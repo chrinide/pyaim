@@ -9,8 +9,9 @@ import h5py
 
 from pyscf import lib
 from pyscf.lib import logger
-libdft = lib.load_library('libdft')
 libcgto = lib.load_library('libcgto')
+
+from pyaim.grids import lebgrid
 
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
@@ -25,11 +26,6 @@ MAXSTEP = 0.75
 SAFETY = 0.8
 ENLARGE = 1.2
 HMINIMAL = numpy.finfo(numpy.float64).eps
-LEBEDEV_NGRID = numpy.asarray((
-    1   , 6   , 14  , 26  , 38  , 50  , 74  , 86  , 110 , 146 ,
-    170 , 194 , 230 , 266 , 302 , 350 , 434 , 590 , 770 , 974 ,
-    1202, 1454, 1730, 2030, 2354, 2702, 3074, 3470, 3890, 4334,
-    4802, 5294, 5810))
 
 class BaderSurf(lib.StreamObject):
 
@@ -84,7 +80,6 @@ class BaderSurf(lib.StreamObject):
 
         if self.verbose < logger.INFO:
             return self
-
         logger.info(self,'')
         logger.info(self,'******** %s flags ********', self.__class__)
         logger.info(self,'Verbose level %d' % self.verbose)
@@ -147,9 +142,20 @@ class BaderSurf(lib.StreamObject):
         self.xnuc = self.coords[self.inuc]
         self.rsurf = numpy.zeros((self.npang,self.ntrial))
         self.nlimsurf = numpy.zeros((self.npang), dtype=numpy.int32)
-        #self.lebgrid()
+        lebgrid.lebgrid(self.npang)
 
         if self.verbose >= logger.WARN:
             self.check_sanity()
         if self.verbose > lib.logger.NOTE:
             self.dump_input()
+
+    kernel = build
+
+if __name__ == '__main__':
+    name = 'test/n2_rhf.chk'
+    surf = BaderSurf(name)
+    surf.epsilon = 1e-4
+    surf.verbose = 4
+    surf.inuc = 0
+    surf.kernel()
+ 
