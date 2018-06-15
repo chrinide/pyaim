@@ -89,15 +89,16 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
         logger.info(self,'Surface for nuc %d' % self.inuc)
-        logger.info(self,'Nuclear coordinate %8.5f %8.5f %8.5f', *self.xnuc)
-        logger.info(self,'Rmaxsurface %8.5f' % self.rmaxsurf)
-        logger.info(self,'Ntrial %d' % self.ntrial)
+        logger.info(self,'Nuclear coordinate %.5f  %.5f  %.5f', *self.xnuc)
+        logger.info(self,'Rmaxsurface %.5f' % self.rmaxsurf)
         logger.info(self,'Npang points %d' % self.npang)
-        logger.info(self,'Rprimer %8.5f' % self.rprimer)
-        logger.info(self,'Epsiscp %8.5f' % self.epsiscp)
-        logger.info(self,'Epsroot %8.5f' % self.epsroot)
+        logger.info(self,'Ntrial %d' % self.ntrial)
+        logger.info(self,'Rprimer %.5f' % self.rprimer)
+        logger.debug(self, 'Rpru : %s' % self.rpru) 
+        logger.info(self,'Epsiscp %.5f' % self.epsiscp)
+        logger.info(self,'Epsroot %.5f' % self.epsroot)
         logger.info(self,'ODE solver %s' % self.backend)
-        logger.info(self,'ODE tool %8.5f' % self.epsilon)
+        logger.info(self,'ODE tool %.5f' % self.epsilon)
         logger.info(self,'Max steps in ODE solver %d' % self.mstep)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
@@ -105,7 +106,7 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Spin %d ' % self.spin)
         logger.info(self,'Atom Coordinates (Bohr)')
         for i in range(self.natm):
-            logger.info(self,'Nuclei %d with charge %d position : %8.5f  %8.5f  %8.5f', i, 
+            logger.info(self,'Nuclei %d with charge %d position : %.5f  %.5f  %.5f', i, 
                         self.charges[i], *self.coords[i])
         return self
 
@@ -155,7 +156,7 @@ if __name__ == '__main__':
     name = 'test/n2_rhf.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-4
-    surf.verbose = 4
+    surf.verbose = 5
     surf.inuc = 0
     surf.kernel()
  
