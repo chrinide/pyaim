@@ -82,6 +82,9 @@ class BaderSurf(lib.StreamObject):
 
     def dump_input(self):
 
+        if self.verbose < logger.INFO:
+            return self
+
         logger.info(self,'')
         logger.info(self,'******** %s flags ********', self.__class__)
         logger.info(self,'Verbose level %d' % self.verbose)
@@ -111,3 +114,42 @@ class BaderSurf(lib.StreamObject):
                         self.charges[i], *self.coords[i])
         return self
 
+    def build(self):
+
+        t0 = time.clock()
+        lib.logger.TIMER_LEVEL = 5
+
+        mol = lib.chkfile.load_mol(self.chkfile)
+        self.nelectron = mol.nelectron 
+        self.charge = mol.charge    
+        self.spin = mol.spin      
+        self.natm = mol.natm		
+        self.atm = numpy.asarray(mol._atm, dtype=numpy.int32, order='C')
+        self.bas = numpy.asarray(mol._bas, dtype=numpy.int32, order='C')
+        self.nbas = self.bas.shape[0]
+        self.env = numpy.asarray(mol._env, dtype=numpy.double, order='C')
+        self.ao_loc = mol.ao_loc_nr()
+        self.shls_slice = (0, self.nbas)
+        sh0, sh1 = self.shls_slice
+        self.nao = self.ao_loc[sh1] - self.ao_loc[sh0]
+        self.non0tab = numpy.ones((1,self.nbas), dtype=numpy.int8)
+        self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in mol._atom])
+        self.charges = mol.atom_charges()
+        self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
+        self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
+        self.cart = mol.cart
+
+        if (self.ntrial%2 == 0): self.ntrial += 1
+        geofac = numpy.power(((self.rmaxsurf-0.1)/self.rprimer),(1.0/(self.ntrial-1.0)))
+        self.rpru = numpy.zeros((self.ntrial))
+        for i in range(self.ntrial): 
+            self.rpru[i] = self.rprimer*numpy.power(geofac,(i+1)-1)
+        self.xnuc = self.coords[self.inuc]
+        self.rsurf = numpy.zeros((self.npang,self.ntrial))
+        self.nlimsurf = numpy.zeros((self.npang), dtype=numpy.int32)
+        #self.lebgrid()
+
+        if self.verbose >= logger.WARN:
+            self.check_sanity()
+        if self.verbose > lib.logger.NOTE:
+            self.dump_input()
