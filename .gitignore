@@ -3,3 +3,7 @@
 *.wfn
 *.mol
 *.chk
+*.h5
+dosurf
+*.wfn.*
+*.pmdout
