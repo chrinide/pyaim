@@ -10,6 +10,7 @@ import h5py
 from pyscf import lib
 from pyscf.lib import logger
 libcgto = lib.load_library('libcgto')
+lib.num_threads(1)
 
 from pyaim.surf import ode, cp, grid
 
