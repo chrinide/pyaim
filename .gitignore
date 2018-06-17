@@ -7,3 +7,5 @@
 dosurf
 *.wfn.*
 *.pmdout
+build/
+build/*
