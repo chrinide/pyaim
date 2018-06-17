@@ -3,6 +3,7 @@
 *.wfn
 *.mol
 *.chk
+*.so
 *.h5
 dosurf
 *.wfn.*
