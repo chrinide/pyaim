@@ -2,7 +2,9 @@
     
 import numpy, ctypes
 from pyscf import lib
+
 libcgto = lib.load_library('libcgto')
+
 OCCDROP = 1e-12
 HMINIMAL = numpy.finfo(numpy.float64).eps
 

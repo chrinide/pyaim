@@ -1,12 +1,5 @@
 *.pyc
-*.txt
-*.wfn
-*.mol
-*.chk
 *.so
-*.h5
-dosurf
-*.wfn.*
-*.pmdout
 build/
-build/*
+*.sh
+tmp/
