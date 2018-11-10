@@ -1,5 +1,8 @@
-*.pyc
-*.so
 build/
-*.sh
+.cache/
+__pycache__/
+*.txt
+*.pyc
 tmp/
+*.o
+*.so
