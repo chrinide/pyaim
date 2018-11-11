@@ -21,12 +21,6 @@ int nmo_;
 int8_t *non0tab_;
 int *shls_;
 int *ao_loc_;
-//double *ao_;
-//double *c0_;
-//double *c1_;
-//double *c2_;
-//double *c3_;
-//#pragma omp threadprivate(c0_,c1_,c2_,c3_)
 
 // Surface info
 #define EPS 1e-7

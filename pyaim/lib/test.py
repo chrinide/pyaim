@@ -37,7 +37,7 @@ lib.logger.TIMER_LEVEL = 5
 inuc = 0
 epsiscp = 0.180
 ntrial = 11
-npang = 5810
+npang = 6
 epsroot = 1e-4
 rmaxsurf = 10.0
 rprimer = 0.4
@@ -83,8 +83,6 @@ st = numpy.asarray(grid[:,1], order='C')
 cp = numpy.asarray(grid[:,2], order='C')
 sp = numpy.asarray(grid[:,3], order='C')
 
-del(grid)
-        
 rsurf = numpy.zeros((npang,ntrial), order='C')
 nlimsurf = numpy.zeros((npang), order='C')
 
@@ -109,8 +107,29 @@ drv(ctypes.c_int(inuc),
     rsurf.ctypes.data_as(ctypes.c_void_p))
 
 for i in range(npang):
-    for j in range(int(nlimsurf[i])):
-        print i,ct[i],st[i],sp[i],cp[i],j,rsurf[i,j]
+    print "*",i,ct[i],st[i],sp[i],cp[i],nlimsurf[i],rsurf[i,:int(nlimsurf[i])]
 
-del(ct,st,sp,cp,rsurf,nlimsurf)
+rmin = 1000.0
+rmax = 0.0
+for i in range(npang):
+    nsurf = int(nlimsurf[i])
+    rmin = numpy.minimum(rmin,rsurf[i,0])
+    rmax = numpy.maximum(rmax,rsurf[i,nsurf-1])
+print 'Rmin for surface ', rmin
+print 'Rmax for surface ', rmax
+
+xnuc = coords[inuc]
+atom_dic = {'inuc':inuc,
+            'xnuc':xnuc,
+            'xyzrho':xnuc,
+            'coords':grid,
+            'intersecs':nlimsurf,
+            'surface':rsurf,
+            'npang':npang,
+            'rmin':rmin,
+            'rmax':rmax,
+            'ntrial':ntrial}
+lib.chkfile.save('surface.h5', 'atom'+str(inuc), atom_dic)
+
+del(ct,st,sp,cp,rsurf,nlimsurf,grid)
 

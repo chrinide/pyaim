@@ -74,7 +74,6 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   atm_ = atm;
   bas_ = bas;
   env_ = env;
-	//ao_ = (double *) malloc(sizeof(double)*nprim_*4);
   ao_loc_ = ao_loc;
 	non0tab_ = (int8_t *) malloc(sizeof(int8_t)*nbas_);
   assert(xnuc_ != NULL);
@@ -424,7 +423,6 @@ void surface(){
 {
 #pragma omp for nowait schedule(dynamic)
 	for (i=0; i<npang_; i++){
-    //if (i==2) exit(-1);
     nintersec = 0;
     double cost = ct_[i];
     double sintcosp = st_[i]*cp_[i];
