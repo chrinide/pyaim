@@ -9,11 +9,11 @@ log = lib.logger.Logger(sys.stdout, 4)
 log.verbose = 5
 lib.logger.TIMER_LEVEL = 5
 
-name = 'h2o'
-betafac = 0.6
-nrad = 120
+name = 'test/lif'
+betafac = 0.4
+nrad = 101
 iqudr = 1
-surface = 'surface.h5'
+surface = 'test/lif.chk.h5'
 mol = lib.chkfile.load_mol(name+'.chk')
 charges = mol.atom_charges()
 coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in mol._atom])
@@ -61,6 +61,7 @@ log.info('Rmax distance to ZFS : %8.5f ', rmax)
 log.info('Beta rad : %8.5f ', brad)
 log.info('Quadrature : legendre ')
 
+# TODO:screaning of points
 def rho(x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao(mol, x, deriv=1)
@@ -72,8 +73,8 @@ xcoor = numpy.zeros(3)
 log.info('Go with inside betasphere')
 r0 = 0
 rfar = brad
-rad = 0.1 #rbrag[]
-mapr = 0
+rad = 0.41 #rbrag[]
+mapr = 2
 log.info('Quadrature mapping : %d ', mapr)
 rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
 rlmr = 0.0
@@ -120,8 +121,8 @@ def inbasin(r,j):
 
 r0 = brad
 rfar = rmax
-rad = 0.1 #rbrag[]
-mapr = 0
+rad = 0.41 #rbrag[]
+mapr = 2
 log.info('Quadrature mapping : %d ', mapr)
 rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
 rlmr = 0.0

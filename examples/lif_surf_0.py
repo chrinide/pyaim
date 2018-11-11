@@ -9,7 +9,7 @@ surf.verbose = 4
 surf.epsiscp = 0.180
 surf.mstep = 100
 surf.inuc = 0
-surf.npang = 6
+surf.npang = 5810
 surf.kernel()
 
 for i in range(surf.npang):

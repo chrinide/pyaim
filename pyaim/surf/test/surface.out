@@ -1,0 +1,30 @@
+
+******** <class '__main__.BaderSurf'> flags ********
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file test/lif.chk
+max_memory 60000 MB (current use 62 MB)
+Num atoms 2
+Num electrons 12
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 9 position : 0.000000  0.000000  -0.738836
+Nuclei 1 with charge 3 position : 0.000000  0.000000  2.216507
+Surface file test/lif.chk.h5
+Surface for nuc 0
+Nuclear coordinate 0.000000  0.000000  -0.738836
+Rmaxsurface 10.000000
+Npang points 5810
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.180000
+Epsroot 0.000100
+ODE solver rkck
+ODE tool 0.000100
+Max steps in ODE solver 100
+Check rho position 0.000000 0.000000 -0.738836
+Rmin for surface 1.811376
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved

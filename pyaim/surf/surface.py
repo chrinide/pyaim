@@ -137,7 +137,7 @@ class BaderSurf(lib.StreamObject):
         self.rpru = numpy.zeros((self.ntrial))
         for i in range(self.ntrial): 
             self.rpru[i] = self.rprimer*numpy.power(geofac,(i+1)-1)
-        self.xnuc = self.coords[self.inuc]
+        self.xnuc = numpy.asarray(self.coords[self.inuc])
         self.rsurf = numpy.zeros((self.npang,self.ntrial))
         self.nlimsurf = numpy.zeros((self.npang), dtype=numpy.int32)
         self.grids = grid.lebgrid(self.npang)
@@ -147,6 +147,7 @@ class BaderSurf(lib.StreamObject):
         if self.verbose > lib.logger.NOTE:
             self.dump_input()
 
+        self.xyzrho = numpy.zeros((3))
         self.xyzrho, gradmod = cp.gradrho(self,self.xnuc,self.step)
         if (gradmod > 1e-4):
             if (self.charges[self.inuc] > 2.0):
@@ -156,6 +157,15 @@ class BaderSurf(lib.StreamObject):
         else:
             logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
 
+        # TODO: check why data is not persistent before C call
+        atom_dic = {'inuc':self.inuc,
+                    'xnuc':self.xnuc,
+                    'xyzrho':self.xyzrho,
+                    'coords':self.grids,
+                    'npang':self.npang,
+                    'ntrial':self.ntrial}
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
+
         feval = 'surf_driver'
         drv = getattr(libaim, feval)
         backend = 1
@@ -163,7 +173,6 @@ class BaderSurf(lib.StreamObject):
         st_ = numpy.asarray(self.grids[:,1], order='C')
         cp_ = numpy.asarray(self.grids[:,2], order='C')
         sp_ = numpy.asarray(self.grids[:,3], order='C')
-        #TODO: Pass xyzrho instead of get coordinates
         drv(ctypes.c_int(self.inuc), 
             ctypes.c_int(self.npang), 
             ct_.ctypes.data_as(ctypes.c_void_p),
@@ -173,9 +182,11 @@ class BaderSurf(lib.StreamObject):
             ctypes.c_int(self.ntrial), self.rpru.ctypes.data_as(ctypes.c_void_p), 
             ctypes.c_double(self.epsiscp), ctypes.c_double(self.epsroot), 
             ctypes.c_double(self.rmaxsurf), ctypes.c_int(backend),
-            ctypes.c_double(self.epsilon), ctypes.c_double(self.step), ctypes.c_int(self.mstep),
+            ctypes.c_double(self.epsilon), ctypes.c_double(self.step), 
+            ctypes.c_int(self.mstep),
             ctypes.c_int(self.cart),
             self.coords.ctypes.data_as(ctypes.c_void_p),
+            self.xyzrho.ctypes.data_as(ctypes.c_void_p),
             self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
             self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
             self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nprim),
@@ -185,9 +196,6 @@ class BaderSurf(lib.StreamObject):
             self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
             self.rsurf.ctypes.data_as(ctypes.c_void_p))
 
-        #for i in range(self.npang):
-        #    print "*",i,ct_[i],st_[i],sp_[i],cp_[i],self.nlimsurf[i],self.rsurf[i,:self.nlimsurf[i]]
-
         self.rmin = 1000.0
         self.rmax = 0.0
         for i in range(self.npang):
@@ -196,20 +204,13 @@ class BaderSurf(lib.StreamObject):
             self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
         logger.info(self,'Rmin for surface %.6f', self.rmin)
         logger.info(self,'Rmax for surface %.6f', self.rmax)
-        logger.info(self,'Write HDF5 surface file')
-        atom_dic = {'inuc':self.inuc,
-                    'xnuc':self.xnuc,
-                    'xyzrho':self.xyzrho,
-                    'coords':self.grids,
-                    'intersecs':self.nlimsurf,
-                    'surface':self.rsurf,
-                    'npang':self.npang,
-                    'rmin':self.rmin,
-                    'rmax':self.rmax,
-                    'ntrial':self.ntrial}
-        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
-        logger.info(self,'Surface of atom %d saved',self.inuc)
 
+        logger.info(self,'Write HDF5 surface file')
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc)+'/intersecs', self.nlimsurf)
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc)+'/surface', self.rsurf)
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc)+'/rmin', self.rmin)
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc)+'/rmax', self.rmax)
+        logger.info(self,'Surface of atom %d saved',self.inuc)
         logger.timer(self,'BaderSurf build', t0)
 
         return self
@@ -224,6 +225,6 @@ if __name__ == '__main__':
     surf.epsiscp = 0.180
     surf.mstep = 100
     surf.inuc = 0
-    surf.npang = 6
+    surf.npang = 5810
     surf.kernel()
  

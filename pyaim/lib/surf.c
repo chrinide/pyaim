@@ -17,7 +17,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  int ntrial, double *rpru, double epsiscp,
                  double epsroot, double rmaxsurf, int backend,
                  double epsilon, double step, int mstep,
-                 int cart, double *coord, int *atm, int natm, 
+                 int cart, double *coord, const double *xyzrho, int *atm, int natm, 
                  int *bas, int nbas, double *env, int nprim,
                  int *ao_loc,
                  double *mo_coeff, double *mo_occ, 
@@ -61,11 +61,9 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
     cp_[i] = cp[i];
     sp_[i] = sp[i];
   }
-	xnuc_ = (double *) malloc(sizeof(double)*3);
-  assert(xnuc_ != NULL);
-  xnuc_[0] = coord_[inuc_*3+0];
-  xnuc_[1] = coord_[inuc_*3+1]; 
-  xnuc_[2] = coord_[inuc_*3+2];
+  xnuc_[0] = xyzrho[0];
+  xnuc_[1] = xyzrho[1]; 
+  xnuc_[2] = xyzrho[2];
 
   // Basis info
   nprim_ = nprim;
@@ -76,7 +74,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   env_ = env;
   ao_loc_ = ao_loc;
 	non0tab_ = (int8_t *) malloc(sizeof(int8_t)*nbas_);
-  assert(xnuc_ != NULL);
+  assert(non0tab_ != NULL);
   for (i=0; i<nbas_; i++){
     non0tab_[i] = 1.0;
   }
@@ -122,7 +120,6 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   free(sp_);
   free(ct_);
   free(st_);
-  free(xnuc_);
   free(non0tab_);
   free(shls_);
   free(ao_loc_);

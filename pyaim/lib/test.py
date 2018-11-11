@@ -33,11 +33,24 @@ ao_loc = mol.ao_loc_nr()
 
 log = lib.logger.Logger(sys.stdout, 4)
 lib.logger.TIMER_LEVEL = 5
+log.verbose = 5
+
+log.info('Verbose level : %d' % log.verbose)
+log.info('Checkpoint file is : %s' % (name+'.chk'))
+log.info('Num atoms : %d ' % natm)
+log.info('Num electrons : %d ' % mol.nelectron)
+log.info('Total charge : %d ' % mol.charge)
+log.info('Spin : %d ' % mol.spin)
+log.info('Atom Coordinates')
+for i in range(natm):
+    log.info('Nuclei %d position : %8.5f %8.5f %8.5f', i, *coords[i])
 
 inuc = 0
+xnuc = coords[inuc]
+xyzrho = xnuc
 epsiscp = 0.180
 ntrial = 11
-npang = 5810
+npang = 6
 epsroot = 1e-4
 rmaxsurf = 10.0
 rprimer = 0.4
@@ -50,6 +63,12 @@ geofac = numpy.power(((rmaxsurf-0.1)/rprimer),(1.0/(ntrial-1.0)))
 rpru = numpy.zeros((ntrial))
 for i in range(ntrial): 
     rpru[i] = rprimer*numpy.power(geofac,(i+1)-1)
+
+log.info('Looking surface for atom : %d', inuc)
+log.info('Nuclei position : %8.5f %8.5f %8.5f', *xnuc)
+log.info('Nuclei rho position : %8.5f %8.5f %8.5f', *xyzrho)
+log.info('Lebedev angular points : %d ', npang)
+log.info('Ntrial : %d ', ntrial)
 
 grids = numpy.zeros((npang,4))
 grid = numpy.zeros((npang,5))
@@ -84,7 +103,7 @@ cp = numpy.asarray(grid[:,2], order='C')
 sp = numpy.asarray(grid[:,3], order='C')
 
 rsurf = numpy.zeros((npang,ntrial), order='C')
-nlimsurf = numpy.zeros((npang), order='C')
+nlimsurf = numpy.zeros((npang), order='C', dtype=numpy.int32)
 
 drv(ctypes.c_int(inuc), 
     ctypes.c_int(npang), 
@@ -96,7 +115,7 @@ drv(ctypes.c_int(inuc),
     ctypes.c_double(epsroot), ctypes.c_double(rmaxsurf), ctypes.c_int(backend),
     ctypes.c_double(epsilon), ctypes.c_double(step), ctypes.c_int(mstep),
     ctypes.c_int(cart),
-    coords.ctypes.data_as(ctypes.c_void_p),
+    coords.ctypes.data_as(ctypes.c_void_p), xyzrho.ctypes.data_as(ctypes.c_void_p),
     atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(natm),
     bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nbas),
     env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nprim),
@@ -107,21 +126,20 @@ drv(ctypes.c_int(inuc),
     rsurf.ctypes.data_as(ctypes.c_void_p))
 
 for i in range(npang):
-    print "*",i,ct[i],st[i],sp[i],cp[i],nlimsurf[i],rsurf[i,:int(nlimsurf[i])]
+    print(i,ct[i],st[i],sp[i],cp[i],nlimsurf[i],rsurf[i,:nlimsurf[i]])
 
 rmin = 1000.0
 rmax = 0.0
 for i in range(npang):
-    nsurf = int(nlimsurf[i])
+    nsurf = nlimsurf[i]
     rmin = numpy.minimum(rmin,rsurf[i,0])
     rmax = numpy.maximum(rmax,rsurf[i,nsurf-1])
-print 'Rmin for surface ', rmin
-print 'Rmax for surface ', rmax
+log.info('Rmin for surface : %8.5f ', rmin)
+log.info('Rmax for surface : %8.5f ', rmax)
 
-xnuc = coords[inuc]
 atom_dic = {'inuc':inuc,
             'xnuc':xnuc,
-            'xyzrho':xnuc,
+            'xyzrho':xyzrho,
             'coords':grid,
             'intersecs':nlimsurf,
             'surface':rsurf,
@@ -129,7 +147,7 @@ atom_dic = {'inuc':inuc,
             'rmin':rmin,
             'rmax':rmax,
             'ntrial':ntrial}
-lib.chkfile.save('surface.h5', 'atom'+str(inuc), atom_dic)
+lib.chkfile.save('test.h5', 'atom'+str(inuc), atom_dic)
 
 del(ct,st,sp,cp,rsurf,nlimsurf,grid)
 

@@ -41,7 +41,7 @@ int backend_;
 double epsilon_;
 double step_;
 int mstep_;
-double *xnuc_;
+double xnuc_[3];
 double *rpru_;
 double *ct_;
 double *st_;
@@ -64,7 +64,8 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  int ntrial, double *rpru, double epsiscp,
                  double epsroot, double rmaxsurf, int backend,
                  double epsilon, double step, int mstep,
-                 int cart, double *coord, int *atm, int natm, 
+                 int cart, double *coord, const double *xyzrho,
+                 int *atm, int natm, 
                  int *bas, int nbas, double *env, int nprim,
                  int *ao_loc,
                  double *mo_coeff, double *mo_occ, int *nlimsurf, double *rsurf);
