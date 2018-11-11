@@ -8,7 +8,7 @@ import ctypes
 from pyscf import lib
 from pyscf.lib import logger
 
-from pyaim.surf import ode, cp
+from pyaim.surf import cp
 from pyaim import grid
 
 _loaderpath = os.path.dirname(__file__)
@@ -16,97 +16,9 @@ libaim = numpy.ctypeslib.load_library('../lib/libaim.so', _loaderpath)
 libcgto = lib.load_library('libcgto')
 libdft = lib.load_library('libdft')
 
-#lib.num_threads(1)
-
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
-
-def surface(self):
-
-    xin = numpy.zeros((3))
-    xfin = numpy.zeros((3))
-    xmed = numpy.zeros((3))
-    xpoint = numpy.zeros((3))
-    xdeltain = numpy.zeros((3))
-    xsurf = numpy.zeros((self.ntrial,3))
-    isurf = numpy.zeros((self.ntrial,2), dtype=numpy.int32)
-
-    if (self.natm == 1):
-        self.nlimsurf[:] = 1
-        self.rsurf[:,0] = self.rmaxsurf
-        return
-
-    for i in range(self.npang):
-        ncount = 0
-        nintersec = 0
-        cost = self.grids[i,0]
-        sintcosp = self.grids[i,1]*self.grids[i,2]
-        sintsinp = self.grids[i,1]*self.grids[i,3]
-        ia = self.inuc
-        ra = 0.0
-        for j in range(self.ntrial):
-            ract = self.rpru[j]
-            xdeltain[0] = ract*sintcosp
-            xdeltain[1] = ract*sintsinp
-            xdeltain[2] = ract*cost    
-            xpoint = self.xnuc + xdeltain
-            ier, xpoint, rho, gradmod = ode.odeint(self,xpoint)
-            good, ib = cp.checkcp(self,xpoint,rho,gradmod)
-            rb = ract
-            if (ib != ia and (ia == self.inuc or ib == self.inuc)):
-                if (ia != self.inuc or ib != -1):
-                    nintersec += 1
-                    xsurf[nintersec-1,0] = ra
-                    xsurf[nintersec-1,1] = rb
-                    isurf[nintersec-1,0] = ia
-                    isurf[nintersec-1,1] = ib
-            ia = ib
-            ra = rb
-        for k in range(nintersec):
-            ia = isurf[k,0]
-            ib = isurf[k,1]
-            ra = xsurf[k,0]
-            rb = xsurf[k,1]
-            xin[0] = self.xnuc[0] + ra*sintcosp
-            xin[1] = self.xnuc[1] + ra*sintsinp
-            xin[2] = self.xnuc[2] + ra*cost
-            xfin[0] = self.xnuc[0] + rb*sintcosp
-            xfin[1] = self.xnuc[1] + rb*sintsinp
-            xfin[2] = self.xnuc[2] + rb*cost
-            while (abs(ra-rb) > self.epsroot):
-                xmed = 0.5*(xfin+xin)    
-                rm = 0.5*(ra+rb)
-                xpoint = xmed
-                ier, xpoint, rho, gradmod = ode.odeint(self,xpoint)
-                good, im = cp.checkcp(self,xpoint,rho,gradmod)
-                #if (ib != -1 and (im != ia and im != ib)):
-                    #logger.debug(self,'warning new intersections found')
-                if (im == ia):
-                    xin = xmed
-                    ra = rm
-                elif (im == ib):
-                    xfin = xmed
-                    rb = rm
-                else:
-                    if (ia == self.inuc):
-                        xfin = xmed
-                        rb = rm
-                    else:
-                        xin = xmed
-                        ra = rm
-            #xpoint = 0.5*(xfin+xin)    
-            xsurf[k,2] = 0.5*(ra+rb)
-        
-        # organize pairs
-        self.nlimsurf[i] = nintersec
-        for ii in range(nintersec):
-            self.rsurf[i,ii] = xsurf[ii,2]
-        if (nintersec%2 == 0):
-            nintersec = +1
-            self.nlimsurf[i] += nintersec
-            self.rsurf[i,nintersec-1] = self.rmaxsurf
-        print("#* ",i,self.grids[i,:4],self.rsurf[i,:nintersec])
 
 class BaderSurf(lib.StreamObject):
 
@@ -149,6 +61,7 @@ class BaderSurf(lib.StreamObject):
         self.atm = None
         self.bas = None
         self.nbas = None
+        self.nprim = None
         self.env = None
         self.ao_loc = None
         self.shls_slice = None
@@ -216,6 +129,7 @@ class BaderSurf(lib.StreamObject):
         self.charges = mol.atom_charges()
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
+        self.nprim = self.mo_coeff.shape[0]
         self.cart = mol.cart
 
         if (self.ntrial%2 == 0): self.ntrial += 1
@@ -242,12 +156,9 @@ class BaderSurf(lib.StreamObject):
         else:
             logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
 
-        #surface(self)
         feval = 'surf_driver'
         drv = getattr(libaim, feval)
-        epsroot = self.epsilon
         backend = 1
-        nprim = self.mo_coeff.shape[0]
         ct_ = numpy.asarray(self.grids[:,0], order='C')
         st_ = numpy.asarray(self.grids[:,1], order='C')
         cp_ = numpy.asarray(self.grids[:,2], order='C')
@@ -267,7 +178,7 @@ class BaderSurf(lib.StreamObject):
             self.coords.ctypes.data_as(ctypes.c_void_p),
             self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
             self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
-            self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nprim),
+            self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nprim),
             self.ao_loc.ctypes.data_as(ctypes.c_void_p),
             self.mo_coeff.ctypes.data_as(ctypes.c_void_p),
             self.mo_occ.ctypes.data_as(ctypes.c_void_p),
@@ -276,7 +187,6 @@ class BaderSurf(lib.StreamObject):
 
         for i in range(self.npang):
             print "*",i,ct_[i],st_[i],sp_[i],cp_[i],self.nlimsurf[i],self.rsurf[i,:self.nlimsurf[i]]
-        #sys.exit()
 
         self.rmin = 1000.0
         self.rmax = 0.0
