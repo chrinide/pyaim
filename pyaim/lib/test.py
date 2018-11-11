@@ -37,7 +37,7 @@ lib.logger.TIMER_LEVEL = 5
 inuc = 0
 epsiscp = 0.180
 ntrial = 11
-npang = 6
+npang = 5810
 epsroot = 1e-4
 rmaxsurf = 10.0
 rprimer = 0.4
@@ -76,21 +76,14 @@ for i in range(npang):
 
 del(grids)        
 
-a = [0.0, 0.1, 1.0]
-a = numpy.asarray(a)
-a = numpy.reshape(a, (-1,3))
-t0 = time.clock()
-ao = dft.numint.eval_ao(mol, a, deriv=1)
-rho = dft.numint.eval_rho2(mol, ao, mo_coeff, mo_occ, xctype='GGA')
-log.timer('own', t0)
-print "rho info : ", rho
-
 feval = 'surf_driver'
 drv = getattr(libaim, feval)
 ct = numpy.asarray(grid[:,0], order='C')
 st = numpy.asarray(grid[:,1], order='C')
 cp = numpy.asarray(grid[:,2], order='C')
 sp = numpy.asarray(grid[:,3], order='C')
+
+del(grid)
         
 rsurf = numpy.zeros((npang,ntrial), order='C')
 nlimsurf = numpy.zeros((npang), order='C')
@@ -115,6 +108,9 @@ drv(ctypes.c_int(inuc),
     nlimsurf.ctypes.data_as(ctypes.c_void_p),
     rsurf.ctypes.data_as(ctypes.c_void_p))
 
-del(ct,st,sp,cp)
-print nlimsurf
-print rsurf
+for i in range(npang):
+    for j in range(int(nlimsurf[i])):
+        print i,ct[i],st[i],sp[i],cp[i],j,rsurf[i,j]
+
+del(ct,st,sp,cp,rsurf,nlimsurf)
+

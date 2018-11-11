@@ -21,11 +21,12 @@ int nmo_;
 int8_t *non0tab_;
 int *shls_;
 int *ao_loc_;
-double *ao_;
-double *c0_;
-double *c1_;
-double *c2_;
-double *c3_;
+//double *ao_;
+//double *c0_;
+//double *c1_;
+//double *c2_;
+//double *c3_;
+//#pragma omp threadprivate(c0_,c1_,c2_,c3_)
 
 // Surface info
 #define EPS 1e-7
@@ -56,11 +57,10 @@ double *nlimsurf_;
 double *rsurf_;
 
 // Functions
-void print_info();
 void rhograd(double *point, double *rho, double *grad, double *gradmod);
-bool checkcp(double *x, double rho, double gradmod, int *nuc);
-void stepper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr);
-bool adaptive_stepper(double *x, double *grad, double *h);
+bool checkcp(const double *x, const double rho, const double gradmod, int *nuc);
+void stepper_rkck(const double *xpoint, const double *grdt, const double h0, double *xout, double *xerr);
+bool adaptive_stepper(double *x, const double *grad, double *h);
 int odeint(double *xpoint, double *rho, double *gradmod);
 
 // Drivers

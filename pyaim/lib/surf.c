@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
+#include <omp.h>
                    
 #include "surf.h"
 
@@ -37,7 +38,11 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   epsilon_ = epsilon;
   step_ = step;
   mstep_ = mstep;
-  rpru_ = rpru;
+	rpru_ = (double *) malloc(sizeof(double)*ntrial_);
+  assert(rpru_ != NULL);
+  for (i=0; i<ntrial_; i++){
+    rpru_[i] = rpru[i];
+  }
 	rsurf_ = (double *) malloc(sizeof(double)*npang_*ntrial_);
   assert(rsurf_ != NULL);
 	nlimsurf_ = (double *) malloc(sizeof(double)*npang_);
@@ -69,7 +74,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   atm_ = atm;
   bas_ = bas;
   env_ = env;
-	ao_ = (double *) malloc(sizeof(double)*nprim_*4);
+	//ao_ = (double *) malloc(sizeof(double)*nprim_*4);
   ao_loc_ = ao_loc;
 	non0tab_ = (int8_t *) malloc(sizeof(int8_t)*nbas_);
   assert(xnuc_ != NULL);
@@ -88,14 +93,6 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   assert(mo_coeff_ != NULL);
 	mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
   assert(mo_occ_ != NULL);
-	c0_ = (double *) malloc(sizeof(double)*nmo_);
-	c1_ = (double *) malloc(sizeof(double)*nmo_);
-	c2_ = (double *) malloc(sizeof(double)*nmo_);
-	c3_ = (double *) malloc(sizeof(double)*nmo_);
-  assert(c0_ != NULL);
-  assert(c1_ != NULL);
-  assert(c2_ != NULL);
-  assert(c3_ != NULL);
   int k = 0;
 	for (i=0; i<nprim_; i++){ // Orbital
     if (mo_occ[i] != 0){
@@ -130,15 +127,13 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   free(non0tab_);
   free(shls_);
   free(ao_loc_);
-  free(ao_);
-  free(c0_);
-  free(c1_);
-  free(c2_);
-  free(c3_);
 
 }
 
-inline void rhograd(double *point, double *rho, double *grad, double *gradmod){
+void rhograd(double *point, double *rho, double *grad, double *gradmod){
+
+	double ao_[nprim_*4];
+  double c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
 
   if (cart_ == 1) {
     aim_GTOval_cart_deriv1(1, shls_, ao_loc_, ao_, point, 
@@ -187,7 +182,7 @@ inline void rhograd(double *point, double *rho, double *grad, double *gradmod){
 
 }
 
-bool checkcp(double *x, double rho, double gradmod, int *nuc){
+bool checkcp(const double *x, const double rho, const double gradmod, int *nuc){
 
   int i;
   bool iscp = false;
@@ -218,7 +213,7 @@ bool checkcp(double *x, double rho, double gradmod, int *nuc){
 }
 
 //Runge-Kutta-Cash-Karp
-inline void stepper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
+void stepper_rkck(const double *xpoint, const double *grdt, const double h0, double *xout, double *xerr){
 
   static const double b21 = 1.0/5.0;
   static const double b31 = 3.0/40.0;
@@ -302,7 +297,7 @@ inline void stepper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
 
 }
 
-bool adaptive_stepper(double *x, double *grad, double *h){
+bool adaptive_stepper(double *x, const double *grad, double *h){
 
   int ier = 1;
   bool adaptive = true;
@@ -422,7 +417,14 @@ void surface(){
     }
   }
 
+#pragma omp parallel default(none)  \
+    private(i,nintersec,j,xpoint,xsurf,isurf) \
+    shared(npang_,ct_,st_,cp_,sp_,xnuc_,inuc_,rpru_,\
+    ntrial_,epsroot_,rsurf_,nlimsurf_,rmaxsurf_)
+{
+#pragma omp for nowait schedule(dynamic)
 	for (i=0; i<npang_; i++){
+    //if (i==2) exit(-1);
     nintersec = 0;
     double cost = ct_[i];
     double sintcosp = st_[i]*cp_[i];
@@ -505,23 +507,24 @@ void surface(){
       xsurf[j][2] = 0.5*(ra + rb);
     }
     // organize pairs
-    nlimsurf_[i] = nintersec;
+    nlimsurf_[i] = nintersec; 
 	  for (j=0; j<nintersec; j++){
       int offset = i*ntrial_+j;
       rsurf_[offset] = xsurf[j][2];
     }
     if (nintersec%2 == 0){
-      nintersec = 1;
-      nlimsurf_[i] += nintersec;
+      nintersec += 1;
+      nlimsurf_[i] = nintersec;
       int offset = i*ntrial_+(nintersec-1);
       rsurf_[offset] = rmaxsurf_;
     }
-    printf("#* %d %d %.6f %.6f %.6f %.6f ",i,nintersec,ct_[i],st_[i],cp_[i],sp_[i]);
-	  for (j=0; j<nintersec; j++){
-     printf(" %.6f ",rsurf_[i*ntrial_+j]);
-    }
-    printf("\n");
+    //printf("#* %d %d %.6f %.6f %.6f %.6f ",i,nintersec,ct_[i],st_[i],cp_[i],sp_[i]);
+	  //for (j=0; j<nintersec; j++){
+    // printf(" %.6f ",rsurf_[i*ntrial_+j]);
+    //}
+    //printf("\n");
   }
+}
 
 }
 
