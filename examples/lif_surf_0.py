@@ -12,3 +12,8 @@ surf.inuc = 0
 surf.npang = 6
 surf.kernel()
 
+for i in range(surf.npang):
+    print "*",i,surf.grids[i,0],surf.grids[i,1],\
+                surf.grids[i,2],surf.grids[i,3],\
+                surf.nlimsurf[i],surf.rsurf[i,:surf.nlimsurf[i]]
+

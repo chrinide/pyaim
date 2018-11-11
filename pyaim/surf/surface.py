@@ -185,8 +185,8 @@ class BaderSurf(lib.StreamObject):
             self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
             self.rsurf.ctypes.data_as(ctypes.c_void_p))
 
-        for i in range(self.npang):
-            print "*",i,ct_[i],st_[i],sp_[i],cp_[i],self.nlimsurf[i],self.rsurf[i,:self.nlimsurf[i]]
+        #for i in range(self.npang):
+        #    print "*",i,ct_[i],st_[i],sp_[i],cp_[i],self.nlimsurf[i],self.rsurf[i,:self.nlimsurf[i]]
 
         self.rmin = 1000.0
         self.rmax = 0.0
