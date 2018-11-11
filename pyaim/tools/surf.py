@@ -42,5 +42,7 @@ def print_txt(filename, inuc):
         rmin = f[idx+'/rmin'].value
         rmax = f[idx+'/rmax'].value
         for i in range(npang):
-            print (coords[i,0],coords[i,1],coords[i,2],coords[i,3],coords[i,4],rsurf[i,:nlimsurf[i]])
+            data = str(rsurf[i,:nlimsurf[i]])[1:-1]
+            log.info('%.15f %.15f %.15f %.15f %.15f %s' % \
+            (coords[i,0],coords[i,1],coords[i,2],coords[i,3],coords[i,4],data))
 
