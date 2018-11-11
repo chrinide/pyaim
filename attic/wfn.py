@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 import numpy 
-import ctypes
 
 def load_wfn(filename):
 
