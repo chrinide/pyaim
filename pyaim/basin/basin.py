@@ -3,6 +3,7 @@
 import h5py, numpy, sys, time
 from pyscf import lib, dft
 from pyscf.lib import logger
+from pyaim import grid
 
 log = lib.logger.Logger(sys.stdout, 4)
 log.verbose = 5
@@ -66,7 +67,6 @@ def rho(x):
     rho = dft.numint.eval_rho2(mol, ao, mo_coeff, mo_occ, xctype='GGA')
     return rho[0]
 
-import legendre
 xcoor = numpy.zeros(3)
 
 log.info('Go with inside betasphere')
@@ -75,7 +75,7 @@ rfar = brad
 rad = 0.1 #rbrag[]
 mapr = 0
 log.info('Quadrature mapping : %d ', mapr)
-rmesh, rwei, dvol, dvoln = legendre.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
 rlmr = 0.0
 t0 = time.clock()
 coords = numpy.empty((npang,3))
@@ -123,7 +123,7 @@ rfar = rmax
 rad = 0.1 #rbrag[]
 mapr = 0
 log.info('Quadrature mapping : %d ', mapr)
-rmesh, rwei, dvol, dvoln = legendre.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
 rlmr = 0.0
 t0 = time.clock()
 for n in range(nrad):

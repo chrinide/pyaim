@@ -21,7 +21,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  int *bas, int nbas, double *env, int nprim,
                  int *ao_loc,
                  double *mo_coeff, double *mo_occ, 
-                 double *nlimsurf, double *rsurf){
+                 int *nlimsurf, double *rsurf){
 
   int i, j;
 
@@ -45,7 +45,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   }
 	rsurf_ = (double *) malloc(sizeof(double)*npang_*ntrial_);
   assert(rsurf_ != NULL);
-	nlimsurf_ = (double *) malloc(sizeof(double)*npang_);
+	nlimsurf_ = (int *) malloc(sizeof(int)*npang_);
   assert(nlimsurf_ != NULL);
 	ct_ = (double *) malloc(sizeof(double)*npang_);
   assert(ct_ != NULL);

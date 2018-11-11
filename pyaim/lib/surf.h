@@ -47,7 +47,7 @@ double *ct_;
 double *st_;
 double *cp_;
 double *sp_;
-double *nlimsurf_;
+int *nlimsurf_;
 double *rsurf_;
 
 // Functions
@@ -67,7 +67,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  int cart, double *coord, int *atm, int natm, 
                  int *bas, int nbas, double *env, int nprim,
                  int *ao_loc,
-                 double *mo_coeff, double *mo_occ, double *nlimsurf, double *rsurf);
+                 double *mo_coeff, double *mo_occ, int *nlimsurf, double *rsurf);
 
 // AO evaluators
 void aim_GTOval_sph_deriv1(int ngrids, int *shls_slice, int *ao_loc,

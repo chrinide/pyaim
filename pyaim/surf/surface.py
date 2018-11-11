@@ -5,15 +5,18 @@ import sys
 import time
 import numpy
 import ctypes
-import h5py
-
 from pyscf import lib
 from pyscf.lib import logger
 
-lib.num_threads(1)
-
 from pyaim.surf import ode, cp
 from pyaim import grid
+
+_loaderpath = os.path.dirname(__file__)
+libaim = numpy.ctypeslib.load_library('../lib/libaim.so', _loaderpath)
+libcgto = lib.load_library('libcgto')
+libdft = lib.load_library('libdft')
+
+#lib.num_threads(1)
 
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
@@ -239,7 +242,41 @@ class BaderSurf(lib.StreamObject):
         else:
             logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
 
-        surface(self)
+        #surface(self)
+        feval = 'surf_driver'
+        drv = getattr(libaim, feval)
+        epsroot = self.epsilon
+        backend = 1
+        nprim = self.mo_coeff.shape[0]
+        ct_ = numpy.asarray(self.grids[:,0], order='C')
+        st_ = numpy.asarray(self.grids[:,1], order='C')
+        cp_ = numpy.asarray(self.grids[:,2], order='C')
+        sp_ = numpy.asarray(self.grids[:,3], order='C')
+        #TODO: Pass xyzrho instead of get coordinates
+        drv(ctypes.c_int(self.inuc), 
+            ctypes.c_int(self.npang), 
+            ct_.ctypes.data_as(ctypes.c_void_p),
+            st_.ctypes.data_as(ctypes.c_void_p),
+            cp_.ctypes.data_as(ctypes.c_void_p),
+            sp_.ctypes.data_as(ctypes.c_void_p),
+            ctypes.c_int(self.ntrial), self.rpru.ctypes.data_as(ctypes.c_void_p), 
+            ctypes.c_double(self.epsiscp), ctypes.c_double(self.epsroot), 
+            ctypes.c_double(self.rmaxsurf), ctypes.c_int(backend),
+            ctypes.c_double(self.epsilon), ctypes.c_double(self.step), ctypes.c_int(self.mstep),
+            ctypes.c_int(self.cart),
+            self.coords.ctypes.data_as(ctypes.c_void_p),
+            self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
+            self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
+            self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nprim),
+            self.ao_loc.ctypes.data_as(ctypes.c_void_p),
+            self.mo_coeff.ctypes.data_as(ctypes.c_void_p),
+            self.mo_occ.ctypes.data_as(ctypes.c_void_p),
+            self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
+            self.rsurf.ctypes.data_as(ctypes.c_void_p))
+
+        for i in range(self.npang):
+            print "*",i,ct_[i],st_[i],sp_[i],cp_[i],self.nlimsurf[i],self.rsurf[i,:self.nlimsurf[i]]
+        #sys.exit()
 
         self.rmin = 1000.0
         self.rmax = 0.0
@@ -277,5 +314,6 @@ if __name__ == '__main__':
     surf.epsiscp = 0.180
     surf.mstep = 100
     surf.inuc = 0
+    surf.npang = 6
     surf.kernel()
  
