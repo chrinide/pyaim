@@ -66,7 +66,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  double epsilon, double step, int mstep,
                  int cart, double *coord, const double *xyzrho,
                  int *atm, int natm, 
-                 int *bas, int nbas, double *env, int nprim,
+                 int *bas, int nbas, double *env, int nprim, int nmo,
                  int *ao_loc,
                  double *mo_coeff, double *mo_occ, int *nlimsurf, double *rsurf);
 

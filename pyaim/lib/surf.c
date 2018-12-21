@@ -25,7 +25,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
                  double epsroot, double rmaxsurf, int backend,
                  double epsilon, double step, int mstep,
                  int cart, double *coord, const double *xyzrho, int *atm, int natm, 
-                 int *bas, int nbas, double *env, int nprim,
+                 int *bas, int nbas, double *env, int nprim, int nmo,
                  int *ao_loc,
                  double *mo_coeff, double *mo_occ, 
                  int *nlimsurf, double *rsurf){
@@ -98,7 +98,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
 	mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
   assert(mo_occ_ != NULL);
   int k = 0;
-	for (i=0; i<nmo_; i++){ // Orbital
+	for (i=0; i<nmo; i++){ // Orbital
     if (mo_occ[i] != 0){
       mo_occ_[k] = mo_occ[i];
 		  for (j=0; j<nprim_; j++){

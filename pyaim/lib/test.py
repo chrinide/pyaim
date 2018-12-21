@@ -28,7 +28,7 @@ bas = numpy.asarray(mol._bas, dtype=numpy.int32, order='C')
 env = numpy.asarray(mol._env, dtype=numpy.double, order='C')
 natm = atm.shape[0]
 nbas = bas.shape[0]
-nprim = mo_coeff.shape[0]
+nprim, nmo = mo_coeff.shape
 ao_loc = mol.ao_loc_nr()
 
 log = lib.logger.Logger(sys.stdout, 4)
@@ -118,7 +118,7 @@ drv(ctypes.c_int(inuc),
     coords.ctypes.data_as(ctypes.c_void_p), xyzrho.ctypes.data_as(ctypes.c_void_p),
     atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(natm),
     bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nbas),
-    env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nprim),
+    env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nprim), ctypes.c_int(nmo), 
     ao_loc.ctypes.data_as(ctypes.c_void_p),
     mo_coeff.ctypes.data_as(ctypes.c_void_p),
     mo_occ.ctypes.data_as(ctypes.c_void_p),
