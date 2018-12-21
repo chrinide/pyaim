@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+from pyscf import lib
+
+lib.num_threads(1)
+
 def surface(self):
-#lib.num_threads(1)
 
     xin = numpy.zeros((3))
     xfin = numpy.zeros((3))

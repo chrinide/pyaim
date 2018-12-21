@@ -12,19 +12,19 @@ else:
         long_description = f.read()
 
 version = {}
-with open(os.path.join(_here, 'pypmd', 'version.py')) as f:
+with open(os.path.join(_here, 'pyaim', 'version.py')) as f:
     exec(f.read(), version)
 
 setup(
-    name='pypmd',
+    name='pyaim',
     version=version['__version__'],
     description=('Python QTAIM project.'),
     long_description=long_description,
     author='Jose Luis Casals Sainz',
     author_email='jluiscasalssainz@gmail.com',
-    url='https://github.com/cuanto/pypmd',
+    url='https://github.com/cuanto/pyaim',
     license='MPL-2.0',
-    packages=['pypmd'],
+    packages=['pyaim'],
 #   no dependencies in this example
 #   install_requires=[
 #       'dependency==1.2.3',

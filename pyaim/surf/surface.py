@@ -62,6 +62,7 @@ class BaderSurf(lib.StreamObject):
         self.bas = None
         self.nbas = None
         self.nprim = None
+        self.nmo = None
         self.env = None
         self.ao_loc = None
         self.shls_slice = None
@@ -129,7 +130,9 @@ class BaderSurf(lib.StreamObject):
         self.charges = mol.atom_charges()
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
-        self.nprim = self.mo_coeff.shape[0]
+        nprim, nmo = self.mo_coeff.shape 
+        self.nprim = nprim
+        self.nmo = nmo
         self.cart = mol.cart
 
         if (self.ntrial%2 == 0): self.ntrial += 1
@@ -144,7 +147,7 @@ class BaderSurf(lib.StreamObject):
 
         if self.verbose >= logger.WARN:
             self.check_sanity()
-        if self.verbose > lib.logger.NOTE:
+        if self.verbose > logger.NOTE:
             self.dump_input()
 
         self.xyzrho = numpy.zeros((3))
@@ -189,7 +192,7 @@ class BaderSurf(lib.StreamObject):
             self.xyzrho.ctypes.data_as(ctypes.c_void_p),
             self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
             self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
-            self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nprim),
+            self.env.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nprim), ctypes.c_int(self.nmo), 
             self.ao_loc.ctypes.data_as(ctypes.c_void_p),
             self.mo_coeff.ctypes.data_as(ctypes.c_void_p),
             self.mo_occ.ctypes.data_as(ctypes.c_void_p),
