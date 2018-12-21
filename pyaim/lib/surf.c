@@ -8,7 +8,14 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
-#include <omp.h>
+
+#ifdef _OPENMP
+  #include <omp.h>
+#else
+  #define omp_get_max_threads() 1
+  #define omp_get_thread_num() 0
+  #define omp_get_num_threads() 1
+#endif
                    
 #include "surf.h"
 
@@ -83,7 +90,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
   shls_[0] = 0;
   shls_[1] = nbas_;
   nmo_ = 0;
-  for (i=0; i<nprim_; i++){
+  for (i=0; i<nmo; i++){
     if (mo_occ[i] != 0) nmo_ += 1;
   }
 	mo_coeff_ = (double *) malloc(sizeof(double)*nmo_*nprim_);
@@ -91,7 +98,7 @@ void surf_driver(int inuc, int npang, double *ct, double *st,
 	mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
   assert(mo_occ_ != NULL);
   int k = 0;
-	for (i=0; i<nprim_; i++){ // Orbital
+	for (i=0; i<nmo_; i++){ // Orbital
     if (mo_occ[i] != 0){
       mo_occ_[k] = mo_occ[i];
 		  for (j=0; j<nprim_; j++){
