@@ -11,6 +11,10 @@ from pyscf.lib import logger
 
 import grid
 
+# For code compatiblity in python-2 and python-3
+if sys.version_info >= (3,):
+    unicode = str
+
 def keyboardInterruptHandler(signal, frame):
     print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
     sys.exit(0)
@@ -130,10 +134,6 @@ def gradrho(self, xpoint, h):
     return xpoint, grdmodule
 
 
-# For code compatiblity in python-2 and python-3
-if sys.version_info >= (3,):
-    unicode = str
-
 class BaderSurf(lib.StreamObject):
 
     def __init__(self, datafile):
@@ -154,7 +154,7 @@ class BaderSurf(lib.StreamObject):
         self.epsilon = 1e-4 
         self.step = 0.1
         self.mstep = 100
-        self.nthreads = 1
+        self.nthreads = lib.num_threads()
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mo_coeff = None
@@ -194,6 +194,11 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'')
         logger.info(self,'******** %s flags ********', self.__class__)
         logger.info(self,'* General Info')
+        logger.info(self,'Date %s' % time.ctime())
+        logger.info(self,'Python %s' % sys.version)
+        logger.info(self,'Numpy %s' % numpy.__version__)
+        logger.info(self,'Scipy %s' % scipy.__version__)
+        logger.info(self,'Number of threads %d' % self.nthreads)
         logger.info(self,'Verbose level %d' % self.verbose)
         logger.info(self,'Scratch dir %s' % self.scratch)
         logger.info(self,'Input data file %s' % self.chkfile)
@@ -362,6 +367,5 @@ if __name__ == '__main__':
     surf.mstep = 100
     surf.inuc = 0
     surf.npang = 5810
-    surf.nthreads = 4
     surf.kernel()
  
