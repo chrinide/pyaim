@@ -154,6 +154,7 @@ class BaderSurf(lib.StreamObject):
         self.epsilon = 1e-4 
         self.step = 0.1
         self.mstep = 100
+        self.nthreads = 1
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mo_coeff = None
@@ -292,7 +293,8 @@ class BaderSurf(lib.StreamObject):
         st_ = numpy.asarray(self.grids[:,1], order='C')
         cp_ = numpy.asarray(self.grids[:,2], order='C')
         sp_ = numpy.asarray(self.grids[:,3], order='C')
-        drv(ctypes.c_int(self.inuc), 
+        with lib.with_omp_threads(self.nthreads):
+            drv(ctypes.c_int(self.inuc), 
             self.xyzrho.ctypes.data_as(ctypes.c_void_p),
             ctypes.c_int(self.npang), 
             ct_.ctypes.data_as(ctypes.c_void_p),
@@ -360,5 +362,6 @@ if __name__ == '__main__':
     surf.mstep = 100
     surf.inuc = 0
     surf.npang = 5810
+    surf.nthreads = 4
     surf.kernel()
  
