@@ -1,7 +1,9 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Wed Dec 26 23:53:50 2018
+Date Wed Dec 26 23:38:26 2018
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -9,7 +11,7 @@ Number of threads 4
 Verbose level 4
 Scratch dir /scratch-ssd/jluis
 Input data file h2o.chk
-Max_memory 32000 MB (current use 71 MB)
+max_memory 32000 MB (current use 71 MB)
 * Molecular Info
 Num atoms 3
 Num electrons 10
@@ -31,7 +33,7 @@ Rmaxsurface 10.000000
 Npang points 5810
 Ntrial 11
 Rprimer 0.400000
-Epsiscp 0.220000
+Epsiscp 0.180000
 Epsroot 0.000100
 ODE solver rkck
 ODE tool 0.000100
@@ -42,4 +44,4 @@ Rmin for surface 1.429763
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 0 saved
-    CPU time for BaderSurf build    119.29 sec
+    CPU time for BaderSurf build    128.23 sec

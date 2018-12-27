@@ -15,11 +15,7 @@ import grid
 if sys.version_info >= (3,):
     unicode = str
 
-def keyboardInterruptHandler(signal, frame):
-    print("KeyboardInterrupt (ID: {}) has been caught. Cleaning up...".format(signal))
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, keyboardInterruptHandler)
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
@@ -197,12 +193,11 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Date %s' % time.ctime())
         logger.info(self,'Python %s' % sys.version)
         logger.info(self,'Numpy %s' % numpy.__version__)
-        logger.info(self,'Scipy %s' % scipy.__version__)
         logger.info(self,'Number of threads %d' % self.nthreads)
         logger.info(self,'Verbose level %d' % self.verbose)
         logger.info(self,'Scratch dir %s' % self.scratch)
         logger.info(self,'Input data file %s' % self.chkfile)
-        logger.info(self,'max_memory %d MB (current use %d MB)',
+        logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
 
         logger.info(self,'* Molecular Info')
@@ -291,13 +286,18 @@ class BaderSurf(lib.StreamObject):
         else:
             logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
 
-        feval = 'surf_driver'
-        drv = getattr(libaim, feval)
-        backend = 1
+        if (self.backend == 'rkck'):
+            backend = 1
+        else:
+            raise NotImplementedError('Only rkck ODE solver yet available') 
+        
         ct_ = numpy.asarray(self.grids[:,0], order='C')
         st_ = numpy.asarray(self.grids[:,1], order='C')
         cp_ = numpy.asarray(self.grids[:,2], order='C')
         sp_ = numpy.asarray(self.grids[:,3], order='C')
+
+        feval = 'surf_driver'
+        drv = getattr(libaim, feval)
         with lib.with_omp_threads(self.nthreads):
             drv(ctypes.c_int(self.inuc), 
                 self.xyzrho.ctypes.data_as(ctypes.c_void_p),
@@ -363,7 +363,7 @@ if __name__ == '__main__':
     surf = BaderSurf(name)
     surf.epsilon = 1e-4
     surf.verbose = 4
-    surf.epsiscp = 0.180
+    surf.epsiscp = 0.220
     surf.mstep = 100
     surf.inuc = 0
     surf.npang = 5810

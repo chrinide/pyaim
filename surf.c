@@ -120,16 +120,6 @@ void surf_driver(const int inuc,
     }
 	}
 
-  //double point[3],grad[3];
-	//double rho, gradmod;
-  //point[0] = 0.0;
-  //point[1] = 0.0;
-  //point[2] = 0.3;
-  //rho_grad(point, &rho, grad, &gradmod);
-  //printf("The value of rho is %f\n", rho);
-  //printf("The value of grad is %f %f %f\n", grad[0], grad[1], grad[2]);
-  //printf("The value of gradmod is %f\n", gradmod);
-
   surface();
 	for (i=0; i<npang_; i++){
     nlimsurf[i] = nlimsurf_[i];
@@ -141,9 +131,6 @@ void surf_driver(const int inuc,
   free(mo_coeff_);
   free(mo_occ_);
   free(coords_);
-  //free(atm_);
-  //free(bas_);
-  //free(env_);
   free(rpru_);
   free(cp_);
   free(sp_);
@@ -151,6 +138,9 @@ void surf_driver(const int inuc,
   free(st_);
   free(non0tab_);
   free(shls_);
+  //free(atm_);
+  //free(bas_);
+  //free(env_);
   //free(ao_loc_);
 
 }
@@ -291,7 +281,6 @@ void surface(){
 }
 
 }
-
 
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
@@ -441,6 +430,7 @@ bool adaptive_stepper(double *x, const double *grad, double *h){
   while (ier != 0){
     double nerr = 0.0;
     stepper_rkck(x, grad, *h, xout, xerr);
+    //stepper_rkdp(x, grad, *h, xout, xerr);
     nerr += xerr[0]*xerr[0];
     nerr += xerr[1]*xerr[1];
     nerr += xerr[2]*xerr[2];
@@ -468,6 +458,118 @@ bool adaptive_stepper(double *x, const double *grad, double *h){
   return adaptive;
 
 }
+
+inline void stepper_rkdp(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr){
+
+  static const double b21 = 1.0/5.0;
+  static const double b31 = 3.0/40.0;
+  static const double b32 = 9.0/40.0;
+  static const double b41 = 44.0/45.0;
+  static const double b42 = -56.0/15.0;
+  static const double b43 = 32.0/9.0;
+  static const double b51 = 19372.0/6561.0;
+  static const double b52 = -25360.0/2187.0;
+  static const double b53 = 64448.0/6561.0;
+  static const double b54 = -212.0/729.0;
+  static const double b61 = 9017.0/3168.0;
+  static const double b62 = -355.0/33.0;
+  static const double b63 = 46732.0/5247.0;
+  static const double b64 = 49.0/176.0;
+  static const double b65 = -5103.0/18656.0;
+  static const double b71 = 35.0/384.0;
+  static const double b73 = 500.0/1113.0;
+  static const double b74 = 125.0/192.0;
+  static const double b75 = -2187.0/6784.0;
+  static const double b76 = 11.0/84.0;
+
+  static const double c1 = 35.0/384.0;
+  static const double c3 = 500.0/1113.0;
+  static const double c4 = 125.0/192.0;
+  static const double c5 = -2187.0/6784.0;
+  static const double c6 = 11.0/84.0;
+  static const double c7 = 0.0;
+
+  static const double b1 = 5179.0/57600.0;
+  static const double b3 = 7571.0/16695.0;
+  static const double b4 = 393.0/640.0;
+  static const double b5 = -92097.0/339200.0;
+  static const double b6 = 187.0/2100.0;
+  static const double b7 = 1.0/40.0;
+
+  static const double dc1 = c1-b1;
+  static const double dc3 = c3-b3;
+  static const double dc4 = c4-b4;
+  static const double dc5 = c5-b5;
+  static const double dc6 = c6-b6;
+  static const double dc7 = -b7;
+
+  double rho, grad[3], gradmod;
+
+  xout[0] = xpoint[0] + h0*b21*grdt[0];
+  xout[1] = xpoint[1] + h0*b21*grdt[1];
+  xout[2] = xpoint[2] + h0*b21*grdt[2];
+
+  double ak2[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak2[0] = grad[0];
+  ak2[1] = grad[1];
+  ak2[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b31*grdt[0]+b32*ak2[0]);
+  xout[1] = xpoint[1] + h0*(b31*grdt[1]+b32*ak2[1]);
+  xout[2] = xpoint[2] + h0*(b31*grdt[2]+b32*ak2[2]);
+  
+  double ak3[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak3[0] = grad[0]; 
+  ak3[1] = grad[1]; 
+  ak3[2] = grad[2]; 
+  xout[0] = xpoint[0] + h0*(b41*grdt[0]+b42*ak2[0]+b43*ak3[0]);
+  xout[1] = xpoint[1] + h0*(b41*grdt[1]+b42*ak2[1]+b43*ak3[1]);
+  xout[2] = xpoint[2] + h0*(b41*grdt[2]+b42*ak2[2]+b43*ak3[2]);
+
+  double ak4[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak4[0] = grad[0];
+  ak4[1] = grad[1];
+  ak4[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b51*grdt[0]+b52*ak2[0]+b53*ak3[0]+b54*ak4[0]);
+  xout[1] = xpoint[1] + h0*(b51*grdt[1]+b52*ak2[1]+b53*ak3[1]+b54*ak4[1]);
+  xout[2] = xpoint[2] + h0*(b51*grdt[2]+b52*ak2[2]+b53*ak3[2]+b54*ak4[2]);
+
+  double ak5[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak5[0] = grad[0];
+  ak5[1] = grad[1];
+  ak5[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b61*grdt[0]+b62*ak2[0]+b63*ak3[0]+b64*ak4[0]+b65*ak5[0]);
+  xout[1] = xpoint[1] + h0*(b61*grdt[1]+b62*ak2[1]+b63*ak3[1]+b64*ak4[1]+b65*ak5[1]);
+  xout[2] = xpoint[2] + h0*(b61*grdt[2]+b62*ak2[2]+b63*ak3[2]+b64*ak4[2]+b65*ak5[2]);
+
+  double ak6[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak6[0] = grad[0];
+  ak6[1] = grad[1];
+  ak6[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b71*grdt[0]+b73*ak3[0]+b74*ak4[0]+b75*ak5[0]+b76*ak6[0]);
+  xout[1] = xpoint[1] + h0*(b71*grdt[1]+b73*ak3[1]+b74*ak4[1]+b75*ak5[1]+b76*ak6[1]);
+  xout[2] = xpoint[2] + h0*(b71*grdt[2]+b73*ak3[2]+b74*ak4[2]+b75*ak5[2]+b76*ak6[2]);
+
+  double ak7[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak7[0] = grad[0];
+  ak7[1] = grad[1];
+  ak7[2] = grad[2];
+  xerr[0] = h0*(dc1*grdt[0]+dc3*ak3[0]+dc4*ak4[0]+dc5*ak5[0]+dc6*ak6[0]+dc7*ak7[0]);
+  xerr[1] = h0*(dc1*grdt[1]+dc3*ak3[1]+dc4*ak4[1]+dc5*ak5[1]+dc6*ak6[1]+dc7*ak7[1]);
+  xerr[2] = h0*(dc1*grdt[2]+dc3*ak3[2]+dc4*ak4[2]+dc5*ak5[2]+dc6*ak6[2]+dc7*ak7[2]);
+  xout[0] += xerr[0];
+  xout[1] += xerr[1];
+  xout[2] += xerr[2];
+
+}                         
 
 // Runge-Kutta-Cash-Karp
 inline void stepper_rkck(const double *xpoint, 

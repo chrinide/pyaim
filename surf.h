@@ -83,6 +83,10 @@ inline void stepper_rkck(const double *xpoint,
                          const double *grdt, 
                          const double h0, 
                          double *xout, double *xerr);
+inline void stepper_rkdp(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr);
 bool adaptive_stepper(double *x, const double *grad, double *h);
 int odeint(double *xpoint, double *rho, double *gradmod);
 
