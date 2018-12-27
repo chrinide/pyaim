@@ -16,13 +16,6 @@ if sys.version_info >= (3,):
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-# TODO: screaning of points
-def rho(self,x):
-    x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    rho = dft.numint.eval_rho2(self.mol, ao, self.mo_coeff, self.mo_occ, xctype='LDA')
-    return rho
-
 EPS = 1e-7
 def inbasin(self,r,j):
 
@@ -44,83 +37,13 @@ def inbasin(self,r,j):
 # TODO: better iqudr and mapr selection
 def out_beta(self):
     logger.info(self,'* Go outside betasphere')
-    xcoor = numpy.zeros(3)
-    nrad = self.nrad
-    if (self.iqudr == 'legendre'):
-        iqudr = 1
-    if (self.mapr == 'becke'):
-        mapr = 1
-    r0 = self.brad
-    rfar = self.rmax
-    rad = self.rad
-    t0 = time.clock()
-    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
-    coordsang = self.agrids
-    rlmr = 0.0
-    for n in range(nrad):
-        r = rmesh[n]
-        rlm = 0.0
-        coords = []
-        weigths = []
-        for j in range(self.npang):
-            inside = True
-            inside = inbasin(self,r,j)
-            if (inside == True):
-                cost = coordsang[j,0]
-                sintcosp = coordsang[j,1]*coordsang[j,2]
-                sintsinp = coordsang[j,1]*coordsang[j,3]
-                xcoor[0] = r*sintcosp
-                xcoor[1] = r*sintsinp
-                xcoor[2] = r*cost    
-                p = self.xyzrho + xcoor
-                coords.append(p)
-                weigths.append(coordsang[j,4])
-        coords = numpy.array(coords)
-        weigths = numpy.array(weigths)
-        den = rho(self,coords)
-        rlm = numpy.einsum('i,i->', den, weigths)
-        rlmr += rlm*dvol[n]*rwei[n]
-    logger.info(self,'*-> Electron density outside bsphere %8.5f ', rlmr)    
-    logger.timer(self,'Out Bsphere build', t0)
-    return rlmr
     
 # TODO: better iqudr and mapr selection
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
-    xcoor = numpy.zeros(3)
-    coords = numpy.empty((self.bnpang,3))
-    nrad = self.bnrad
-    if (self.biqudr == 'legendre'):
-        iqudr = 1
-    if (self.bmapr == 'becke'):
-        mapr = 1
-    r0 = 0
-    rfar = self.brad
-    rad = self.rad
-    t0 = time.clock()
-    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
-    coordsang = grid.lebgrid(self.bnpang)
-    rlmr = 0.0
-    for n in range(nrad):
-        r = rmesh[n]
-        rlm = 0.0
-        for j in range(self.bnpang): # j-loop can be changed to map
-            cost = coordsang[j,0]
-            sintcosp = coordsang[j,1]*coordsang[j,2]
-            sintsinp = coordsang[j,1]*coordsang[j,3]
-            xcoor[0] = r*sintcosp
-            xcoor[1] = r*sintsinp
-            xcoor[2] = r*cost    
-            p = self.xyzrho + xcoor
-            coords[j] = p
-        den = rho(self,coords)
-        rlm = numpy.einsum('i,i->', den, coordsang[:,4])
-        rlmr += rlm*dvol[n]*rwei[n]
-    logger.info(self,'*-> Electron density inside bsphere %8.5f ', rlmr)    
-    logger.timer(self,'Bsphere build', t0)
-    return rlmr
 
-class Basin(lib.StreamObject):
+# Atomic overlap matrix in the MO basis
+class Aom(lib.StreamObject):
 
     def __init__(self, datafile):
         self.verbose = logger.NOTE
@@ -140,6 +63,7 @@ class Basin(lib.StreamObject):
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
         self.non0tab = False
+        self.full = False # Use only occupied orbitals
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mol = None
@@ -264,11 +188,10 @@ class Basin(lib.StreamObject):
         if self.verbose > logger.NOTE:
             self.dump_input()
 
-        rhoa = int_beta(self)
-        rhob = out_beta(self)
-        logger.info(self,'*-> Total Electron density %8.5f ', (rhoa+rhob))    
-        logger.info(self,'Basim properties of atom %d done',self.inuc)
-        logger.timer(self,'Basin build', t0)
+        int_beta(self)
+        out_beta(self)
+        logger.info(self,'AOM of atom %d done',self.inuc)
+        logger.timer(self,'AOM build', t0)
 
         return self
 
@@ -276,7 +199,7 @@ class Basin(lib.StreamObject):
 
 if __name__ == '__main__':
     name = 'h2o.chk'
-    bas = Basin(name)
+    bas = Aom(name)
     bas.verbose = 4
     bas.inuc = 0
     bas.nrad = 121
@@ -287,5 +210,6 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False
+    bas.full = False
     bas.kernel()
  
