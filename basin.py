@@ -15,7 +15,6 @@ if sys.version_info >= (3,):
     unicode = str
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
-#with lib.with_omp_threads(self.nthreads):
 
 # TODO: screaning of points
 def rho(self,x):
@@ -23,9 +22,28 @@ def rho(self,x):
     ao = dft.numint.eval_ao(self.mol, x, deriv=0)
     rho = dft.numint.eval_rho2(self.mol, ao, self.mo_coeff, self.mo_occ, xctype='LDA')
     return rho
+
+EPS = 1e-6
+def inbasin(self,r,j):
+
+    isin = False
+    rs1 = 0.0
+    irange = self.nlimsurf[j]
+    for k in range(irange):
+        rs2 = self.rsurf[j,k]
+        if (r >= rs1-EPS and r <= rs2+EPS):
+            if (((k+1)%2) == 0):
+                isin = False
+            else:
+                isin = True
+            return isin
+        rs1 = rs2
+
+    return isin
     
+# TODO: better iqudr and mapr selection
 def int_beta(self): 
-    logger.info(self,'Go with inside betasphere')
+    logger.info(self,'* Go with inside betasphere')
     xcoor = numpy.zeros(3)
     coords = numpy.empty((self.bnpang,3))
     nrad = self.bnrad
@@ -50,12 +68,12 @@ def int_beta(self):
             xcoor[0] = r*sintcosp
             xcoor[1] = r*sintsinp
             xcoor[2] = r*cost    
-            p = self.xnuc + xcoor
+            p = self.xyzrho + xcoor
             coords[j] = p
         den = rho(self,coords)
         rlm = numpy.einsum('i,i->', den, coordsang[:,4])
         rlmr += rlm*dvol[n]*rwei[n]
-    logger.info(self,'Electron density inside bsphere %8.5f ', rlmr)    
+    logger.info(self,'*-> Electron density inside bsphere %8.5f ', rlmr)    
     logger.timer(self,'Bsphere build', t0)
     return self
 
@@ -69,15 +87,15 @@ class Basin(lib.StreamObject):
         self.surfile = datafile+'.h5'
         self.scratch = lib.param.TMPDIR 
         self.nthreads = lib.num_threads()
+        self.inuc = 0
         self.nrad = 101
-        self.bnrad = 101
-        self.bnpang = 3074
         self.iqudr = 'legendre'
         self.mapr = 'becke'
+        self.betafac = 0.4
+        self.bnrad = 101
+        self.bnpang = 3074
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
-        self.inuc = 0
-        self.betafac = 0.4
         self.non0tab = False
 ##################################################
 # don't modify the following attributes, they are not input options
@@ -220,6 +238,7 @@ if __name__ == '__main__':
     bas.iqudr = 'legendre'
     bas.mapr = 'becke'
     bas.bnrad = 121
+    bas.bnpang = 5810
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False

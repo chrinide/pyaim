@@ -4,24 +4,6 @@
 
 ################
 log.info('Go outside betasphere')
-EPS = 1e-6
-def inbasin(r,j):
-
-    isin = False
-    rs1 = 0.0
-    irange = nlimsurf[j]
-    irange = int(irange)
-    for k in range(irange):
-        rs2 = rsurf[j,k]
-        if (r >= rs1-EPS and r <= rs2+EPS):
-            if (((k+1)%2) == 0):
-                isin = False
-            else:
-                isin = True
-            return isin
-        rs1 = rs2
-
-    return isin
 
 r0 = brad
 rfar = rmax
