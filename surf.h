@@ -20,7 +20,7 @@ int *__restrict__ ao_loc_;
 #define EPS 1e-7
 #define GRADEPS 1e-10
 #define RHOEPS 1e-10
-#define MINSTEP 1e-4
+#define MINSTEP 1e-6
 #define MAXSTEP 0.75
 #define SAFETY 0.8
 #define HMINIMAL DBL_EPSILON

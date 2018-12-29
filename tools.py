@@ -37,14 +37,39 @@ def print_txt(filename, inuc):
         rmin = f[idx+'/rmin'].value
         rmax = f[idx+'/rmax'].value
         log.info('Rmin and rmax for surface : %8.5f %8.5f', rmin, rmax)
-        surf_file = filename+'.txt'
+        surf_file = filename+'_'+idx+'.txt'
         with open(surf_file, 'w') as f2:
             for i in range(npang):
                 data = str(rsurf[i,:nlimsurf[i]])[1:-1]
                 f2.write('%.15f %.15f %.15f %.15f %.15f %s\n' % \
                 (coords[i,0],coords[i,1],coords[i,2],coords[i,3],coords[i,4],data))
 
+NPROPS = 3
+PROPS = ['density', 'kinetic', 'laplacian']
+def print_properties(name, natm):                
+    props = numpy.zeros((natm,NPROPS))
+    totprops = numpy.zeros((NPROPS))
+    with h5py.File(name) as f:
+        for i in range(natm):
+            idx = 'atom_props'+str(i)
+            props[i] = f[idx+'/totprops'].value
+    for i in range(natm):
+        for j in range(NPROPS):
+            log.info('Nuclei %d prop %s value : %8.5f', i, PROPS[j], props[i,j])
+            totprops[j] += props[i,j]
+    for j in range(NPROPS):
+        log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
+
 if __name__ == '__main__':
     name = 'h2o.chk.h5'
     inuc = 0
     print_txt(name,inuc)
+    inuc = 1
+    print_txt(name,inuc)
+    inuc = 2
+    print_txt(name,inuc)
+
+    name = 'cf2.chk.h5'
+    natm = 3
+    print_properties(name,natm)
+

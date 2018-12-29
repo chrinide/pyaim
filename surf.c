@@ -191,8 +191,18 @@ void surface(){
       xpoint[0] = xnuc_[0] + ract*sintcosp; 
       xpoint[1] = xnuc_[1] + ract*sintsinp; 
       xpoint[2] = xnuc_[2] + ract*cost;     
-      //TODO: Check for error
+      //TODO: Better Check for error
       int ier = odeint(xpoint, &rho, &gradmod);
+      if (ier == 1) {
+        printf("Too short step on Odeint\n");
+        exit(-1);
+      } else if (ier == 2) {
+        printf("Too many steeps on Odeint\n");
+        exit(-1);
+			} else if (ier == 4) {
+        printf("NNA on Odeint\n");
+        //exit(-1);
+			}
       bool good = checkcp(xpoint, rho, gradmod, &ib);
       rb = ract;
       if (ib != ia && (ia == inuc_ || ib == inuc_)){
@@ -230,6 +240,16 @@ void surface(){
         xpoint[2] = xmed[2];
         int im;
         int ier = odeint(xpoint, &rho, &gradmod);
+      	if (ier == 1) {
+	        printf("Too short step on Odeint\n");
+	        exit(-1);
+	      } else if (ier == 2) {
+	        printf("Too many steeps on Odeint\n");
+	        exit(-1);
+				} else if (ier == 4) {
+	        printf("NNA on Odeint\n");
+	        //exit(-1);
+				}
         bool good = checkcp(xpoint, rho, gradmod, &im);
         if (im == ia){
           xin[0] = xmed[0];
@@ -344,7 +364,7 @@ int odeint(double *xpoint, double *rho, double *gradmod){
 
 	rho_grad(xpoint, rho, grad, gradmod);
 
-  if (*rho <= GRADEPS && *gradmod <= RHOEPS){
+  if (*rho <= RHOEPS && *gradmod <= GRADEPS){
     ier = 3;
     return ier;
   }
@@ -434,8 +454,8 @@ bool adaptive_stepper(double *x, const double *grad, double *h){
     nerr += xerr[0]*xerr[0];
     nerr += xerr[1]*xerr[1];
     nerr += xerr[2]*xerr[2];
-    //nerr = sqrt(nerr)/3.0;
-    nerr = sqrt(nerr);
+    nerr = sqrt(nerr)/3.0;
+    //nerr = sqrt(nerr);
     if (nerr <= epsilon_){
       ier = 0;
       x[0] = xout[0];

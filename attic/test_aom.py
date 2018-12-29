@@ -4,15 +4,15 @@ import numpy
 from pyscf import gto, scf, lib, ao2mo
 
 mol = gto.Mole()
-mol.basis = '3-21g'
 mol.atom = '''
-O  0.0000   0.0000   0.1173
-H  0.0000   0.7572  -0.4692
-H  0.0000  -0.7572  -0.4692
+O      0.000000      0.000000      0.118351
+H      0.000000      0.761187     -0.469725
+H      0.000000     -0.761187     -0.469725
     '''
+mol.basis = 'sto-6g'
 mol.verbose = 4
 mol.spin = 0
-mol.symmetry = 0
+mol.symmetry = 1
 mol.charge = 0
 mol.build()
 

@@ -16,11 +16,34 @@ if sys.version_info >= (3,):
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+NPROPS = 3
+PROPS = ['density', 'kinetic', 'laplacian']
+
+OCCDROP = 1e-12
+def eval_rho2(ao, mo_coeff, mo_occ):
+    ngrids, nao = ao[0].shape
+    pos = mo_occ > OCCDROP
+    cpos = numpy.einsum('ij,j->ij', mo_coeff[:,pos], numpy.sqrt(mo_occ[pos]))
+    rho = numpy.zeros((3,ngrids))
+    c0 = numpy.dot(ao[0], cpos)
+    rho[0] = numpy.einsum('pi,pi->p', c0, c0)
+    for i in range(1, 4):
+        c1 = numpy.dot(ao[i], cpos)
+        rho[1] += numpy.einsum('pi,pi->p', c1, c1)
+    XX, YY, ZZ = 4, 7, 9
+    ao2 = ao[XX] + ao[YY] + ao[ZZ]
+    c1 = numpy.dot(ao2, cpos)
+    rho[2] = numpy.einsum('pi,pi->p', c0, c1)
+    rho[2] += rho[1]
+    rho[2] *= 2
+    rho[1] *= 0.5
+    return rho
+
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    rho = dft.numint.eval_rho2(self.mol, ao, self.mo_coeff, self.mo_occ, xctype='LDA')
+    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
+    rho = eval_rho2(ao, self.mo_coeff, self.mo_occ)
     return rho
 
 EPS = 1e-7
@@ -46,20 +69,17 @@ def out_beta(self):
     logger.info(self,'* Go outside betasphere')
     xcoor = numpy.zeros(3)
     nrad = self.nrad
-    if (self.iqudr == 'legendre'):
-        iqudr = 1
-    if (self.mapr == 'becke'):
-        mapr = 1
+    iqudr = self.iqudr
+    mapr = self.mapr
     r0 = self.brad
     rfar = self.rmax
     rad = self.rad
     t0 = time.clock()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    rlmr = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
-        rlm = 0.0
         coords = []
         weigths = []
         for j in range(self.npang):
@@ -77,12 +97,13 @@ def out_beta(self):
                 weigths.append(coordsang[j,4])
         coords = numpy.array(coords)
         weigths = numpy.array(weigths)
-        den = rho(self,coords)
-        rlm = numpy.einsum('i,i->', den, weigths)
-        rlmr += rlm*dvol[n]*rwei[n]
-    logger.info(self,'*-> Electron density outside bsphere %8.5f ', rlmr)    
+        val = rho(self,coords)
+        props = numpy.einsum('pi,i->p', val, weigths)
+        rprops += props*dvol[n]*rwei[n]
+    for i in range(NPROPS):
+        logger.info(self,'*--> %s density outside bsphere %8.5f ', PROPS[i], rprops[i])    
     logger.timer(self,'Out Bsphere build', t0)
-    return rlmr
+    return rprops
     
 # TODO: better iqudr and mapr selection
 def int_beta(self): 
@@ -90,20 +111,17 @@ def int_beta(self):
     xcoor = numpy.zeros(3)
     coords = numpy.empty((self.bnpang,3))
     nrad = self.bnrad
-    if (self.biqudr == 'legendre'):
-        iqudr = 1
-    if (self.bmapr == 'becke'):
-        mapr = 1
+    iqudr = self.biqudr
+    mapr = self.bmapr
     r0 = 0
     rfar = self.brad
     rad = self.rad
     t0 = time.clock()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(self.bnpang)
-    rlmr = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
-        rlm = 0.0
         for j in range(self.bnpang): # j-loop can be changed to map
             cost = coordsang[j,0]
             sintcosp = coordsang[j,1]*coordsang[j,2]
@@ -113,12 +131,13 @@ def int_beta(self):
             xcoor[2] = r*cost    
             p = self.xyzrho + xcoor
             coords[j] = p
-        den = rho(self,coords)
-        rlm = numpy.einsum('i,i->', den, coordsang[:,4])
-        rlmr += rlm*dvol[n]*rwei[n]
-    logger.info(self,'*-> Electron density inside bsphere %8.5f ', rlmr)    
+        val = rho(self,coords)
+        props = numpy.einsum('pi,i->p', val, coordsang[:,4])
+        rprops += props*dvol[n]*rwei[n]
+    for i in range(NPROPS):
+        logger.info(self,'*--> %s density inside bsphere %8.5f ', PROPS[i], rprops[i])    
     logger.timer(self,'Bsphere build', t0)
-    return rlmr
+    return rprops
 
 class Basin(lib.StreamObject):
 
@@ -264,9 +283,35 @@ class Basin(lib.StreamObject):
         if self.verbose > logger.NOTE:
             self.dump_input()
 
-        rhoa = int_beta(self)
-        rhob = out_beta(self)
-        logger.info(self,'*-> Total Electron density %8.5f ', (rhoa+rhob))    
+        if (self.iqudr == 'legendre'):
+            self.iqudr = 1
+        if (self.biqudr == 'legendre'):
+            self.biqudr = 1
+
+        if (self.mapr == 'becke'):
+            self.mapr = 1
+        elif (self.mapr == 'exp'):
+            self.mapr = 2
+        elif (self.mapr == 'none'):
+            self.mapr = 0 
+        if (self.bmapr == 'becke'):
+            self.bmapr = 1
+        elif (self.bmapr == 'exp'):
+            self.bmapr = 2
+        elif (self.bmapr == 'none'):
+            self.bmapr = 0
+
+        brprops = int_beta(self)
+        rprops = out_beta(self)
+
+        logger.info(self,'Write info to HDF5 file')
+        atom_dic = {'inprops':brprops,
+                    'outprops':rprops,
+                    'totprops':(brprops+rprops)}
+        lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
+        for i in range(NPROPS):
+            logger.info(self,'*-> Total %s density %8.5f ', PROPS[i], (rprops[i]+brprops[i]))    
+        logger.info(self,'')
         logger.info(self,'Basim properties of atom %d done',self.inuc)
         logger.timer(self,'Basin build', t0)
 
@@ -278,14 +323,21 @@ if __name__ == '__main__':
     name = 'h2o.chk'
     bas = Basin(name)
     bas.verbose = 4
-    bas.inuc = 0
-    bas.nrad = 121
+    bas.nrad = 101
     bas.iqudr = 'legendre'
     bas.mapr = 'becke'
-    bas.bnrad = 121
+    bas.bnrad = 101
     bas.bnpang = 5810
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False
+
+    bas.inuc = 0
+    bas.kernel()
+
+    bas.inuc = 1
     bas.kernel()
  
+    bas.inuc = 2
+    bas.kernel()
+

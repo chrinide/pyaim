@@ -163,6 +163,10 @@ def rquad(nr,r0,rfar,rad,iqudr,mapr):
         eta = 2.0*rad/rfarc
     elif (mapr == 2):
         eta = 2.0*numpy.exp(-rfarc/rad)/(1.0-numpy.exp(-rfarc/rad))
+    elif (mapr == 0):
+        eta = 0.0
+    else:    
+        raise NotImplementedError('Only becke or exp mapping available') 
 
     if (iqudr == 1):
         xr, rwei = legendre(nr)
@@ -188,10 +192,10 @@ def rquad(nr,r0,rfar,rad,iqudr,mapr):
             den = (1.0-u+eta)
             r = rad*(1.0+u)/den + r0
             rmesh[i] = r
-            #if (numpy.abs(den) >= RHOEPS):
-            dvoln[i] = rad*(2.0+eta)/den/den*r
-            #else
-            #dvoln(n) = 0.0
+            if (numpy.abs(den) >= EPS):
+                dvoln[i] = rad*(2.0+eta)/den/den*r
+            else:
+                dvoln[i] = 0.0
             dvol[i] = dvoln[i]*r
     elif (mapr == 2):
         for i in range(nr):
@@ -199,10 +203,11 @@ def rquad(nr,r0,rfar,rad,iqudr,mapr):
             den = (1.0-u+eta)
             r = rad*numpy.log((2.0+eta)/den) + r0
             rmesh[i] = r
-            dvoln[i] = r*rad/den
+            if (numpy.abs(den) >= EPS):
+                dvoln[i] = r*rad/den
+            else:
+                dvoln[i] = 0.0
             dvol[i] = dvoln[i]*r
-    else:
-        raise NotImplementedError('Only becke and log radial mapping available') 
 
     return rmesh, rwei, dvol, dvoln
 

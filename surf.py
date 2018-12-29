@@ -25,9 +25,9 @@ libdft = lib.load_library('libdft')
 OCCDROP = 1e-12
 GRADEPS = 1e-10
 RHOEPS = 1e-10
-MINSTEP = 1e-4
+MINSTEP = 1e-6
 MAXSTEP = 0.75
-SAFETY = 0.8
+SAFETY = 0.9
 ENLARGE = 1.2
 HMINIMAL = numpy.finfo(numpy.float64).eps
 
@@ -282,7 +282,7 @@ class BaderSurf(lib.StreamObject):
             if (self.charges[self.inuc] > 2.0):
                 logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
             else:
-                raise RuntimeError('Failed finding nucleus:', *self.xyzrho) 
+                raise RuntimeError('Failed finding nucleus, last position ', *self.xyzrho) 
         else:
             logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
 
@@ -361,11 +361,17 @@ class BaderSurf(lib.StreamObject):
 if __name__ == '__main__':
     name = 'h2o.chk'
     surf = BaderSurf(name)
-    surf.epsilon = 1e-4
+    surf.epsilon = 1e-5
+    surf.epsroot = 1e-5
     surf.verbose = 4
     surf.epsiscp = 0.220
     surf.mstep = 100
-    surf.inuc = 0
     surf.npang = 5810
+
+    surf.inuc = 0
     surf.kernel()
- 
+    surf.inuc = 1
+    surf.kernel()
+    surf.inuc = 2
+    surf.kernel()
+

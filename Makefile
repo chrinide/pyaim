@@ -14,7 +14,7 @@ libaim.so: $(OBJECTS)
 	$(LD) $(LFLAGS) -o libaim.so $(OBJECTS)
 
 clean:
-	/bin/rm -f *.so *.o
+	/bin/rm -f *.so *.o *.pyc 
 
 surf.o: surf.h
 

@@ -3,13 +3,12 @@
 import numpy, time, h5py
 from pyscf import gto, scf, lib, dft, ao2mo
 
-name = 'h2o'
+name = 'lif'
 
 mol = gto.Mole()
 mol.atom = '''
-O      0.000000      0.000000      0.118351
-H      0.000000      0.761187     -0.469725
-H      0.000000     -0.761187     -0.469725
+Li      0.000000      0.000000      1.565940
+F      0.000000      0.000000     -0.002040
 '''
 mol.basis = 'sto-6g'
 mol.verbose = 4

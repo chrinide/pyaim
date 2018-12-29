@@ -10,11 +10,22 @@ from pyscf.lib import logger
 
 import grid
 
+OCCDROP = 1e-8
+
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+def mo(self,x):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
+    pos = self.mo_occ > OCCDROP
+    cpos = self.mo_coeff[:,pos]
+    c0 = numpy.dot(ao, cpos)
+    #mos = numpy.einsum('pi,pi->pi', c0, c0)
+    return self
 
 EPS = 1e-7
 def inbasin(self,r,j):
@@ -41,6 +52,38 @@ def out_beta(self):
 # TODO: better iqudr and mapr selection
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
+    xcoor = numpy.zeros(3)
+    coords = numpy.empty((self.bnpang,3))
+    nrad = self.bnrad
+    if (self.biqudr == 'legendre'):
+        iqudr = 1
+    if (self.bmapr == 'becke'):
+        mapr = 1
+    r0 = 0
+    rfar = self.brad
+    rad = self.rad
+    t0 = time.clock()
+    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+    coordsang = grid.lebgrid(self.bnpang)
+    rlmr = 0.0
+    for n in range(nrad):
+        r = rmesh[n]
+        rlm = 0.0
+        for j in range(self.bnpang): # j-loop can be changed to map
+            cost = coordsang[j,0]
+            sintcosp = coordsang[j,1]*coordsang[j,2]
+            sintsinp = coordsang[j,1]*coordsang[j,3]
+            xcoor[0] = r*sintcosp
+            xcoor[1] = r*sintsinp
+            xcoor[2] = r*cost    
+            p = self.xyzrho + xcoor
+            coords[j] = p
+        den = rho(self,coords)
+        rlm = numpy.einsum('i,i->', den, coordsang[:,4])
+        rlmr += rlm*dvol[n]*rwei[n]
+    #logger.info(self,'*-> Electron density inside bsphere %8.5f ', rlmr)    
+    logger.timer(self,'Bsphere build', t0)
+    return self
 
 # Atomic overlap matrix in the MO basis
 class Aom(lib.StreamObject):
