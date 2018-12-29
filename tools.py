@@ -26,7 +26,7 @@ def print_txt(filename, inuc):
         xnuc = f[idx+'/xnuc'].value
         log.info('Nuclei %d position : %8.5f %8.5f %8.5f', i, *xnuc)
         xyzrho = f[idx+'/xyzrho'].value
-        log.info('Nuclei rho %d position : %8.5f %8.5f %8.5f', i, *xyzrho)
+        log.info('Nuclei rho %d position : %8.5f %8.5f %8.5f', i, *xyzrho[i])
         npang = f[idx+'/npang'].value
         log.info('Number of angular points : %d', npang)
         ntrial = f[idx+'/ntrial'].value

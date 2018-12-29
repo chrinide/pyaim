@@ -218,7 +218,6 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
         logger.info(self,'Surface for nuc %d' % self.inuc)
-        logger.info(self,'Nuclear coordinate %.6f  %.6f  %.6f', *self.xnuc)
         logger.info(self,'Rmaxsurface %.6f' % self.rmaxsurf)
         logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Ntrial %d' % self.ntrial)
@@ -266,7 +265,6 @@ class BaderSurf(lib.StreamObject):
         self.rpru = numpy.zeros((self.ntrial))
         for i in range(self.ntrial): 
             self.rpru[i] = self.rprimer*numpy.power(geofac,(i+1)-1)
-        self.xnuc = numpy.asarray(self.coords[self.inuc])
         self.rsurf = numpy.zeros((self.npang,self.ntrial), order='C')
         self.nlimsurf = numpy.zeros((self.npang), dtype=numpy.int32)
         self.grids = grid.lebgrid(self.npang)
@@ -276,15 +274,19 @@ class BaderSurf(lib.StreamObject):
         if self.verbose > logger.NOTE:
             self.dump_input()
 
-        self.xyzrho = numpy.zeros((3))
-        self.xyzrho, gradmod = gradrho(self,self.xnuc,self.step)
-        if (gradmod > 1e-4):
-            if (self.charges[self.inuc] > 2.0):
-                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
+        self.xyzrho = numpy.zeros((self.natm,3))
+        for i in range(self.natm):
+            self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
+            if (gradmod > 1e-4):
+                if (self.charges[i] > 2.0):
+                    logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                else:
+                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
             else:
-                raise RuntimeError('Failed finding nucleus, last position ', *self.xyzrho) 
-        else:
-            logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho)
+                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                logger.info(self,'Setting xyrho for atom to imput coords')
+                self.xyzrho[i] = self.coords[i]
+        self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
 
         if (self.backend == 'rkck'):
             backend = 1

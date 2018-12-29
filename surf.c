@@ -38,6 +38,7 @@ void surf_driver(const int inuc,
 
   int i, j;
 
+
   // Setup surface info
   natm_ = natm;
 	coords_ = (double *) malloc(sizeof(double)*natm_*3);
@@ -47,10 +48,17 @@ void surf_driver(const int inuc,
     coords_[i*3+1] = coords[i*3+1];
     coords_[i*3+2] = coords[i*3+2];
   }
+  xyzrho_ = (double *) malloc(sizeof(double)*natm_*3);
+  assert(xyzrho_ != NULL);
+  for (i=0; i<natm_; i++) {
+    xyzrho_[i*3+0] = xyzrho[i*3+0];
+    xyzrho_[i*3+1] = xyzrho[i*3+1];
+    xyzrho_[i*3+2] = xyzrho[i*3+2];
+  }
   inuc_ = inuc;
-  xnuc_[0] = xyzrho[0];
-  xnuc_[1] = xyzrho[1]; 
-  xnuc_[2] = xyzrho[2];
+  xnuc_[0] = xyzrho[inuc_*3+0];
+  xnuc_[1] = xyzrho[inuc_*3+1]; 
+  xnuc_[2] = xyzrho[inuc_*3+2];
   epsiscp_ = epsiscp;
   ntrial_ = ntrial;      
   npang_ = npang;
@@ -131,6 +139,7 @@ void surf_driver(const int inuc,
   free(mo_coeff_);
   free(mo_occ_);
   free(coords_);
+  free(xyzrho_);
   free(rpru_);
   free(cp_);
   free(sp_);
@@ -542,9 +551,9 @@ bool checkcp(double *x, int *nuc){
   rho_grad(x, &rho, grad, &gradmod);
 
   for (i=0; i<natm_; i++){
-    if (fabs(x[0]-coords_[i*3+0]) < epsiscp_ &&
-        fabs(x[1]-coords_[i*3+1]) < epsiscp_ &&
-        fabs(x[2]-coords_[i*3+2]) < epsiscp_){
+    if (fabs(x[0]-xyzrho_[i*3+0]) < epsiscp_ &&
+        fabs(x[1]-xyzrho_[i*3+1]) < epsiscp_ &&
+        fabs(x[2]-xyzrho_[i*3+2]) < epsiscp_){
       iscp = true;
       *nuc = i;
       return iscp;

@@ -7,6 +7,7 @@ int nmo_;
 int nprims_;
 int cart_;
 double *__restrict__ coords_;
+double *__restrict__ xyzrho_;
 int *__restrict__ atm_;
 int *__restrict__ bas_;
 double *__restrict__ env_;
