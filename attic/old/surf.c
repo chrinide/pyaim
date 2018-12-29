@@ -175,7 +175,7 @@ void surface(){
 #pragma omp parallel default(none)  \
     private(i,nintersec,j,xpoint,xsurf,isurf) \
     shared(npang_,ct_,st_,cp_,sp_,xnuc_,inuc_,rpru_,\
-    ntrial_,epsroot_,rsurf_,nlimsurf_,rmaxsurf_,step_,epsilon_)
+    ntrial_,epsroot_,rsurf_,nlimsurf_,rmaxsurf_)
 {
 #pragma omp for schedule(dynamic) nowait
 	for (i=0; i<npang_; i++){
@@ -192,15 +192,18 @@ void surface(){
       xpoint[1] = xnuc_[1] + ract*sintsinp; 
       xpoint[2] = xnuc_[2] + ract*cost;     
       //TODO: Better Check for error
-      int ier = odeint(xpoint, step_, epsilon_);
+      int ier = odeint(xpoint, &rho, &gradmod);
       if (ier == 1) {
-        cerror("too short steep on odeint");
+        printf("Too short step on Odeint\n");
+        exit(-1);
       } else if (ier == 2) {
-        cerror("too many steeps on odeint");
+        printf("Too many steeps on Odeint\n");
+        exit(-1);
 			} else if (ier == 4) {
-        cerror("nna on odeint");
+        printf("NNA on Odeint\n");
+        //exit(-1);
 			}
-      bool good = checkcp(xpoint, &ib);
+      bool good = checkcp(xpoint, rho, gradmod, &ib);
       rb = ract;
       if (ib != ia && (ia == inuc_ || ib == inuc_)){
         if (ia != inuc_ || ib != -1){
@@ -236,15 +239,18 @@ void surface(){
         xpoint[1] = xmed[1];
         xpoint[2] = xmed[2];
         int im;
-        int ier = odeint(xpoint, step_, epsilon_);
+        int ier = odeint(xpoint, &rho, &gradmod);
       	if (ier == 1) {
-        	cerror("too short steep on odeint");
+	        printf("Too short step on Odeint\n");
+	        exit(-1);
 	      } else if (ier == 2) {
-        	cerror("too many steeps on odeint");
+	        printf("Too many steeps on Odeint\n");
+	        exit(-1);
 				} else if (ier == 4) {
-        	cerror("nna on odeint");
+	        printf("NNA on Odeint\n");
+	        //exit(-1);
 				}
-        bool good = checkcp(xpoint, &im);
+        bool good = checkcp(xpoint, rho, gradmod, &im);
         if (im == ia){
           xin[0] = xmed[0];
           xin[1] = xmed[1];
@@ -349,105 +355,247 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 }
 
 //ier = 0 (correct), 1 (short step), 2 (too many iterations), 
-//      3 (infty), 4 (nna), 5(undef)
-int odeint(double *ystart, double h1, double eps){
+//      3 (infty), 4 (nna)
+int odeint(double *xpoint, double *rho, double *gradmod){
 
-	double rho, gradmod, hnext;
+  int ier = 0, i;
+  double h0 = step_;
   double grad[3] = {0.0};
-	int ier = 0, i, nuc;
-  double dydx[3], y[3], yscal[3];
 
-	rho_grad(ystart, &rho, grad, &gradmod);
-  if (rho <= RHOEPS && gradmod <= GRADEPS){
+	rho_grad(xpoint, rho, grad, gradmod);
+
+  if (*rho <= RHOEPS && *gradmod <= GRADEPS){
     ier = 3;
     return ier;
   }
-  
-  double hmin = 0.0;
-  double x1 = 0.0;
-  double x2 = 1e40;
-  double x = x1;
-  double h = h1;
-  y[0] = ystart[0];
-  y[1] = ystart[1];
-  y[2] = ystart[2];
 
-	for (i=0; i<mstep_; i++){
-	  rho_grad(y, &rho, dydx, &gradmod);
-		yscal[0] = fmax(fabs(y[0]) + fabs(dydx[0]*h) + TINY, eps);
-		yscal[1] = fmax(fabs(y[1]) + fabs(dydx[1]*h) + TINY, eps);
-		yscal[2] = fmax(fabs(y[2]) + fabs(dydx[2]*h) + TINY, eps);
-		if ((x+h-x2)*(x+h-x1) > 0.0) h = x2 - x;
-		rkqs(y, dydx, &x, h, eps, yscal, &hnext);
-		if ((x-x2)*(x2-x1) >= 0.0 || checkcp(y, &nuc)){
-			ystart[0] = y[0];
-			ystart[1] = y[1];
-			ystart[2] = y[2];
+  for (i=0; i<mstep_; i++){
+    double xlast[3];
+    xlast[0] = xpoint[0];
+    xlast[1] = xpoint[1];
+    xlast[2] = xpoint[2];
+    bool ok = adaptive_stepper(xpoint, grad, &h0);
+    if (ok == false){
+      xpoint[0] = xlast[0];
+      xpoint[1] = xlast[1];
+      xpoint[2] = xlast[2];
+      ier = 1;
+      //exit(0);
+      return ier;
+    }
+	  rho_grad(xpoint, rho, grad, gradmod);
+    int nuc;
+    bool iscp = checkcp(xpoint, *rho, *gradmod, &nuc);
+    if (iscp == true){
       ier = 0;
-			return ier;
-		}
-		if (fabs(hnext) <= hmin) cerror("Step size too small in odeint");
-		if (i == (mstep_-1)) cerror("Reached max steps in odeint");
-		h = hnext;
+      return ier;
+    }
+  }
+
+  double dist = 0.0;
+  dist = (xpoint[0]-xnuc_[0])*(xpoint[0]-xnuc_[0]);
+  dist += (xpoint[1]-xnuc_[1])*(xpoint[1]-xnuc_[1]);
+  dist += (xpoint[2]-xnuc_[2])*(xpoint[2]-xnuc_[2]);
+  dist = sqrt(dist);
+  if (dist < rmaxsurf_){
+    ier = 4;
+  } 
+  else if (dist >= rmaxsurf_){
+    ier = 3;
+  }
+  else{
+    ier = 2;
   }
     
-	// Test if the point is far from RMAXSURF from current atom. 
-  double a1 = y[0] - xnuc_[0];
-  double a2 = y[1] - xnuc_[1];
-  double a3 = y[2] - xnuc_[2];
-  if ((a1*a1+a2*a2+a3*a3)>=5.0*5.0){
-    ier = 3;
-  } else { 
-  	printf("NNA at %f %f %f\n", y[0], y[1], y[2]);
-	  cerror("NNA found in odeint"); 
+  return ier;
+
+}
+
+bool checkcp(const double *x, const double rho, const double gradmod, int *nuc){
+
+  int i;
+  bool iscp = false;
+  *nuc = -2;
+
+  for (i=0; i<natm_; i++){
+    double r = 0.0;
+    r =  (x[0]-coords_[i*3+0])*(x[0]-coords_[i*3+0]);
+    r += (x[1]-coords_[i*3+1])*(x[1]-coords_[i*3+1]);
+    r += (x[2]-coords_[i*3+2])*(x[2]-coords_[i*3+2]);
+    r = sqrt(r);
+    if (r <= epsiscp_){
+      iscp = true;
+      *nuc = i;
+      return iscp;
+    }
   }
 
-  return ier;
-}
-
-void rkqs(double *y, double *dydx, double *x, 
-          double htry, double eps,
-	        double *yscal, double *hnext){
-	
-  int i;
-	double yerr[3], ytemp[3], errmax, xnew, htemp;
-
-	double h = htry;
-  *hnext = 0.0;
-  errmax = 0.0;
-
-	for (;;){
-		steeper_rkck(y, dydx, h, ytemp, yerr);
-		errmax = 0.0;
-		for (i=0; i<3; i++) {
-		  errmax = fmax(errmax, fabs(yerr[i]/yscal[i]));
+  if (gradmod <= GRADEPS){
+    iscp = true;
+    if (rho <= RHOEPS){
+      *nuc = -1;
     }
-		errmax /= eps;
-		if (errmax > 1.0) {
-			htemp = SAFETY*h*pow(errmax, PSHRNK);
-      h = fmin(fmax(fabs(htemp),0.1*fabs(h)),h);
-			xnew = *x + h;
-			if (xnew == *x) {
-        cerror("stepsize underflow in rkqs");
-      }
-			continue;
-		}
-		else {
-			if (errmax > ERRCON) {
-				*hnext = SAFETY*h*pow(errmax, PGROW);
-			} else {
-				*hnext = 5.0*h;
-			}
-			*x += h;
-			y[0] = ytemp[0];
-			y[1] = ytemp[1];
-			y[2] = ytemp[2];
-			break; //return
-		}
-	}
+  } 
+
+  return iscp;
+  
 }
 
-void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
+bool adaptive_stepper(double *x, const double *grad, double *h){
+
+  int ier = 1;
+  bool adaptive = true;
+  double xout[3], xerr[3];
+
+  while (ier != 0){
+    double nerr = 0.0;
+    stepper_rkck(x, grad, *h, xout, xerr);
+    //stepper_rkdp(x, grad, *h, xout, xerr);
+    nerr += xerr[0]*xerr[0];
+    nerr += xerr[1]*xerr[1];
+    nerr += xerr[2]*xerr[2];
+    nerr = sqrt(nerr)/3.0;
+    //nerr = sqrt(nerr);
+    if (nerr <= epsilon_){
+      ier = 0;
+      x[0] = xout[0];
+      x[1] = xout[1];
+      x[2] = xout[2];
+      if (nerr < epsilon_/10.0){ 
+        *h = fmin(MAXSTEP, ENLARGE*(*h));
+      }
+    } 
+    else {
+      double scale = SAFETY*(epsilon_/nerr);
+      *h = scale*(*h);
+      if (fabs(*h) < MINSTEP){
+        adaptive = false;
+        return adaptive; 
+      }
+    }
+  }
+
+  return adaptive;
+
+}
+
+inline void stepper_rkdp(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr){
+
+  static const double b21 = 1.0/5.0;
+  static const double b31 = 3.0/40.0;
+  static const double b32 = 9.0/40.0;
+  static const double b41 = 44.0/45.0;
+  static const double b42 = -56.0/15.0;
+  static const double b43 = 32.0/9.0;
+  static const double b51 = 19372.0/6561.0;
+  static const double b52 = -25360.0/2187.0;
+  static const double b53 = 64448.0/6561.0;
+  static const double b54 = -212.0/729.0;
+  static const double b61 = 9017.0/3168.0;
+  static const double b62 = -355.0/33.0;
+  static const double b63 = 46732.0/5247.0;
+  static const double b64 = 49.0/176.0;
+  static const double b65 = -5103.0/18656.0;
+  static const double b71 = 35.0/384.0;
+  static const double b73 = 500.0/1113.0;
+  static const double b74 = 125.0/192.0;
+  static const double b75 = -2187.0/6784.0;
+  static const double b76 = 11.0/84.0;
+
+  static const double c1 = 35.0/384.0;
+  static const double c3 = 500.0/1113.0;
+  static const double c4 = 125.0/192.0;
+  static const double c5 = -2187.0/6784.0;
+  static const double c6 = 11.0/84.0;
+  static const double c7 = 0.0;
+
+  static const double b1 = 5179.0/57600.0;
+  static const double b3 = 7571.0/16695.0;
+  static const double b4 = 393.0/640.0;
+  static const double b5 = -92097.0/339200.0;
+  static const double b6 = 187.0/2100.0;
+  static const double b7 = 1.0/40.0;
+
+  static const double dc1 = c1-b1;
+  static const double dc3 = c3-b3;
+  static const double dc4 = c4-b4;
+  static const double dc5 = c5-b5;
+  static const double dc6 = c6-b6;
+  static const double dc7 = -b7;
+
+  double rho, grad[3], gradmod;
+
+  xout[0] = xpoint[0] + h0*b21*grdt[0];
+  xout[1] = xpoint[1] + h0*b21*grdt[1];
+  xout[2] = xpoint[2] + h0*b21*grdt[2];
+
+  double ak2[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak2[0] = grad[0];
+  ak2[1] = grad[1];
+  ak2[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b31*grdt[0]+b32*ak2[0]);
+  xout[1] = xpoint[1] + h0*(b31*grdt[1]+b32*ak2[1]);
+  xout[2] = xpoint[2] + h0*(b31*grdt[2]+b32*ak2[2]);
+  
+  double ak3[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak3[0] = grad[0]; 
+  ak3[1] = grad[1]; 
+  ak3[2] = grad[2]; 
+  xout[0] = xpoint[0] + h0*(b41*grdt[0]+b42*ak2[0]+b43*ak3[0]);
+  xout[1] = xpoint[1] + h0*(b41*grdt[1]+b42*ak2[1]+b43*ak3[1]);
+  xout[2] = xpoint[2] + h0*(b41*grdt[2]+b42*ak2[2]+b43*ak3[2]);
+
+  double ak4[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak4[0] = grad[0];
+  ak4[1] = grad[1];
+  ak4[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b51*grdt[0]+b52*ak2[0]+b53*ak3[0]+b54*ak4[0]);
+  xout[1] = xpoint[1] + h0*(b51*grdt[1]+b52*ak2[1]+b53*ak3[1]+b54*ak4[1]);
+  xout[2] = xpoint[2] + h0*(b51*grdt[2]+b52*ak2[2]+b53*ak3[2]+b54*ak4[2]);
+
+  double ak5[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak5[0] = grad[0];
+  ak5[1] = grad[1];
+  ak5[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b61*grdt[0]+b62*ak2[0]+b63*ak3[0]+b64*ak4[0]+b65*ak5[0]);
+  xout[1] = xpoint[1] + h0*(b61*grdt[1]+b62*ak2[1]+b63*ak3[1]+b64*ak4[1]+b65*ak5[1]);
+  xout[2] = xpoint[2] + h0*(b61*grdt[2]+b62*ak2[2]+b63*ak3[2]+b64*ak4[2]+b65*ak5[2]);
+
+  double ak6[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak6[0] = grad[0];
+  ak6[1] = grad[1];
+  ak6[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b71*grdt[0]+b73*ak3[0]+b74*ak4[0]+b75*ak5[0]+b76*ak6[0]);
+  xout[1] = xpoint[1] + h0*(b71*grdt[1]+b73*ak3[1]+b74*ak4[1]+b75*ak5[1]+b76*ak6[1]);
+  xout[2] = xpoint[2] + h0*(b71*grdt[2]+b73*ak3[2]+b74*ak4[2]+b75*ak5[2]+b76*ak6[2]);
+
+  double ak7[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak7[0] = grad[0];
+  ak7[1] = grad[1];
+  ak7[2] = grad[2];
+  xerr[0] = h0*(dc1*grdt[0]+dc3*ak3[0]+dc4*ak4[0]+dc5*ak5[0]+dc6*ak6[0]+dc7*ak7[0]);
+  xerr[1] = h0*(dc1*grdt[1]+dc3*ak3[1]+dc4*ak4[1]+dc5*ak5[1]+dc6*ak6[1]+dc7*ak7[1]);
+  xerr[2] = h0*(dc1*grdt[2]+dc3*ak3[2]+dc4*ak4[2]+dc5*ak5[2]+dc6*ak6[2]+dc7*ak7[2]);
+  xout[0] += xerr[0];
+  xout[1] += xerr[1];
+  xout[2] += xerr[2];
+
+}                         
+
+// Runge-Kutta-Cash-Karp
+inline void stepper_rkck(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr){
 
   static const double b21 = 1.0/5.0;
   static const double b31 = 3.0/40.0;
@@ -468,11 +616,11 @@ void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double 
   static const double c3 = 250.0/621.0;
   static const double c4 = 125.0/594.0;
   static const double c6 = 512.0/1771.0;
-  double dc1 = c1-(2825.0/27648.0);
-  double dc3 = c3-(18575.0/48384.0);
-  double dc4 = c4-(13525.0/55296.0);
-  double dc5 = -277.0/14336.0;
-  double dc6 = c6-(1.0/4.0);
+  static const double dc1 = c1-(2825.0/27648.0);
+  static const double dc3 = c3-(18575.0/48384.0);
+  static const double dc4 = c4-(13525.0/55296.0);
+  static const double dc5 = -277.0/14336.0;
+  static const double dc6 = c6-(1.0/4.0);
   
   double rho, grad[3], gradmod;
 
@@ -529,42 +677,4 @@ void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double 
   xerr[1] = h0*(dc1*grdt[1]+dc3*ak3[1]+dc4*ak4[1]+dc5*ak5[1]+dc6*ak6[1]);
   xerr[2] = h0*(dc1*grdt[2]+dc3*ak3[2]+dc4*ak4[2]+dc5*ak5[2]+dc6*ak6[2]);
 
-	}
-
-
-bool checkcp(double *x, int *nuc){
-
-  int i;
-  bool iscp = false;
-  double rho, grad[3], gradmod;
-
-  *nuc = -2;
-  rho_grad(x, &rho, grad, &gradmod);
-
-  for (i=0; i<natm_; i++){
-    if (fabs(x[0]-coords_[i*3+0]) < epsiscp_ &&
-        fabs(x[1]-coords_[i*3+1]) < epsiscp_ &&
-        fabs(x[2]-coords_[i*3+2]) < epsiscp_){
-      iscp = true;
-      *nuc = i;
-      return iscp;
-    }
-  }
-
-  // Put in the begining
-  if (gradmod <= GRADEPS){
-    iscp = true;
-    if (rho <= RHOEPS){
-      *nuc = -1;
-    }
-  } 
-
-  return iscp;
-  
 }
-
-void cerror(const char *text){
-	fprintf(stderr,"Error %s\n", text);
-	exit(1);
-}
-

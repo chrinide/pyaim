@@ -69,7 +69,7 @@ if __name__ == '__main__':
     inuc = 2
     print_txt(name,inuc)
 
-    name = 'cf2.chk.h5'
-    natm = 3
-    print_properties(name,natm)
+    #name = 'cf2.chk.h5'
+    #natm = 3
+    #print_properties(name,natm)
 

@@ -22,13 +22,9 @@ int *__restrict__ ao_loc_;
 #define RHOEPS 1e-10
 #define MINSTEP 1e-6
 #define MAXSTEP 0.75
-#define SAFETY 0.9
+#define SAFETY 0.8
 #define HMINIMAL DBL_EPSILON
 #define ENLARGE 1.2
-#define PGROW -0.2
-#define PSHRNK -0.25
-#define ERRCON 1.89e-4
-#define TINY 1.0e-30
 int inuc_;        
 double epsiscp_;
 int ntrial_;      
@@ -80,16 +76,19 @@ void surf_driver(const int inuc,
                  int *nlimsurf, double *rsurf);
 
 void surface(void);
-bool checkcp(double *x, int *nuc);
-void cerror(const char *text);
 
-int odeint(double *ystart, double h1, double eps);
-void rkqs(double *y, double *dydx, double *x, 
-          double htry, double eps,
-	        double *yscal, double *hnext);
-void steeper_rkck(double *y, double *dydx, double h, double *yout, double *yerr);
-
-void rho_grad(double *point, double *rho, double *grad, double *gradmod);
+inline void rho_grad(double *point, double *rho, double *grad, double *gradmod);
+bool checkcp(const double *x, const double rho, const double gradmod, int *nuc);
+inline void stepper_rkck(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr);
+inline void stepper_rkdp(const double *xpoint, 
+                         const double *grdt, 
+                         const double h0, 
+                         double *xout, double *xerr);
+bool adaptive_stepper(double *x, const double *grad, double *h);
+int odeint(double *xpoint, double *rho, double *gradmod);
 
 // AO evaluators
 void aim_GTOval_sph_deriv1(int ngrids, int *shls_slice, int *ao_loc,
