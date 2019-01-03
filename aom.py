@@ -8,6 +8,7 @@ import signal
 
 from pyscf import lib, dft
 from pyscf.lib import logger
+from pyscf.tools.dump_mat import dump_tri
 
 import grid
 
@@ -19,15 +20,22 @@ OCCDROP = 1e-8
 if sys.version_info >= (3,):
     unicode = str
 
-def mo(self,x):
+# Temporal only occupied orbitals
+def mos(self,x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    print ao.shape
+    npoints, nao = ao.shape
+    nocc = self.nocc
     pos = self.mo_occ > OCCDROP
     cpos = self.mo_coeff[:,pos]
     c0 = numpy.dot(ao, cpos)
-    #mos = numpy.einsum('pi,pi->pi', c0, c0)
-    return self
+    aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
+    idx = 0
+    for i in range(nocc):
+        for j in range(i+1):
+            aom[idx] = numpy.einsum('i,i->i',c0[:,i],c0[:,j])
+            idx += 1
+    return aom
 
 EPS = 1e-7
 def inbasin(self,r,j):
@@ -50,6 +58,42 @@ def inbasin(self,r,j):
 # TODO: better iqudr and mapr selection
 def out_beta(self):
     logger.info(self,'* Go outside betasphere')
+    xcoor = numpy.zeros(3)
+    nrad = self.nrad
+    iqudr = self.iqudr
+    mapr = self.mapr
+    r0 = self.brad
+    rfar = self.rmax
+    rad = self.rad
+    t0 = time.clock()
+    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+    coordsang = self.agrids
+    NPROPS = self.nocc*(self.nocc+1)//2
+    rprops = numpy.zeros(NPROPS)
+    for n in range(nrad):
+        r = rmesh[n]
+        coords = []
+        weigths = []
+        for j in range(self.npang):
+            inside = True
+            inside = inbasin(self,r,j)
+            if (inside == True):
+                cost = coordsang[j,0]
+                sintcosp = coordsang[j,1]*coordsang[j,2]
+                sintsinp = coordsang[j,1]*coordsang[j,3]
+                xcoor[0] = r*sintcosp
+                xcoor[1] = r*sintsinp
+                xcoor[2] = r*cost    
+                p = self.xnuc + xcoor
+                coords.append(p)
+                weigths.append(coordsang[j,4])
+        coords = numpy.array(coords)
+        weigths = numpy.array(weigths)
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, weigths)
+        rprops += props*dvol[n]*rwei[n]
+    logger.timer(self,'Out Bsphere build', t0)
+    return rprops
     
 # TODO: better iqudr and mapr selection
 def int_beta(self): 
@@ -57,20 +101,18 @@ def int_beta(self):
     xcoor = numpy.zeros(3)
     coords = numpy.empty((self.bnpang,3))
     nrad = self.bnrad
-    if (self.biqudr == 'legendre'):
-        iqudr = 1
-    if (self.bmapr == 'becke'):
-        mapr = 1
+    iqudr = self.biqudr
+    mapr = self.bmapr
     r0 = 0
     rfar = self.brad
     rad = self.rad
     t0 = time.clock()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(self.bnpang)
-    rlmr = 0.0
+    NPROPS = self.nocc*(self.nocc+1)//2
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
-        rlm = 0.0
         for j in range(self.bnpang): # j-loop can be changed to map
             cost = coordsang[j,0]
             sintcosp = coordsang[j,1]*coordsang[j,2]
@@ -78,14 +120,13 @@ def int_beta(self):
             xcoor[0] = r*sintcosp
             xcoor[1] = r*sintsinp
             xcoor[2] = r*cost    
-            p = self.xyzrho + xcoor
+            p = self.xnuc + xcoor
             coords[j] = p
-        den = rho(self,coords)
-        rlm = numpy.einsum('i,i->', den, coordsang[:,4])
-        rlmr += rlm*dvol[n]*rwei[n]
-    #logger.info(self,'*-> Electron density inside bsphere %8.5f ', rlmr)    
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, coordsang[:,4])
+        rprops += props*dvol[n]*rwei[n]
     logger.timer(self,'Bsphere build', t0)
-    return self
+    return rprops
 
 # Atomic overlap matrix in the MO basis
 class Aom(lib.StreamObject):
@@ -133,6 +174,8 @@ class Aom(lib.StreamObject):
         self.nmo = None
         self.rad = None
         self.brad = None
+        self.aom = None
+        self.nocc = None
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -171,7 +214,7 @@ class Aom(lib.StreamObject):
         logger.info(self,'Surface file %s' % self.surfile)
         logger.info(self,'Surface for nuc %d' % self.inuc)
         logger.info(self,'Nuclear coordinate %.6f  %.6f  %.6f', *self.xnuc)
-        logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho)
+        logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho[self.inuc])
         logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Ntrial %d' % self.ntrial)
         logger.info(self,'Rmin for surface %.6f', self.rmin)
@@ -233,10 +276,42 @@ class Aom(lib.StreamObject):
         if self.verbose > logger.NOTE:
             self.dump_input()
 
-        #int_beta(self)
-        #out_beta(self)
-        point = numpy.zeros(3)
-        mo(self,point)
+        if (self.iqudr == 'legendre'):
+            self.iqudr = 1
+        if (self.biqudr == 'legendre'):
+            self.biqudr = 1
+
+        if (self.mapr == 'becke'):
+            self.mapr = 1
+        elif (self.mapr == 'exp'):
+            self.mapr = 2
+        elif (self.mapr == 'none'):
+            self.mapr = 0 
+        if (self.bmapr == 'becke'):
+            self.bmapr = 1
+        elif (self.bmapr == 'exp'):
+            self.bmapr = 2
+        elif (self.bmapr == 'none'):
+            self.bmapr = 0
+
+        self.nocc = self.nelectron//2
+        self.aom = numpy.zeros((self.nocc,self.nocc))
+        aomb = int_beta(self)
+        aoma = out_beta(self)
+        idx = 0
+        nocc = self.nocc
+        for i in range(nocc):
+            for j in range(i+1):
+                self.aom[i,j] = aoma[idx]+aomb[idx] 
+                self.aom[j,i] = self.aom[i,j]
+                idx += 1
+        dump_tri(self.stdout, self.aom)
+
+        logger.info(self,'Write info to HDF5 file')
+        atom_dic = {'aom':self.aom}
+        lib.chkfile.save(self.surfile, 'ovlp'+str(self.inuc), atom_dic)
+        logger.info(self,'')
+
         logger.info(self,'AOM of atom %d done',self.inuc)
         logger.timer(self,'AOM build', t0)
 
@@ -248,15 +323,28 @@ if __name__ == '__main__':
     name = 'h2o.chk'
     bas = Aom(name)
     bas.verbose = 4
-    bas.inuc = 0
     bas.nrad = 121
     bas.iqudr = 'legendre'
     bas.mapr = 'becke'
     bas.bnrad = 121
-    bas.bnpang = 5810
+    bas.bnpang = 3074
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False
     bas.full = False
+
+    bas.inuc = 0
     bas.kernel()
+    a = bas.aom
  
+    bas.inuc = 1
+    bas.kernel()
+    b = bas.aom
+ 
+    bas.inuc = 2
+    bas.kernel()
+    c = bas.aom
+
+    from pyscf.tools.dump_mat import dump_tri
+    dump_tri(bas.stdout,a+b+c)
+

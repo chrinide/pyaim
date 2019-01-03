@@ -28,7 +28,7 @@ RHOEPS = 1e-10
 MINSTEP = 1e-6
 MAXSTEP = 0.75
 SAFETY = 0.9
-ENLARGE = 1.2
+ENLARGE = 1.6
 HMINIMAL = numpy.finfo(numpy.float64).eps
 
 def rhograd(self, x):
@@ -279,7 +279,7 @@ class BaderSurf(lib.StreamObject):
             self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
             if (gradmod > 1e-4):
                 if (self.charges[i] > 2.0):
-                    logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
                 else:
                     raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
             else:

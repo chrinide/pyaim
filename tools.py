@@ -5,6 +5,7 @@ import numpy
 import sys
 
 from pyscf import lib
+from pyscf.tools.dump_mat import dump_tri
 log = lib.logger.Logger(sys.stdout, 4)
 
 def print_ply():
@@ -46,19 +47,28 @@ def print_txt(filename, inuc):
 
 NPROPS = 3
 PROPS = ['density', 'kinetic', 'laplacian']
-def print_properties(name, natm):                
+def print_properties(name, natm, nmo):                
+    aom = numpy.zeros((natm,nmo,nmo))
+    totaom = numpy.zeros((nmo,nmo))
     props = numpy.zeros((natm,NPROPS))
     totprops = numpy.zeros((NPROPS))
     with h5py.File(name) as f:
         for i in range(natm):
             idx = 'atom_props'+str(i)
             props[i] = f[idx+'/totprops'].value
+            idx = 'ovpl'+str(i)
+            aom[i] = f[idx+'/aom'].value
     for i in range(natm):
+        log.info('Follow AOM for atom %d', i)
+        dump_tri(sys.stdout, aom[i])
+        totaom += aom[i]
         for j in range(NPROPS):
             log.info('Nuclei %d prop %s value : %8.5f', i, PROPS[j], props[i,j])
             totprops[j] += props[i,j]
     for j in range(NPROPS):
         log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
+    log.info('Follow total AOM')
+    dump_tri(sys.stdout, totaom)
 
 if __name__ == '__main__':
     name = 'h2o.chk.h5'
@@ -69,7 +79,8 @@ if __name__ == '__main__':
     inuc = 2
     print_txt(name,inuc)
 
-    #name = 'cf2.chk.h5'
-    #natm = 3
-    #print_properties(name,natm)
+    name = 'h2o.chk.h5'
+    natm = 3
+    nmo = 5
+    print_properties(name,natm,nmo)
 

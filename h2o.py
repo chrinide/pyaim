@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import numpy, time, h5py
+import numpy, time, h5py, os, sys
 from pyscf import gto, scf, lib, dft, ao2mo
 
 name = 'h2o'
@@ -11,7 +11,9 @@ O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
 H      0.000000     -0.761187     -0.469725
 '''
-mol.basis = 'sto-6g'
+dirnow = os.path.realpath(os.path.join(__file__, '..'))
+basfile = os.path.join(dirnow, 'sqzp.dat')
+mol.basis = basfile
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
@@ -20,8 +22,8 @@ mol.build()
 
 mf = dft.RKS(mol)
 mf.max_cycle = 150
-mf.grids.atom_grid = {'H': (20,110), 'O': (20,110)}
-mf.grids.prune = None
+#mf.grids.atom_grid = {'H': (20,110), 'O': (20,110)}
+#mf.grids.prune = None
 mf.chkfile = name+'.chk'
 mf.xc = 'rpw86,pbe'
 ehf = mf.kernel()

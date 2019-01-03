@@ -92,7 +92,7 @@ def out_beta(self):
                 xcoor[0] = r*sintcosp
                 xcoor[1] = r*sintsinp
                 xcoor[2] = r*cost    
-                p = self.xyzrho + xcoor
+                p = self.xnuc + xcoor
                 coords.append(p)
                 weigths.append(coordsang[j,4])
         coords = numpy.array(coords)
@@ -129,7 +129,7 @@ def int_beta(self):
             xcoor[0] = r*sintcosp
             xcoor[1] = r*sintsinp
             xcoor[2] = r*cost    
-            p = self.xyzrho + xcoor
+            p = self.xnuc + xcoor
             coords[j] = p
         val = rho(self,coords)
         props = numpy.einsum('pi,i->p', val, coordsang[:,4])
@@ -221,7 +221,7 @@ class Basin(lib.StreamObject):
         logger.info(self,'Surface file %s' % self.surfile)
         logger.info(self,'Surface for nuc %d' % self.inuc)
         logger.info(self,'Nuclear coordinate %.6f  %.6f  %.6f', *self.xnuc)
-        logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho)
+        logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho[self.inuc])
         logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Ntrial %d' % self.ntrial)
         logger.info(self,'Rmin for surface %.6f', self.rmin)
@@ -323,13 +323,14 @@ if __name__ == '__main__':
     name = 'h2o.chk'
     bas = Basin(name)
     bas.verbose = 4
-    bas.nrad = 101
+    bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'becke'
-    bas.bnrad = 101
-    bas.bnpang = 5810
+    bas.mapr = 'none'
+    bas.bnrad = 141
+    bas.bnpang = 3074
     bas.biqudr = 'legendre'
-    bas.bmapr = 'becke'
+    bas.bmapr = 'exp'
+    bas.betafac = 0.4
     bas.non0tab = False
 
     bas.inuc = 0
