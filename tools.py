@@ -56,7 +56,7 @@ def print_properties(name, natm, nmo):
         for i in range(natm):
             idx = 'atom_props'+str(i)
             props[i] = f[idx+'/totprops'].value
-            idx = 'ovpl'+str(i)
+            idx = 'ovlp'+str(i)
             aom[i] = f[idx+'/aom'].value
     for i in range(natm):
         log.info('Follow AOM for atom %d', i)

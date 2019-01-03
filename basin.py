@@ -20,10 +20,13 @@ NPROPS = 3
 PROPS = ['density', 'kinetic', 'laplacian']
 
 OCCDROP = 1e-12
-def eval_rho2(ao, mo_coeff, mo_occ):
+# TODO: screaning of points
+def rho(self,x):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
     ngrids, nao = ao[0].shape
-    pos = mo_occ > OCCDROP
-    cpos = numpy.einsum('ij,j->ij', mo_coeff[:,pos], numpy.sqrt(mo_occ[pos]))
+    pos = self.mo_occ > OCCDROP
+    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
     rho = numpy.zeros((3,ngrids))
     c0 = numpy.dot(ao[0], cpos)
     rho[0] = numpy.einsum('pi,pi->p', c0, c0)
@@ -37,13 +40,6 @@ def eval_rho2(ao, mo_coeff, mo_occ):
     rho[2] += rho[1]
     rho[2] *= 2
     rho[1] *= 0.5
-    return rho
-
-# TODO: screaning of points
-def rho(self,x):
-    x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
-    rho = eval_rho2(ao, self.mo_coeff, self.mo_occ)
     return rho
 
 EPS = 1e-7
@@ -323,11 +319,11 @@ if __name__ == '__main__':
     name = 'h2o.chk'
     bas = Basin(name)
     bas.verbose = 4
-    bas.nrad = 221
+    bas.nrad = 121
     bas.iqudr = 'legendre'
-    bas.mapr = 'none'
-    bas.bnrad = 141
-    bas.bnpang = 3074
+    bas.mapr = 'exp'
+    bas.bnrad = 121
+    bas.bnpang = 5810
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
