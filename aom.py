@@ -25,9 +25,13 @@ def mos(self,x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao(self.mol, x, deriv=0)
     npoints, nao = ao.shape
-    nocc = self.nocc
-    pos = self.mo_occ > OCCDROP
-    cpos = self.mo_coeff[:,pos]
+    if (self.full):
+        nocc = self.nmo
+        cpos = self.mo_coeff
+    else:
+        nocc = self.nocc
+        pos = self.mo_occ > OCCDROP
+        cpos = self.mo_coeff[:,pos]
     c0 = numpy.dot(ao, cpos)
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
     idx = 0
@@ -68,7 +72,11 @@ def out_beta(self):
     t0 = time.clock()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    NPROPS = self.nocc*(self.nocc+1)//2
+    if (self.full):
+        nocc = self.nmo
+    else:
+        nocc = self.nocc
+    NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
@@ -109,7 +117,11 @@ def int_beta(self):
     t0 = time.clock()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(self.bnpang)
-    NPROPS = self.nocc*(self.nocc+1)//2
+    if (self.full):
+        nocc = self.nmo
+    else:
+        nocc = self.nocc
+    NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
@@ -294,7 +306,10 @@ class Aom(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-        self.nocc = self.nelectron//2
+        if (self.full):
+            self.nocc = self.nmo
+        else:
+            self.nocc = self.nelectron//2 # Change for open shell
         self.aom = numpy.zeros((self.nocc,self.nocc))
         aomb = int_beta(self)
         aoma = out_beta(self)
@@ -331,7 +346,7 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False
-    bas.full = False
+    bas.full = True
 
     bas.inuc = 0
     bas.kernel()
