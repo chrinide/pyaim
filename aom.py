@@ -320,7 +320,8 @@ class Aom(lib.StreamObject):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
                 self.aom[j,i] = self.aom[i,j]
                 idx += 1
-        dump_tri(self.stdout, self.aom)
+        if (not self.full):
+            dump_tri(self.stdout, self.aom)
 
         logger.info(self,'Write info to HDF5 file')
         atom_dic = {'aom':self.aom}
@@ -346,20 +347,14 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'becke'
     bas.non0tab = False
-    bas.full = True
+    bas.full = False
 
     bas.inuc = 0
     bas.kernel()
-    a = bas.aom
  
     bas.inuc = 1
     bas.kernel()
-    b = bas.aom
  
     bas.inuc = 2
     bas.kernel()
-    c = bas.aom
-
-    from pyscf.tools.dump_mat import dump_tri
-    dump_tri(bas.stdout,a+b+c)
 

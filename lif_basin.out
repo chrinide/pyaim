@@ -1,0 +1,122 @@
+
+******** <class 'basin.Basin'> flags ********
+* General Info
+Date Thu Jan  3 03:31:17 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file lif.chk
+Max_memory 32000 MB (current use 73 MB)
+* Molecular Info
+Num atoms 2
+Num electrons 12
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 3 position : 0.000000  0.000000  2.222290
+Nuclei 1 with charge 9 position : 0.000000  0.000000  -0.740763
+* Basis Info
+Number of molecular orbitals 145
+Number of molecular primitives 145
+* Surface Info
+Surface file lif.chk.h5
+Surface for nuc 0
+Nuclear coordinate 0.000000  0.000000  2.222366
+Rho nuclear coordinate 0.000000  0.000000  2.222366
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.142604
+Rmax for surface 7.864347
+Npang points inside 5810
+* Radial grid Info
+Number of radial points outside 101
+Number of radial points inside 101
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.370051
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.457041
+
+* Go with inside betasphere
+*--> density density inside bsphere  0.88115 
+*--> kinetic density inside bsphere  3.58154 
+*--> laplacian density inside bsphere -14.38981 
+    CPU time for Bsphere build     14.83 sec
+* Go outside betasphere
+*--> density density outside bsphere  1.19601 
+*--> kinetic density outside bsphere  3.80435 
+*--> laplacian density outside bsphere 14.38927 
+    CPU time for Out Bsphere build     13.45 sec
+Write info to HDF5 file
+*-> Total density density  2.07716 
+*-> Total kinetic density  7.38589 
+*-> Total laplacian density -0.00054 
+
+Basim properties of atom 0 done
+    CPU time for Basin build     28.31 sec
+
+******** <class 'basin.Basin'> flags ********
+* General Info
+Date Thu Jan  3 03:31:24 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file lif.chk
+Max_memory 32000 MB (current use 111 MB)
+* Molecular Info
+Num atoms 2
+Num electrons 12
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 3 position : 0.000000  0.000000  2.222290
+Nuclei 1 with charge 9 position : 0.000000  0.000000  -0.740763
+* Basis Info
+Number of molecular orbitals 145
+Number of molecular primitives 145
+* Surface Info
+Surface file lif.chk.h5
+Surface for nuc 1
+Nuclear coordinate 0.000000  0.000000  -0.740761
+Rho nuclear coordinate 0.000000  0.000000  -0.740761
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.820511
+Rmax for surface 10.000000
+Npang points inside 5810
+* Radial grid Info
+Number of radial points outside 101
+Number of radial points inside 101
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.472432
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.728204
+
+* Go with inside betasphere
+*--> density density inside bsphere  4.22922 
+*--> kinetic density inside bsphere 91.46786 
+*--> laplacian density inside bsphere -16.92717 
+    CPU time for Bsphere build     15.23 sec
+* Go outside betasphere
+*--> density density outside bsphere  5.68960 
+*--> kinetic density outside bsphere  8.45131 
+*--> laplacian density outside bsphere 16.92106 
+    CPU time for Out Bsphere build     18.46 sec
+Write info to HDF5 file
+*-> Total density density  9.91882 
+*-> Total kinetic density 99.91916 
+*-> Total laplacian density -0.00611 
+
+Basim properties of atom 1 done
+    CPU time for Basin build     33.72 sec

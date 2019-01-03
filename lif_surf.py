@@ -2,7 +2,7 @@
 
 import surf
 
-name = 'cf2.chk'
+name = 'lif.chk'
 surf = surf.BaderSurf(name)
 surf.epsilon = 1e-5
 surf.epssurf = 1e-5
@@ -14,7 +14,5 @@ surf.npang = 5810
 surf.inuc = 0
 surf.kernel()
 surf.inuc = 1
-surf.kernel()
-surf.inuc = 2
 surf.kernel()
 
