@@ -14,7 +14,10 @@ import grid
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-OCCDROP = 1e-8
+OCCDROP = 1e-6
+EPS = 1e-7
+NCOL = 15
+DIGITS = 5
 
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
@@ -41,9 +44,7 @@ def mos(self,x):
             idx += 1
     return aom
 
-EPS = 1e-7
 def inbasin(self,r,j):
-
     isin = False
     rs1 = 0.0
     irange = self.nlimsurf[j]
@@ -56,10 +57,8 @@ def inbasin(self,r,j):
                 isin = True
             return isin
         rs1 = rs2
-
     return isin
 
-# TODO: better iqudr and mapr selection
 def out_beta(self):
     logger.info(self,'* Go outside betasphere')
     xcoor = numpy.zeros(3)
@@ -69,7 +68,7 @@ def out_beta(self):
     r0 = self.brad
     rfar = self.rmax
     rad = self.rad
-    t0 = time.clock()
+    t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
     if (self.full):
@@ -100,10 +99,9 @@ def out_beta(self):
         val = mos(self,coords)
         props = numpy.einsum('pi,i->p', val, weigths)
         rprops += props*dvol[n]*rwei[n]
-    logger.timer(self,'Out Bsphere build', t0)
+    logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
-# TODO: better iqudr and mapr selection
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
     xcoor = numpy.zeros(3)
@@ -114,7 +112,7 @@ def int_beta(self):
     r0 = 0
     rfar = self.brad
     rad = self.rad
-    t0 = time.clock()
+    t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(self.bnpang)
     if (self.full):
@@ -137,7 +135,7 @@ def int_beta(self):
         val = mos(self,coords)
         props = numpy.einsum('pi,i->p', val, coordsang[:,4])
         rprops += props*dvol[n]*rwei[n]
-    logger.timer(self,'Bsphere build', t0)
+    logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
 # Atomic overlap matrix in the MO basis
@@ -308,20 +306,26 @@ class Aom(lib.StreamObject):
 
         if (self.full):
             self.nocc = self.nmo
+            nocc = self.nmo
         else:
-            self.nocc = self.nelectron//2 # Change for open shell
-        self.aom = numpy.zeros((self.nocc,self.nocc))
-        aomb = int_beta(self)
-        aoma = out_beta(self)
+            nocc = self.mo_occ[self.mo_occ>OCCDROP]
+            nocc = len(nocc)
+            self.nocc = nocc
+
+        self.aom = numpy.zeros((nocc,nocc))
+
+        with lib.with_omp_threads(self.nthreads):
+            aomb = int_beta(self)
+            aoma = out_beta(self)
+
         idx = 0
-        nocc = self.nocc
         for i in range(nocc):
             for j in range(i+1):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
                 self.aom[j,i] = self.aom[i,j]
                 idx += 1
-        if (not self.full):
-            dump_tri(self.stdout, self.aom, ncol=15, digits=5, start=0)
+        if (not self.full or self.nmo<=30):
+            dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
 
         logger.info(self,'Write info to HDF5 file')
         atom_dic = {'aom':self.aom}
@@ -336,25 +340,20 @@ class Aom(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'crco6.chk'
-    bas = Aom(name)
-    bas.verbose = 4
-    bas.nrad = 221
-    bas.iqudr = 'legendre'
-    bas.mapr = 'exp'
-    bas.bnrad = 121
-    bas.bnpang = 3074
-    bas.biqudr = 'legendre'
-    bas.bmapr = 'exp'
-    bas.non0tab = False
-    bas.full = False
-    for i in range(13):
-        bas.inuc = i
-        bas.kernel()
-    #bas.inuc = 0
-    #bas.kernel()
-    #bas.inuc = 1
-    #bas.kernel()
-    #bas.inuc = 2
-    #bas.kernel()
-
+    name = 'h2o.chk'
+    ovlp = Aom(name)
+    ovlp.verbose = 4
+    ovlp.nrad = 321
+    ovlp.iqudr = 'legendre'
+    ovlp.mapr = 'exp'
+    ovlp.bnrad = 221
+    ovlp.betafac = 0.5
+    ovlp.bnpang = 3074
+    ovlp.biqudr = 'legendre'
+    ovlp.bmapr = 'exp'
+    ovlp.non0tab = False
+    ovlp.full = True
+    for i in range(3):
+        ovlp.inuc = i
+        ovlp.kernel()
+                 

@@ -6,7 +6,13 @@ import sys
 
 from pyscf import lib
 from pyscf.tools.dump_mat import dump_tri
+
 log = lib.logger.Logger(sys.stdout, 4)
+
+NPROPS = 3
+PROPS = ['density', 'kinetic', 'laplacian']
+NCOL = 15
+DIGITS = 5
 
 def print_ply():
     msg = ('Ply format not yet available')
@@ -45,8 +51,6 @@ def print_txt(filename, inuc):
                 f2.write('%.15f %.15f %.15f %.15f %.15f %s\n' % \
                 (coords[i,0],coords[i,1],coords[i,2],coords[i,3],coords[i,4],data))
 
-NPROPS = 3
-PROPS = ['density', 'kinetic', 'laplacian']
 def print_properties(name, natm, nmo):                
     aom = numpy.zeros((natm,nmo,nmo))
     totaom = numpy.zeros((nmo,nmo))
@@ -60,7 +64,7 @@ def print_properties(name, natm, nmo):
             aom[i] = f[idx+'/aom'].value
     for i in range(natm):
         log.info('Follow AOM for atom %d', i)
-        dump_tri(sys.stdout, aom[i])
+        dump_tri(sys.stdout, aom[i], ncol=NCOL, digits=DIGITS, start=0)
         totaom += aom[i]
         for j in range(NPROPS):
             log.info('Nuclei %d prop %s value : %8.5f', i, PROPS[j], props[i,j])
@@ -68,12 +72,12 @@ def print_properties(name, natm, nmo):
     for j in range(NPROPS):
         log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
     log.info('Follow total AOM')
-    dump_tri(sys.stdout, totaom)
+    dump_tri(sys.stdout, totaom, ncol=NCOL, digits=DIGITS, start=0)
 
 if __name__ == '__main__':
-    name = 'crco6.chk.h5'
-    natm = 13
-    nmo = 54
+    name = 'h2o.chk.h5'
+    natm = 3
+    nmo = 24
     for i in range(natm):
         print_txt(name,i)
     print_properties(name,natm,nmo)

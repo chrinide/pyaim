@@ -1,0 +1,176 @@
+ #  =====================================================
+ # |         DOSURF: QTAIM INTERATOMIC SURFACES          |
+ # |    (c) E. Francisco, University of Oviedo, 2017     |
+ #  =====================================================
+ #
+ # DOSURF Calculation starts at vie ene  4 23:41:39 CET 2019
+
+ # 
+ # WARNING: ¡¡¡ ABOUT PARALLELIZATION !!!
+ # By now only the OMP model is used. The following 
+ # parts of the code of IQA and no others are parallelized :
+ # 
+ # a) The binary code used to compute the RDM matrices 
+ # b) The check of the beta-sphere radii 
+ # c) The determination of the atomic surfaces 
+ # d) The computation of the angular averages 
+ # e) The computation of the bicentric terms 
+ # f) The romberg and different reduction like operations 
+ # g) The angular averages in the aom task 
+ # 
+ # Some results can be different when they are compared 
+ # with a version that it is not parallelized, this is 
+ # because at the end of the regions for which the reduction
+ # clause was specified, the original object is updated to 
+ # reflect the result of combining its original value with 
+ # the final value of each of the private copies using the 
+ # operator specified. The reduction operators are all 
+ # associative (except for subtraction), and the compiler 
+ # may freely reassociate the computation of the final 
+ # value. Furthermore, different degrees of parallelism may 
+ # result in different numeric results because of changes 
+ # in the association of numeric operations. For example, 
+ # a serial addition reduction may have a different 
+ # pattern of addition associations than a parallel 
+ # reduction. These different associations may change the 
+ # results of floating-point addition. Usually these 
+ # differences are small, near the machine precision, 
+ # but can acumulate up to 1d-6/1d-7 differences. 
+ # 
+ # When using the OMP model, some problems related with 
+ # the stack size can occuor, specially with the intel  
+ # compiler, to avoid this issue, the following         
+ # enviormental variables should be exported, for the   
+ # bash shell for example                               
+ # 
+ # a) export OMP_STACK_SIZE=128m                        
+ # b) export KMP_STACK_SIZE=128m                        
+ # 
+
+ # Number of OMP threads :   1
+ # Number of MPI process :   1
+ # 
+ # Input number of Primitives      273 reduced to      273
+ # Rmaxsurf for all the atoms
+    10.000000    10.000000    10.000000
+ # CUTOFF for GTOs, eps =  0.1000000000E-14
+ # CENTER   1
+ # S Shell   Exp =   0.11371829E+05    Cutoff =      0.100000    Primitives :     1
+ # S Shell   Exp =   0.17060929E+04    Cutoff =      0.200000    Primitives :     2
+ # S Shell   Exp =   0.38826799E+03    Cutoff =      0.300000    Primitives :     3
+ # S Shell   Exp =   0.10975075E+03    Cutoff =      0.600000    Primitives :     4
+ # S Shell   Exp =   0.35465902E+02    Cutoff =      1.000000    Primitives :     5
+ # S Shell   Exp =   0.12534049E+02    Cutoff =      1.700000    Primitives :     6
+ # S Shell   Exp =   0.98428230E+01    Cutoff =      1.900000    Primitives :     7
+ # S Shell   Exp =   0.10495500E+01    Cutoff =      5.800000    Primitives :     8
+ # S Shell   Exp =   0.45888600E+01    Cutoff =      2.800000    Primitives :     9
+ # S Shell   Exp =   0.19723430E+01    Cutoff =      4.200000    Primitives :    10
+ # S Shell   Exp =   0.43265900E+00    Cutoff =      9.000000    Primitives :    11
+ # S Shell   Exp =   0.19162800E+00    Cutoff =     13.500000    Primitives :    12
+ # S Shell   Exp =   0.63876000E-01    Cutoff =     23.300000    Primitives :    13
+ # P Shell   Exp =   0.11164360E+03    Cutoff =      0.600000    Primitives :    14   15   16
+ # P Shell   Exp =   0.26229036E+02    Cutoff =      1.200000    Primitives :    17   18   19
+ # P Shell   Exp =   0.81625280E+01    Cutoff =      2.100000    Primitives :    20   21   22
+ # P Shell   Exp =   0.29239230E+01    Cutoff =      3.500000    Primitives :    23   24   25
+ # P Shell   Exp =   0.25608557E+02    Cutoff =      1.200000    Primitives :    26   27   28
+ # P Shell   Exp =   0.11057210E+01    Cutoff =      5.800000    Primitives :    29   30   31
+ # P Shell   Exp =   0.41363600E+00    Cutoff =      9.500000    Primitives :    32   33   34
+ # P Shell   Exp =   0.14797700E+00    Cutoff =     15.900000    Primitives :    35   36   37
+ # P Shell   Exp =   0.49325700E-01    Cutoff =     27.800000    Primitives :    38   39   40
+ # D Shell   Exp =   0.10520368E+02    Cutoff =      1.900000    Primitives :    41   42   43   44   45   46
+ # D Shell   Exp =   0.29714730E+01    Cutoff =      3.600000    Primitives :    47   48   49   50   51   52
+ # D Shell   Exp =   0.11683940E+01    Cutoff =      5.800000    Primitives :    53   54   55   56   57   58
+ # D Shell   Exp =   0.42681900E+00    Cutoff =      9.600000    Primitives :    59   60   61   62   63   64
+ # D Shell   Exp =   0.14227300E+00    Cutoff =     16.900000    Primitives :    65   66   67   68   69   70
+ # F Shell   Exp =   0.48912290E+01    Cutoff =      2.800000    Primitives :    71   72   73   74   75   76   77   78   79   80
+ # F Shell   Exp =   0.19686530E+01    Cutoff =      4.500000    Primitives :    81   82   83   84   85   86   87   88   89   90
+ # F Shell   Exp =   0.74764400E+00    Cutoff =      7.400000    Primitives :    91   92   93   94   95   96   97   98   99  100
+ # F Shell   Exp =   0.24921470E+00    Cutoff =     13.100000    Primitives :   101  102  103  104  105  106  107  108  109  110
+ # G Shell   Exp =   0.26377970E+01    Cutoff =      3.900000    Primitives :   111  112  113  114  115  116  117  118  119  120  121  122  123  124  125
+ # G Shell   Exp =   0.97211900E+00    Cutoff =      6.600000    Primitives :   126  127  128  129  130  131  132  133  134  135  136  137  138  139  140
+ # G Shell   Exp =   0.33189570E+00    Cutoff =     11.600000    Primitives :   141  142  143  144  145  146  147  148  149  150  151  152  153  154  155
+ # CENTER   2
+ # S Shell   Exp =   0.41855801E+03    Cutoff =      0.300000    Primitives :   156
+ # S Shell   Exp =   0.62745349E+02    Cutoff =      0.800000    Primitives :   157
+ # S Shell   Exp =   0.14279584E+02    Cutoff =      1.600000    Primitives :   158
+ # S Shell   Exp =   0.40418170E+01    Cutoff =      3.000000    Primitives :   159
+ # S Shell   Exp =   0.13163895E+01    Cutoff =      5.200000    Primitives :   160
+ # S Shell   Exp =   0.47346190E+00    Cutoff =      8.600000    Primitives :   161
+ # S Shell   Exp =   0.18279990E+00    Cutoff =     13.800000    Primitives :   162
+ # S Shell   Exp =   0.72884400E-01    Cutoff =     21.800000    Primitives :   163
+ # S Shell   Exp =   0.24294800E-01    Cutoff =     37.800000    Primitives :   164
+ # P Shell   Exp =   0.28606730E+01    Cutoff =      3.600000    Primitives :   165  166  167
+ # P Shell   Exp =   0.88819000E+00    Cutoff =      6.500000    Primitives :   168  169  170
+ # P Shell   Exp =   0.30377600E+00    Cutoff =     11.100000    Primitives :   171  172  173
+ # P Shell   Exp =   0.10125870E+00    Cutoff =     19.300000    Primitives :   174  175  176
+ # D Shell   Exp =   0.17706130E+01    Cutoff =      4.700000    Primitives :   177  178  179  180  181  182
+ # D Shell   Exp =   0.59308100E+00    Cutoff =      8.100000    Primitives :   183  184  185  186  187  188
+ # D Shell   Exp =   0.19769370E+00    Cutoff =     14.200000    Primitives :   189  190  191  192  193  194
+ # F Shell   Exp =   0.14514450E+01    Cutoff =      5.300000    Primitives :   195  196  197  198  199  200  201  202  203  204
+ # F Shell   Exp =   0.48381500E+00    Cutoff =      9.300000    Primitives :   205  206  207  208  209  210  211  212  213  214
+ # CENTER   3
+ # S Shell   Exp =   0.41855801E+03    Cutoff =      0.300000    Primitives :   215
+ # S Shell   Exp =   0.62745349E+02    Cutoff =      0.800000    Primitives :   216
+ # S Shell   Exp =   0.14279584E+02    Cutoff =      1.600000    Primitives :   217
+ # S Shell   Exp =   0.40418170E+01    Cutoff =      3.000000    Primitives :   218
+ # S Shell   Exp =   0.13163895E+01    Cutoff =      5.200000    Primitives :   219
+ # S Shell   Exp =   0.47346190E+00    Cutoff =      8.600000    Primitives :   220
+ # S Shell   Exp =   0.18279990E+00    Cutoff =     13.800000    Primitives :   221
+ # S Shell   Exp =   0.72884400E-01    Cutoff =     21.800000    Primitives :   222
+ # S Shell   Exp =   0.24294800E-01    Cutoff =     37.800000    Primitives :   223
+ # P Shell   Exp =   0.28606730E+01    Cutoff =      3.600000    Primitives :   224  225  226
+ # P Shell   Exp =   0.88819000E+00    Cutoff =      6.500000    Primitives :   227  228  229
+ # P Shell   Exp =   0.30377600E+00    Cutoff =     11.100000    Primitives :   230  231  232
+ # P Shell   Exp =   0.10125870E+00    Cutoff =     19.300000    Primitives :   233  234  235
+ # D Shell   Exp =   0.17706130E+01    Cutoff =      4.700000    Primitives :   236  237  238  239  240  241
+ # D Shell   Exp =   0.59308100E+00    Cutoff =      8.100000    Primitives :   242  243  244  245  246  247
+ # D Shell   Exp =   0.19769370E+00    Cutoff =     14.200000    Primitives :   248  249  250  251  252  253
+ # F Shell   Exp =   0.14514450E+01    Cutoff =      5.300000    Primitives :   254  255  256  257  258  259  260  261  262  263
+ # F Shell   Exp =   0.48381500E+00    Cutoff =      9.300000    Primitives :   264  265  266  267  268  269  270  271  272  273
+ # Total number of shells =           70
+ #  70 shells contribute to the basin of center    1
+ # [ shell(atom) means shell number "shell" of atom "atom" ]
+      1(   1)     2(   1)     3(   1)     4(   1)     5(   1)     6(   1)     7(   1)     8(   1)
+      9(   1)    10(   1)    11(   1)    12(   1)    13(   1)    14(   1)    15(   1)    16(   1)
+     17(   1)    18(   1)    19(   1)    20(   1)    21(   1)    22(   1)    23(   1)    24(   1)
+     25(   1)    26(   1)    27(   1)    28(   1)    29(   1)    30(   1)    31(   1)    32(   1)
+     33(   1)    34(   1)     1(   2)     2(   2)     3(   2)     4(   2)     5(   2)     6(   2)
+      7(   2)     8(   2)     9(   2)    10(   2)    11(   2)    12(   2)    13(   2)    14(   2)
+     15(   2)    16(   2)    17(   2)    18(   2)     1(   3)     2(   3)     3(   3)     4(   3)
+      5(   3)     6(   3)     7(   3)     8(   3)     9(   3)    10(   3)    11(   3)    12(   3)
+     13(   3)    14(   3)    15(   3)    16(   3)    17(   3)    18(   3)
+ #  70 shells contribute to the basin of center    2
+ # [ shell(atom) means shell number "shell" of atom "atom" ]
+      1(   1)     2(   1)     3(   1)     4(   1)     5(   1)     6(   1)     7(   1)     8(   1)
+      9(   1)    10(   1)    11(   1)    12(   1)    13(   1)    14(   1)    15(   1)    16(   1)
+     17(   1)    18(   1)    19(   1)    20(   1)    21(   1)    22(   1)    23(   1)    24(   1)
+     25(   1)    26(   1)    27(   1)    28(   1)    29(   1)    30(   1)    31(   1)    32(   1)
+     33(   1)    34(   1)     1(   2)     2(   2)     3(   2)     4(   2)     5(   2)     6(   2)
+      7(   2)     8(   2)     9(   2)    10(   2)    11(   2)    12(   2)    13(   2)    14(   2)
+     15(   2)    16(   2)    17(   2)    18(   2)     1(   3)     2(   3)     3(   3)     4(   3)
+      5(   3)     6(   3)     7(   3)     8(   3)     9(   3)    10(   3)    11(   3)    12(   3)
+     13(   3)    14(   3)    15(   3)    16(   3)    17(   3)    18(   3)
+ #  70 shells contribute to the basin of center    3
+ # [ shell(atom) means shell number "shell" of atom "atom" ]
+      1(   1)     2(   1)     3(   1)     4(   1)     5(   1)     6(   1)     7(   1)     8(   1)
+      9(   1)    10(   1)    11(   1)    12(   1)    13(   1)    14(   1)    15(   1)    16(   1)
+     17(   1)    18(   1)    19(   1)    20(   1)    21(   1)    22(   1)    23(   1)    24(   1)
+     25(   1)    26(   1)    27(   1)    28(   1)    29(   1)    30(   1)    31(   1)    32(   1)
+     33(   1)    34(   1)     1(   2)     2(   2)     3(   2)     4(   2)     5(   2)     6(   2)
+      7(   2)     8(   2)     9(   2)    10(   2)    11(   2)    12(   2)    13(   2)    14(   2)
+     15(   2)    16(   2)    17(   2)    18(   2)     1(   3)     2(   3)     3(   3)     4(   3)
+      5(   3)     6(   3)     7(   3)     8(   3)     9(   3)    10(   3)    11(   3)    12(   3)
+     13(   3)    14(   3)    15(   3)    16(   3)    17(   3)    18(   3)
+ # Surface precision =  0.100000E-04
+ # Lebedev grid is used. Angular points follow
+ #      1  5810 <--- (Atom & Points)
+ #      2  5810 <--- (Atom & Points)
+ #      3  5810 <--- (Atom & Points)
+ # 
+ # RMAXSURF  parameter  =  0.100000E+02
+ # DAMPRMAX  parameter  =  0.200000E+01
+ # EPSISCP   parameter  =  0.220000E+00
+ # SURF will be computed for the following    3 atoms
+ #    1   2   3
+
+ # Total elapsed time =      154.804719 seconds

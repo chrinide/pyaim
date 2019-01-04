@@ -11,11 +11,11 @@ from pyscf.lib import logger
 
 import grid
 
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
-
-signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
@@ -138,6 +138,7 @@ class BaderSurf(lib.StreamObject):
         self.chkfile = datafile
         self.surfile = datafile+'.h5'
         self.scratch = lib.param.TMPDIR 
+        self.nthreads = lib.num_threads()
         self.inuc = 0
         self.epsiscp = 0.180
         self.ntrial = 11
@@ -146,14 +147,13 @@ class BaderSurf(lib.StreamObject):
         self.nptheta = 90
         self.npphi = 180
         self.iqudt = 'legendre'
-        self.epsroot = 1e-4
         self.rmaxsurf = 10.0
         self.rprimer = 0.4
         self.backend = 'rkck'
-        self.epsilon = 1e-4 
+        self.epsroot = 1e-5
+        self.epsilon = 1e-5 
         self.step = 0.1
-        self.mstep = 100
-        self.nthreads = lib.num_threads()
+        self.mstep = 120
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mo_coeff = None
@@ -286,10 +286,6 @@ class BaderSurf(lib.StreamObject):
 
         if (self.iqudt == 'legendre'):
             self.iqudt = 1
-        elif (self.iqudt == 'cheb1'):
-            self.iqudt = 2
-        elif (self.iqudt == 'cheb2'):
-            self.iqudt = 3
 
         if (self.leb):
             self.grids = grid.lebgrid(self.npang)
@@ -297,6 +293,7 @@ class BaderSurf(lib.StreamObject):
             self.grids = grid.anggrid(self.iqudt,self.nptheta,self.npphi)
 
         self.xyzrho = numpy.zeros((self.natm,3))
+        t = time.time()
         for i in range(self.natm):
             self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
             if (gradmod > 1e-4):
@@ -309,6 +306,7 @@ class BaderSurf(lib.StreamObject):
                 logger.info(self,'Setting xyrho for atom to imput coords')
                 self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
+        logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
         if (self.backend == 'rkck'):
             backend = 1
@@ -320,6 +318,7 @@ class BaderSurf(lib.StreamObject):
         cp_ = numpy.asarray(self.grids[:,2], order='C')
         sp_ = numpy.asarray(self.grids[:,3], order='C')
 
+        t = time.time()
         feval = 'surf_driver'
         drv = getattr(libaim, feval)
         with lib.with_omp_threads(self.nthreads):
@@ -353,6 +352,7 @@ class BaderSurf(lib.StreamObject):
                 self.mo_occ.ctypes.data_as(ctypes.c_void_p),
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
+        logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
             
         self.rmin = 1000.0
         self.rmax = 0.0
@@ -383,22 +383,15 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'crco6.chk'
+    name = 'h2o.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
     surf.verbose = 4
     surf.epsiscp = 0.220
     surf.mstep = 200
-    surf.leb = False
-    #surf.npang = 5810
-    for i in range(13):
+    surf.npang = 5810
+    for i in range(3):
         surf.inuc = i
         surf.kernel()
-    #surf.inuc = 0
-    #surf.kernel()
-    #surf.inuc = 1
-    #surf.kernel()
-    #surf.inuc = 2
-    #surf.kernel()
 

@@ -72,10 +72,8 @@ def prange(start, end, step):
         yield i, min(i+step, end)
 
 def legendre(n):
-
     x = numpy.zeros(n)
     w = numpy.zeros(n)
-
     e1 = n*(n+1)
     m = ((n+1)//2)
     for i in range(1,m+1):
@@ -119,37 +117,30 @@ def legendre(n):
     return x, w
 
 def chebyshev1(n):
-
-  x = numpy.zeros(n)
-  w = numpy.zeros(n)
-
-  if (n == 1):
-    x[0] = 0.0
-    w[0] = numpy.pi
-  else:
-    for i in range(n):
-      angle = float(i)*numpy.pi/float(n-1)
-      x[i] = numpy.cos(angle)
-      w[i] = numpy.pi/float(n-1)
-    w[0] = 0.5*w[0]
-    w[n-1] = 0.5*w[n-1]
-
-  return x[::-1], w[::-1]
+    x = numpy.zeros(n)
+    w = numpy.zeros(n)
+    if (n == 1):
+        x[0] = 0.0
+        w[0] = numpy.pi
+    else:
+        for i in range(n):
+            angle = float(i)*numpy.pi/float(n-1)
+            x[i] = numpy.cos(angle)
+            w[i] = numpy.pi/float(n-1)
+        w[0] = 0.5*w[0]
+        w[n-1] = 0.5*w[n-1]
+    return x[::-1], w[::-1]
 
 def chebyshev2(n):
+    x = numpy.zeros(n)
+    w = numpy.zeros(n)
+    for i in range(n):
+        angle = numpy.pi*float(n-i)/float(n+1)
+        w[i] = numpy.pi/float(n+1)*(np.sin(angle))**2
+        x[i] = numpy.cos(angle)
+    return x[::-1], w[::-1]
 
-  x = numpy.zeros(n)
-  w = numpy.zeros(n)
-
-  for i in range(n):
-    angle = numpy.pi*float(n-i)/float(n+1)
-    w[i] = numpy.pi/float(n+1)*(np.sin(angle))**2
-    x[i] = numpy.cos(angle)
-
-  return x, w
-
-def compositetrap(a,b,n):
-
+def trap(a,b,n):
     x = numpy.zeros(n)
     w = numpy.zeros(n)
     h = (b-a)/float(n)
@@ -160,12 +151,10 @@ def compositetrap(a,b,n):
     for i in range(1,n-1):
         w[i] = h
         x[i] = float(i)*h
-
     return x,w
 
 # Change the -1,1 limits for quadratures
 def changelimits(a,b,x,w):  
-
     nr = len(x)
     for i in range(nr):
         aa = (b-a)/2.0
@@ -174,45 +163,40 @@ def changelimits(a,b,x,w):
         #r = a + aa*(x[i]+1.0)
         x[i] = r
         w[i] = w[i]*aa
-
     return x,w
 
 def anggrid(iqudt,nptheta,npphi):
-
     npang = nptheta*npphi
     agrids = numpy.zeros((npang,5))
     delphi = 2.0*numpy.pi/float(npphi)
-        
     if (iqudt == 1):
         x, w = legendre(nptheta)
     elif (iqudt == 2):
         x, w = chebyshev1(nptheta)
+    elif (iqudt == 3):
+        x, w = chebyshev2(nptheta)
     else:
-        raise NotImplementedError("anggrid only legendre or cheby1")
-
+        raise NotImplementedError("anggrid only legendre or chebx")
     tnpang = 0
     for ip in range(npphi):
-       phi = ip*delphi
-       for it in range(nptheta):
-          thang = x[it]
-          agrids[tnpang,0] = thang
-          agrids[tnpang,1] = numpy.sqrt(1.0-thang*thang)
-          agrids[tnpang,2] = numpy.cos(phi)
-          agrids[tnpang,3] = numpy.sin(phi)
-          agrids[tnpang,4] = w[it]*delphi
-          tnpang += 1
-
+        phi = ip*delphi
+        for it in range(nptheta):
+            thang = x[it]
+            agrids[tnpang,0] = thang
+            agrids[tnpang,1] = numpy.sqrt(1.0-thang*thang)
+            agrids[tnpang,2] = numpy.cos(phi)
+            agrids[tnpang,3] = numpy.sin(phi)
+            agrids[tnpang,4] = w[it]*delphi
+            tnpang += 1
     return agrids
 
 def lebgrid(npang):
-
     if npang not in LEBEDEV_NGRID:
         raise ValueError('Lebgrid unsupported angular grid %d' % npang)
     else:
         grids = numpy.zeros((npang,4))
         agrids = numpy.zeros((npang,5))
         libdft.MakeAngularGrid(grids.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(npang))
-
     for i in range(npang):
         agrids[i,4] = 4.0*numpy.pi*grids[i,3]
         rxy = grids[i,0]*grids[i,0] + grids[i,1]*grids[i,1]
@@ -231,18 +215,14 @@ def lebgrid(npang):
             agrids[i,1] = numpy.sqrt((1.0-agrids[i,0])*(1.0+agrids[i,0]))
             agrids[i,2] = grids[i,0]/rxy
             agrids[i,3] = grids[i,1]/rxy
-
     return agrids
 
 def rquad(nr,r0,rfar,rad,iqudr,mapr):
-
     rmesh = numpy.zeros(nr)
     dvol = numpy.zeros(nr)
     dvoln = numpy.zeros(nr)
- 
     if (rfar-r0 <= 0.001):
         raise RuntimeError('rmax < rmin ??') 
-
     # Determine eta parameter in case of radial mapping
     rfarc = rfar - r0
     if (mapr == 1):
@@ -253,11 +233,14 @@ def rquad(nr,r0,rfar,rad,iqudr,mapr):
         eta = 0.0
     else:    
         raise NotImplementedError('Only becke or exp mapping available') 
-
     if (iqudr == 1):
         xr, rwei = legendre(nr)
+    elif (iqudr == 2):
+        xr, rwei = chebyshev1(nr)
+    elif (iqudr == 3):
+        xr, rwei = chebyshev2(nr)
     else:    
-        raise NotImplementedError('Only legendre quadrature available') 
+        raise NotImplementedError('Only legendre or chebx quadrature available') 
 
     # Determine abscissas and volume elements.
     # for finite range (a..b) the transformation is y = (b-a)*x/2+(b+a)/2
@@ -294,7 +277,6 @@ def rquad(nr,r0,rfar,rad,iqudr,mapr):
             else:
                 dvoln[i] = 0.0
             dvol[i] = dvoln[i]*r
-
     return rmesh, rwei, dvol, dvoln
 
 if __name__ == '__main__':

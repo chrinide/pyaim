@@ -2,44 +2,37 @@
 
 import numpy, time, h5py, os, sys
 from pyscf import gto, scf, lib, dft, ao2mo
+from pyscf.tools import wfn_format
 
-name = 'lif'
+name = 'h2o'
 
 mol = gto.Mole()
 mol.atom = '''
-Li      0.000000      0.000000      1.565940
-F      0.000000      0.000000     -0.002040
+O      0.000000      0.000000      0.118351
+H      0.000000      0.761187     -0.469725
+H      0.000000     -0.761187     -0.469725
 '''
 dirnow = os.path.realpath(os.path.join(__file__, '..'))
 basfile = os.path.join(dirnow, 'sqzp.dat')
-mol.basis = 'def2-svp'
+mol.basis = basfile
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
 mol.charge = 0
 mol.build()
 
-mf = dft.RKS(mol)
+mf = scf.RHF(mol)
 mf.max_cycle = 150
-#mf.grids.atom_grid = {'H': (20,110), 'O': (20,110)}
-#mf.grids.prune = None
 mf.chkfile = name+'.chk'
-mf.xc = 'rpw86,pbe'
 ehf = mf.kernel()
+
+wfn_file = name + '.wfn'
+with open(wfn_file, 'w') as f2:
+    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], \
+    mo_occ=mf.mo_occ[mf.mo_occ>0], mo_energy=mf.mo_energy[mf.mo_occ>0])
 
 dm = mf.make_rdm1()
 nao = mol.nao_nr()
-
-coords = mf.grids.coords
-weights = mf.grids.weights
-ngrids = len(weights)
-ao = dft.numint.eval_ao(mol, coords, deriv=1)
-rho = dft.numint.eval_rho(mol, ao, dm, xctype='GGA')
-lib.logger.info(mf,'Rho = %.12f' % numpy.einsum('i,i->', rho[0], weights))
-ex, vx = dft.libxc.eval_xc('rPW86,', rho)[:2]
-ec, vc = dft.libxc.eval_xc(',PBE', rho)[:2]
-ex = numpy.einsum('i,i,i->', ex, rho[0], weights)
-ec = numpy.einsum('i,i,i->', ec, rho[0], weights)
 
 s = mol.intor('int1e_ovlp')
 t = mol.intor('int1e_kin')
@@ -68,11 +61,6 @@ lib.logger.info(mf,'XC energy : %12.6f' % -bie2)
 lib.logger.info(mf,'EE energy : %12.6f' % (bie1-bie2))
 etot = enuc + ekin + elnuce + bie1 - bie2
 lib.logger.info(mf,'HF Total energy : %12.6f' % etot)
-lib.logger.info(mf,'Ex : %12.6f' % ex)
-lib.logger.info(mf,'Ec : %12.6f' % ec)
-lib.logger.info(mf,'Exc : %12.6f' % (ex+ec))
-etot = enuc + ekin + elnuce + bie1 + ex + ec
-lib.logger.info(mf,'DFT Total energy : %12.6f' % etot)
 
 lib.logger.info(mf,'Write aom on AO basis to HDF5 file')
 atom_dic = {'overlap':s}

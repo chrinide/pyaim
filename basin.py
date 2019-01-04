@@ -10,16 +10,17 @@ from pyscf.lib import logger
 
 import grid
 
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
 
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-
 NPROPS = 3
 PROPS = ['density', 'kinetic', 'laplacian']
+OCCDROP = 1e-6
+EPS = 1e-7
 
-OCCDROP = 1e-12
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
@@ -42,9 +43,7 @@ def rho(self,x):
     rho[1] *= 0.5
     return rho
 
-EPS = 1e-7
 def inbasin(self,r,j):
-
     isin = False
     rs1 = 0.0
     irange = self.nlimsurf[j]
@@ -57,10 +56,8 @@ def inbasin(self,r,j):
                 isin = True
             return isin
         rs1 = rs2
-
     return isin
 
-# TODO: better iqudr and mapr selection
 def out_beta(self):
     logger.info(self,'* Go outside betasphere')
     xcoor = numpy.zeros(3)
@@ -70,7 +67,7 @@ def out_beta(self):
     r0 = self.brad
     rfar = self.rmax
     rad = self.rad
-    t0 = time.clock()
+    t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
     rprops = numpy.zeros(NPROPS)
@@ -98,10 +95,9 @@ def out_beta(self):
         rprops += props*dvol[n]*rwei[n]
     for i in range(NPROPS):
         logger.info(self,'*--> %s density outside bsphere %8.5f ', PROPS[i], rprops[i])    
-    logger.timer(self,'Out Bsphere build', t0)
+    logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
-# TODO: better iqudr and mapr selection
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
     xcoor = numpy.zeros(3)
@@ -112,7 +108,7 @@ def int_beta(self):
     r0 = 0
     rfar = self.brad
     rad = self.rad
-    t0 = time.clock()
+    t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(self.bnpang)
     rprops = numpy.zeros(NPROPS)
@@ -132,7 +128,7 @@ def int_beta(self):
         rprops += props*dvol[n]*rwei[n]
     for i in range(NPROPS):
         logger.info(self,'*--> %s density inside bsphere %8.5f ', PROPS[i], rprops[i])    
-    logger.timer(self,'Bsphere build', t0)
+    logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
 class Basin(lib.StreamObject):
@@ -297,8 +293,9 @@ class Basin(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-        brprops = int_beta(self)
-        rprops = out_beta(self)
+        with lib.with_omp_threads(self.nthreads):
+            brprops = int_beta(self)
+            rprops = out_beta(self)
 
         logger.info(self,'Write info to HDF5 file')
         atom_dic = {'inprops':brprops,
@@ -316,7 +313,7 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'crco6.chk'
+    name = 'h2o.chk'
     bas = Basin(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -328,13 +325,7 @@ if __name__ == '__main__':
     bas.bmapr = 'exp'
     bas.betafac = 0.4
     bas.non0tab = False
-    for i in range(13):
+    for i in range(3):
         bas.inuc = i
         bas.kernel()
-    #bas.inuc = 0
-    #bas.kernel()
-    #bas.inuc = 1
-    #bas.kernel()
-    #bas.inuc = 2
-    #bas.kernel()
 

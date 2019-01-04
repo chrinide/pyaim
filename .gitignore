@@ -5,6 +5,3 @@ __pycache__/
 tmp/
 *.o
 *.so
-*.txt
-diff
-*.h5

@@ -3,6 +3,7 @@
 
 import numpy, time, h5py, os, sys
 from pyscf import gto, scf, lib, dft, ao2mo
+from pyscf.tools import wfn_format
 
 name = 'h2o'
 
@@ -12,36 +13,27 @@ O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
 H      0.000000     -0.761187     -0.469725
 '''
-#dirnow = os.path.realpath(os.path.join(__file__, '..'))
-#basfile = os.path.join(dirnow, 'sqzp.dat')
-mol.basis = 'sto-6g'
+dirnow = os.path.realpath(os.path.join(__file__, '..'))
+basfile = os.path.join(dirnow, 'sqzp.dat')
+mol.basis = basfile
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
 mol.charge = 0
 mol.build()
 
-mf = dft.RKS(mol)
+mf = scf.RHF(mol)
 mf.max_cycle = 150
-#mf.grids.atom_grid = {'H': (20,110), 'O': (20,110)}
-#mf.grids.prune = None
 mf.chkfile = name+'.chk'
-mf.xc = 'rpw86,pbe'
 ehf = mf.kernel()
+
+wfn_file = name + '.wfn'
+with open(wfn_file, 'w') as f2:
+    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], \
+    mo_occ=mf.mo_occ[mf.mo_occ>0], mo_energy=mf.mo_energy[mf.mo_occ>0])
 
 dm = mf.make_rdm1()
 nao = mol.nao_nr()
-
-coords = mf.grids.coords
-weights = mf.grids.weights
-ngrids = len(weights)
-ao = dft.numint.eval_ao(mol, coords, deriv=1)
-rho = dft.numint.eval_rho(mol, ao, dm, xctype='GGA')
-lib.logger.info(mf,'Rho = %.12f' % numpy.einsum('i,i->', rho[0], weights))
-ex, vx = dft.libxc.eval_xc('rPW86,', rho)[:2]
-ec, vc = dft.libxc.eval_xc(',PBE', rho)[:2]
-ex = numpy.einsum('i,i,i->', ex, rho[0], weights)
-ec = numpy.einsum('i,i,i->', ec, rho[0], weights)
 
 s = mol.intor('int1e_ovlp')
 t = mol.intor('int1e_kin')
@@ -70,11 +62,6 @@ lib.logger.info(mf,'XC energy : %12.6f' % -bie2)
 lib.logger.info(mf,'EE energy : %12.6f' % (bie1-bie2))
 etot = enuc + ekin + elnuce + bie1 - bie2
 lib.logger.info(mf,'HF Total energy : %12.6f' % etot)
-lib.logger.info(mf,'Ex : %12.6f' % ex)
-lib.logger.info(mf,'Ec : %12.6f' % ec)
-lib.logger.info(mf,'Exc : %12.6f' % (ex+ec))
-etot = enuc + ekin + elnuce + bie1 + ex + ec
-lib.logger.info(mf,'DFT Total energy : %12.6f' % etot)
 
 lib.logger.info(mf,'Write aom on AO basis to HDF5 file')
 atom_dic = {'overlap':s}
@@ -87,7 +74,7 @@ System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 numpy 1.15.4  scipy 1.2.0
-Date: Thu Jan  3 16:40:05 2019
+Date: Fri Jan  4 22:29:25 2019
 PySCF version 1.6
 PySCF path  /home/jluis/src/pyscf/dev/pyscf
 GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
@@ -110,19 +97,20 @@ GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
 
 nuclear repulsion = 9.14985900416406
 point group symmetry = C2v
-num. orbitals of irrep A1 = 4
-num. orbitals of irrep B1 = 2
-num. orbitals of irrep B2 = 1
-number of shells = 5
-number of NR pGTOs = 42
-number of NR cGTOs = 7
-basis = sto-6g
+num. orbitals of irrep A1 = 64
+num. orbitals of irrep A2 = 27
+num. orbitals of irrep B1 = 50
+num. orbitals of irrep B2 = 36
+number of shells = 51
+number of NR pGTOs = 220
+number of NR cGTOs = 177
+basis = /home/jluis/tmp/pyaim/sqzp.dat
 ecp = {}
-CPU time:         0.44
+CPU time:         0.48
 
 
-******** <class 'pyscf.dft.rks_symm.SymAdaptedRKS'> ********
-method = SymAdaptedRKS-SymAdaptedRHF-RHF
+******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
+method = SymAdaptedRHF-RHF
 initial guess = minao
 damping factor = 0
 level shift factor = 0
@@ -136,49 +124,38 @@ direct_scf = True
 direct_scf_tol = 1e-13
 chkfile to save SCF result = h2o.chk
 max_memory 32000 MB (current use 74 MB)
-XC functionals = rpw86,pbe
-radial grids: 
-    Treutler-Ahlrichs (JCP 102, 346 (M4)) radial grids
-    
-becke partition: Becke, JCP, 88, 2547 (1988)
-pruning grids: <function nwchem_prune at 0x2aeb3e986230>
-grids dens level: 3
-symmetrized grids: 1
-atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2aeb3e986140>
 Freeze 0 electrons in irreps []
-    10 free electrons in irreps A1 B1 B2
+    10 free electrons in irreps A1 A2 B1 B2
 Set gradient conv threshold to 3.16228e-05
-tot grids = 34310
-init E= -76.2290131755788
-HOMO (B2) = -0.328203417936797  LUMO (A1) = 0.213520849359458
-cycle= 1 E= -76.0828938445881  delta_E= 0.146  |g|= 0.485  |ddm|= 1.67
-HOMO (B2) = 0.0825786260108883  LUMO (A1) = 0.363167105206023
-cycle= 2 E= -76.0782791488399  delta_E= 0.00461  |g|= 0.506  |ddm|= 1.44
-HOMO (B2) = -0.0764749328064722  LUMO (A1) = 0.290375641520621
-cycle= 3 E= -76.1656375001627  delta_E= -0.0874  |g|= 0.00321  |ddm|= 0.767
-HOMO (B2) = -0.0794018820130968  LUMO (A1) = 0.286320527999361
-cycle= 4 E= -76.1656410318611  delta_E= -3.53e-06  |g|= 0.000674  |ddm|= 0.0065
-HOMO (B2) = -0.0795737406356588  LUMO (A1) = 0.286266413416428
-cycle= 5 E= -76.1656412003026  delta_E= -1.68e-07  |g|= 1.8e-05  |ddm|= 0.00118
-HOMO (B2) = -0.0795814098250994  LUMO (A1) = 0.28625970855368
-cycle= 6 E= -76.1656412004086  delta_E= -1.06e-10  |g|= 8.13e-07  |ddm|= 2.44e-05
-HOMO (B2) = -0.079582029487395  LUMO (A1) = 0.286259447675465
-Extra cycle  E= -76.1656412004087  delta_E= -7.11e-14  |g|= 8.44e-07  |ddm|= 2.35e-06
-converged SCF energy = -76.1656412004087
-Rho = 9.999999873617
+init E= -75.8750027979745
+HOMO (B2) = -0.478488571466419  LUMO (A1) = 0.0138573862847843
+cycle= 1 E= -76.0270558553261  delta_E= -0.152  |g|= 0.442  |ddm|= 0.765
+HOMO (B2) = -0.43463685553506  LUMO (A1) = 0.0249701199289777
+cycle= 2 E= -76.052623342152  delta_E= -0.0256  |g|= 0.265  |ddm|= 0.269
+HOMO (B2) = -0.517714686380074  LUMO (A1) = 0.0261054963354519
+cycle= 3 E= -76.0632372314475  delta_E= -0.0106  |g|= 0.0287  |ddm|= 0.0839
+HOMO (B2) = -0.50907331473281  LUMO (A1) = 0.0270255002282223
+cycle= 4 E= -76.0634108340384  delta_E= -0.000174  |g|= 0.0061  |ddm|= 0.0113
+HOMO (B2) = -0.509963919603036  LUMO (A1) = 0.0270511886060873
+cycle= 5 E= -76.0634259992782  delta_E= -1.52e-05  |g|= 0.00111  |ddm|= 0.00437
+HOMO (B2) = -0.510157831167435  LUMO (A1) = 0.0270453209472383
+cycle= 6 E= -76.0634267881188  delta_E= -7.89e-07  |g|= 0.000209  |ddm|= 0.00105
+HOMO (B2) = -0.510225472439871  LUMO (A1) = 0.0270458277434372
+cycle= 7 E= -76.0634268189144  delta_E= -3.08e-08  |g|= 3.53e-05  |ddm|= 0.000267
+HOMO (B2) = -0.510227799951948  LUMO (A1) = 0.027046227818018
+cycle= 8 E= -76.0634268196131  delta_E= -6.99e-10  |g|= 3.73e-06  |ddm|= 3.64e-05
+HOMO (B2) = -0.510227964282333  LUMO (A1) = 0.0270463165250736
+Extra cycle  E= -76.0634268196197  delta_E= -6.66e-12  |g|= 1.33e-06  |ddm|= 7.12e-06
+converged SCF energy = -76.0634268196197
 Population :    10.000000
-Kinetic energy :    75.943631
-Nuclear Atraction energy :  -199.074841
+Kinetic energy :    75.962962
+Nuclear Atraction energy :  -198.941442
 Nuclear Repulsion energy :     9.149859
 Coulomb Pairs :   100.000000
 XC Pairs :    10.000000
 Pairs :    90.000000
-J energy :    47.438678
-XC energy :    -9.135560
-EE energy :    38.303118
-HF Total energy :   -75.678233
-Ex :    -9.282046
-Ec :    -0.340922
-Exc :    -9.622968
-DFT Total energy :   -76.165641
+J energy :    46.706193
+XC energy :    -8.940999
+EE energy :    37.765194
+HF Total energy :   -76.063427
 Write aom on AO basis to HDF5 file
