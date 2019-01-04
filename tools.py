@@ -84,14 +84,14 @@ if __name__ == '__main__':
     nmo = 5
     print_properties(name,natm,nmo)
 
-    name = 'lif.chk.h5'
-    inuc = 0
-    print_txt(name,inuc)
-    inuc = 1
-    print_txt(name,inuc)
+    #name = 'lif.chk.h5'
+    #inuc = 0
+    #print_txt(name,inuc)
+    #inuc = 1
+    #print_txt(name,inuc)
 
-    name = 'lif.chk.h5'
-    natm = 2
-    nmo = 6
-    print_properties(name,natm,nmo)
+    #name = 'lif.chk.h5'
+    #natm = 2
+    #nmo = 6
+    #print_properties(name,natm,nmo)
 

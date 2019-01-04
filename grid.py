@@ -118,6 +118,63 @@ def legendre(n):
 
     return x, w
 
+def chebyshev1(n):
+
+  x = numpy.zeros(n)
+  w = numpy.zeros(n)
+
+  if (n == 1):
+    x[0] = 0.0
+    w[0] = numpy.pi
+  else:
+    for i in range(n):
+      angle = float(i)*numpy.pi/float(n-1)
+      x[i] = numpy.cos(angle)
+      w[i] = numpy.pi/float(n-1)
+    w[0] = 0.5*w[0]
+    w[n-1] = 0.5*w[n-1]
+
+  return x[::-1], w[::-1]
+
+def chebyshev2(n):
+
+  x = numpy.zeros(n)
+  w = numpy.zeros(n)
+
+  for i in range(n):
+    angle = numpy.pi*float(n-i)/float(n+1)
+    w[i] = numpy.pi/float(n+1)*(np.sin(angle))**2
+    x[i] = numpy.cos(angle)
+
+  return x, w
+
+def anggrid(iqudt,nptheta,npphi):
+
+    npang = nptheta*npphi
+    agrids = numpy.zeros((npang,5))
+    delphi = 2.0*numpy.pi/float(npphi)
+        
+    if (iqudt == 1):
+        x, w = legendre(nptheta)
+    elif (iqudt == 2):
+        x, w = chebyshev1(nptheta)
+    else:
+        raise NotImplementedError("anggrid only legendre or cheby1")
+
+    tnpang = 0
+    for ip in range(npphi):
+       phi = ip*delphi
+       for it in range(nptheta):
+          thang = x[it]
+          agrids[tnpang,0] = thang
+          agrids[tnpang,1] = numpy.sqrt(1-thang*thang)
+          agrids[tnpang,2] = numpy.cos(phi)
+          agrids[tnpang,3] = numpy.sin(phi)
+          agrids[tnpang,4] = w[it]*delphi
+          tnpang += 1
+
+    return agrids
+
 def lebgrid(npang):
 
     if npang not in LEBEDEV_NGRID:
@@ -220,6 +277,20 @@ if __name__ == '__main__':
         for i in range(npang):
             f2.write('%d   %.6f  %.6f  %.6f  %.6f  %.6f\n' % \
             ((i+1), agrid[i,0], agrid[i,1], agrid[i,2], agrid[i,3], agrid[i,4]))
+
+    iqudt = 1
+    nptheta = 101
+    npphi = 101
+    agrid = anggrid(iqudt,nptheta,npphi) 
+    with open('anggrid.txt', 'w') as f2:
+        f2.write('# Point 1 2 3 4 weight\n')
+        for i in range(nptheta*npphi):
+            f2.write('%d   %.6f  %.6f  %.6f  %.6f  %.6f\n' % \
+            ((i+1), agrid[i,0], agrid[i,1], agrid[i,2], agrid[i,3], agrid[i,4]))
+    
+    x, w = chebyshev1(nr) 
+    print('Cheb points %s' % x)
+    print('Cheb weigths %s' % w)
 
     x, w = legendre(nr) 
     print('Legendre points %s' % x)

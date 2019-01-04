@@ -8,7 +8,7 @@ surf.epsilon = 1e-5
 surf.epssurf = 1e-5
 surf.verbose = 4
 surf.epsiscp = 0.220
-surf.mstep = 100
+surf.mstep = 200
 surf.npang = 5810
 
 surf.inuc = 0

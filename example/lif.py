@@ -12,7 +12,7 @@ F      0.000000      0.000000     -0.002040
 '''
 dirnow = os.path.realpath(os.path.join(__file__, '..'))
 basfile = os.path.join(dirnow, 'sqzp.dat')
-mol.basis = basfile
+mol.basis = 'def2-svp'
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1

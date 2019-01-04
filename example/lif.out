@@ -13,7 +13,7 @@ F      0.000000      0.000000     -0.002040
 '''
 dirnow = os.path.realpath(os.path.join(__file__, '..'))
 basfile = os.path.join(dirnow, 'sqzp.dat')
-mol.basis = basfile
+mol.basis = 'def2-svp'
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
@@ -86,7 +86,7 @@ System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 numpy 1.15.4  scipy 1.2.0
-Date: Thu Jan  3 03:28:01 2019
+Date: Thu Jan  3 04:40:54 2019
 PySCF version 1.6
 PySCF path  /home/jluis/src/pyscf/dev/pyscf
 GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
@@ -108,21 +108,17 @@ GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
 
 nuclear repulsion = 9.11222381333946
 point group symmetry = Coov
-num. orbitals of irrep A1 = 43
-num. orbitals of irrep E1x = 27
-num. orbitals of irrep E1y = 27
-num. orbitals of irrep E2x = 15
-num. orbitals of irrep E2y = 15
-num. orbitals of irrep E3x = 7
-num. orbitals of irrep E3y = 7
-num. orbitals of irrep E4x = 2
-num. orbitals of irrep E4y = 2
-number of shells = 43
-number of NR pGTOs = 187
-number of NR cGTOs = 145
-basis = /home/jluis/tmp/pyaim/sqzp.dat
+num. orbitals of irrep A1 = 11
+num. orbitals of irrep E1x = 5
+num. orbitals of irrep E1y = 5
+num. orbitals of irrep E2x = 1
+num. orbitals of irrep E2y = 1
+number of shells = 11
+number of NR pGTOs = 40
+number of NR cGTOs = 23
+basis = def2-svp
 ecp = {}
-CPU time:         0.45
+CPU time:         0.44
 
 
 ******** <class 'pyscf.dft.rks_symm.SymAdaptedRKS'> ********
@@ -139,56 +135,56 @@ max. SCF cycles = 150
 direct_scf = True
 direct_scf_tol = 1e-13
 chkfile to save SCF result = lif.chk
-max_memory 32000 MB (current use 74 MB)
+max_memory 32000 MB (current use 73 MB)
 XC functionals = rpw86,pbe
 radial grids: 
     Treutler-Ahlrichs (JCP 102, 346 (M4)) radial grids
     
 becke partition: Becke, JCP, 88, 2547 (1988)
-pruning grids: <function nwchem_prune at 0x2b6615dbc230>
+pruning grids: <function nwchem_prune at 0x2b24794bf230>
 grids dens level: 3
 symmetrized grids: 1
-atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2b6615dbc140>
+atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2b24794bf140>
 Freeze 0 electrons in irreps []
-    12 free electrons in irreps A1 E1x E1y E2x E2y E3x E3y E4x E4y
+    12 free electrons in irreps A1 E1x E1y E2x E2y
 Set gradient conv threshold to 3.16228e-05
 tot grids = 26688
-init E= -107.495679864774
-HOMO (E1x) = -0.490744541093743  LUMO (A1) = -0.0961220299471643
-cycle= 1 E= -107.524262716281  delta_E= -0.0286  |g|= 0.902  |ddm|= 0.794
-HOMO (E1y) = -0.0185452387483427  LUMO (A1) = 0.0050856671727996
-cycle= 2 E= -101.330644078884  delta_E= 6.19  |g|= 4.41  |ddm|=  2.3
-HOMO (E1x) = -0.258843641318386  LUMO (A1) = -0.0489587891476665
-cycle= 3 E= -107.651569708401  delta_E= -6.32  |g|= 0.315  |ddm|= 2.27
-HOMO (E1x) = -0.215599040157378  LUMO (A1) = -0.0527072835590241
-cycle= 4 E= -107.661005736016  delta_E= -0.00944  |g|= 0.0725  |ddm|= 0.128
-HOMO (E1x) = -0.224631723606448  LUMO (A1) = -0.0548458267159601
-cycle= 5 E= -107.661820532528  delta_E= -0.000815  |g|= 0.0217  |ddm|= 0.0332
-HOMO (E1x) = -0.22740308362871  LUMO (A1) = -0.0553871469400581
-cycle= 6 E= -107.661885259033  delta_E= -6.47e-05  |g|= 0.00711  |ddm|= 0.00754
-HOMO (E1y) = -0.228363317985146  LUMO (A1) = -0.0554128625760532
-cycle= 7 E= -107.661892727806  delta_E= -7.47e-06  |g|= 0.000716  |ddm|= 0.00312
-HOMO (E1y) = -0.228439949955547  LUMO (A1) = -0.0553825193059624
-cycle= 8 E= -107.661892802303  delta_E= -7.45e-08  |g|= 3.09e-05  |ddm|= 0.000319
-HOMO (E1y) = -0.228433865416623  LUMO (A1) = -0.055380284087802
-cycle= 9 E= -107.661892802469  delta_E= -1.67e-10  |g|= 1.64e-06  |ddm|= 2.7e-05
-HOMO (E1x) = -0.22843318886725  LUMO (A1) = -0.0553800232070182
-Extra cycle  E= -107.661892802468  delta_E= 1.22e-12  |g|= 3.22e-06  |ddm|= 2.65e-06
-converged SCF energy = -107.661892802468
-Rho = 11.999959380199
+init E= -107.355297182081
+HOMO (E1y) = -0.492957557899091  LUMO (A1) = -0.0953260197385075
+cycle= 1 E= -107.374087527049  delta_E= -0.0188  |g|= 0.876  |ddm|= 0.96
+HOMO (E1x) = -0.00234475475957811  LUMO (A1) = 0.0330321679487536
+cycle= 2 E= -100.977007541665  delta_E=  6.4  |g|=  4.4  |ddm|= 2.93
+HOMO (E1y) = -0.197594707013258  LUMO (A1) = -0.0389077218892141
+cycle= 3 E= -107.491457996846  delta_E= -6.51  |g|= 0.405  |ddm|= 2.65
+HOMO (E1x) = -0.18834621644687  LUMO (A1) = -0.0554626896382292
+cycle= 4 E= -107.513645657564  delta_E= -0.0222  |g|= 0.0716  |ddm|= 0.18
+HOMO (E1y) = -0.198656483092028  LUMO (A1) = -0.058703104878663
+cycle= 5 E= -107.514480353426  delta_E= -0.000835  |g|= 0.0284  |ddm|= 0.0321
+HOMO (E1y) = -0.203017772577138  LUMO (A1) = -0.0595262624964949
+cycle= 6 E= -107.514618726956  delta_E= -0.000138  |g|= 0.00499  |ddm|= 0.0158
+HOMO (E1x) = -0.203591889908235  LUMO (A1) = -0.0594325327542744
+cycle= 7 E= -107.514623037219  delta_E= -4.31e-06  |g|= 5.86e-05  |ddm|= 0.0032
+HOMO (E1y) = -0.203580700922344  LUMO (A1) = -0.0594082909863526
+cycle= 8 E= -107.514623037785  delta_E= -5.66e-10  |g|= 3.77e-05  |ddm|= 7.98e-05
+HOMO (E1x) = -0.203574105623  LUMO (A1) = -0.0594073199018752
+cycle= 9 E= -107.51462303805  delta_E= -2.65e-10  |g|= 6.1e-07  |ddm|= 2.65e-05
+HOMO (E1x) = -0.203573771749923  LUMO (A1) = -0.059407250285415
+Extra cycle  E= -107.51462303805  delta_E= 4.12e-13  |g|= 1.44e-06  |ddm|= 1.3e-06
+converged SCF energy = -107.51462303805
+Rho = 12.000064898131
 Population :    12.000000
-Kinetic energy :   107.306132
-Nuclear Atraction energy :  -276.443969
+Kinetic energy :   106.681775
+Nuclear Atraction energy :  -275.792303
 Nuclear Repulsion energy :     9.112224
 Coulomb Pairs :   144.000000
 XC Pairs :    12.000000
 Pairs :   132.000000
-J energy :    64.977588
-XC energy :   -11.919492
-EE energy :    53.058096
-HF Total energy :  -106.967517
-Ex :   -12.238767
-Ec :    -0.375101
-Exc :   -12.613868
-DFT Total energy :  -107.661893
+J energy :    65.105543
+XC energy :   -11.941571
+EE energy :    53.163973
+HF Total energy :  -106.834332
+Ex :   -12.241801
+Ec :    -0.380061
+Exc :   -12.621862
+DFT Total energy :  -107.514623
 Write aom on AO basis to HDF5 file

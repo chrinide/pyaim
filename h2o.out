@@ -12,9 +12,9 @@ O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
 H      0.000000     -0.761187     -0.469725
 '''
-dirnow = os.path.realpath(os.path.join(__file__, '..'))
-basfile = os.path.join(dirnow, 'sqzp.dat')
-mol.basis = basfile
+#dirnow = os.path.realpath(os.path.join(__file__, '..'))
+#basfile = os.path.join(dirnow, 'sqzp.dat')
+mol.basis = 'sto-6g'
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
@@ -87,7 +87,7 @@ System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 numpy 1.15.4  scipy 1.2.0
-Date: Thu Jan  3 03:24:17 2019
+Date: Thu Jan  3 16:40:05 2019
 PySCF version 1.6
 PySCF path  /home/jluis/src/pyscf/dev/pyscf
 GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
@@ -110,16 +110,15 @@ GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
 
 nuclear repulsion = 9.14985900416406
 point group symmetry = C2v
-num. orbitals of irrep A1 = 64
-num. orbitals of irrep A2 = 27
-num. orbitals of irrep B1 = 50
-num. orbitals of irrep B2 = 36
-number of shells = 51
-number of NR pGTOs = 220
-number of NR cGTOs = 177
-basis = /home/jluis/tmp/pyaim/sqzp.dat
+num. orbitals of irrep A1 = 4
+num. orbitals of irrep B1 = 2
+num. orbitals of irrep B2 = 1
+number of shells = 5
+number of NR pGTOs = 42
+number of NR cGTOs = 7
+basis = sto-6g
 ecp = {}
-CPU time:         0.45
+CPU time:         0.44
 
 
 ******** <class 'pyscf.dft.rks_symm.SymAdaptedRKS'> ********
@@ -142,48 +141,44 @@ radial grids:
     Treutler-Ahlrichs (JCP 102, 346 (M4)) radial grids
     
 becke partition: Becke, JCP, 88, 2547 (1988)
-pruning grids: <function nwchem_prune at 0x2b1621540230>
+pruning grids: <function nwchem_prune at 0x2aeb3e986230>
 grids dens level: 3
 symmetrized grids: 1
-atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2b1621540140>
+atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2aeb3e986140>
 Freeze 0 electrons in irreps []
-    10 free electrons in irreps A1 A2 B1 B2
+    10 free electrons in irreps A1 B1 B2
 Set gradient conv threshold to 3.16228e-05
 tot grids = 34310
-init E= -76.5535812573087
-HOMO (B2) = -0.409995353594441  LUMO (A1) = -0.04924477120894
-cycle= 1 E= -76.4871323052335  delta_E= 0.0664  |g|= 0.839  |ddm|= 0.869
-HOMO (B2) = -0.0821786881313361  LUMO (A1) = -0.0114608030863466
-cycle= 2 E= -75.9054675992166  delta_E= 0.582  |g|= 1.89  |ddm|= 0.895
-HOMO (B2) = -0.285001010842376  LUMO (A1) = -0.0399548847098644
-cycle= 3 E= -76.608467716254  delta_E= -0.703  |g|= 0.0337  |ddm|= 0.637
-HOMO (B2) = -0.269185476820624  LUMO (A1) = -0.0351184771666439
-cycle= 4 E= -76.6087005003029  delta_E= -0.000233  |g|= 0.00907  |ddm|= 0.0256
-HOMO (B2) = -0.270405777144556  LUMO (A1) = -0.036045937170638
-cycle= 5 E= -76.6087119791813  delta_E= -1.15e-05  |g|= 0.00201  |ddm|= 0.00373
-HOMO (B2) = -0.270751773842794  LUMO (A1) = -0.0361833637743554
-cycle= 6 E= -76.60871272629  delta_E= -7.47e-07  |g|= 0.000231  |ddm|= 0.000899
-HOMO (B2) = -0.27080035994327  LUMO (A1) = -0.0362008414863193
-cycle= 7 E= -76.6087127342958  delta_E= -8.01e-09  |g|= 1.46e-05  |ddm|= 6.61e-05
-HOMO (B2) = -0.270801708886993  LUMO (A1) = -0.0362006212727468
-cycle= 8 E= -76.6087127343356  delta_E= -3.98e-11  |g|= 2.11e-06  |ddm|= 6.95e-06
-HOMO (B2) = -0.27080258743652  LUMO (A1) = -0.0362007826441037
-Extra cycle  E= -76.608712734333  delta_E= 2.54e-12  |g|= 4.18e-06  |ddm|= 1.89e-06
-converged SCF energy = -76.608712734333
-Rho = 10.000000184125
+init E= -76.2290131755788
+HOMO (B2) = -0.328203417936797  LUMO (A1) = 0.213520849359458
+cycle= 1 E= -76.0828938445881  delta_E= 0.146  |g|= 0.485  |ddm|= 1.67
+HOMO (B2) = 0.0825786260108883  LUMO (A1) = 0.363167105206023
+cycle= 2 E= -76.0782791488399  delta_E= 0.00461  |g|= 0.506  |ddm|= 1.44
+HOMO (B2) = -0.0764749328064722  LUMO (A1) = 0.290375641520621
+cycle= 3 E= -76.1656375001627  delta_E= -0.0874  |g|= 0.00321  |ddm|= 0.767
+HOMO (B2) = -0.0794018820130968  LUMO (A1) = 0.286320527999361
+cycle= 4 E= -76.1656410318611  delta_E= -3.53e-06  |g|= 0.000674  |ddm|= 0.0065
+HOMO (B2) = -0.0795737406356588  LUMO (A1) = 0.286266413416428
+cycle= 5 E= -76.1656412003026  delta_E= -1.68e-07  |g|= 1.8e-05  |ddm|= 0.00118
+HOMO (B2) = -0.0795814098250994  LUMO (A1) = 0.28625970855368
+cycle= 6 E= -76.1656412004086  delta_E= -1.06e-10  |g|= 8.13e-07  |ddm|= 2.44e-05
+HOMO (B2) = -0.079582029487395  LUMO (A1) = 0.286259447675465
+Extra cycle  E= -76.1656412004087  delta_E= -7.11e-14  |g|= 8.44e-07  |ddm|= 2.35e-06
+converged SCF energy = -76.1656412004087
+Rho = 9.999999873617
 Population :    10.000000
-Kinetic energy :    76.320670
-Nuclear Atraction energy :  -199.278254
+Kinetic energy :    75.943631
+Nuclear Atraction energy :  -199.074841
 Nuclear Repulsion energy :     9.149859
 Coulomb Pairs :   100.000000
 XC Pairs :    10.000000
 Pairs :    90.000000
-J energy :    46.670496
-XC energy :    -8.913047
-EE energy :    37.757449
-HF Total energy :   -76.050277
-Ex :    -9.147705
-Ec :    -0.323779
-Exc :    -9.471484
-DFT Total energy :   -76.608713
+J energy :    47.438678
+XC energy :    -9.135560
+EE energy :    38.303118
+HF Total energy :   -75.678233
+Ex :    -9.282046
+Ec :    -0.340922
+Exc :    -9.622968
+DFT Total energy :   -76.165641
 Write aom on AO basis to HDF5 file
