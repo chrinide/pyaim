@@ -1,0 +1,767 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 17:10:41 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 89 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature legendre
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 0.713809
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build   5008.52 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 17:31:33 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 94 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 2
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 1.440874
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 2 saved
+    CPU time for BaderSurf build   3866.46 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 17:47:40 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 100 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 3
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 0.713809
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 3 saved
+    CPU time for BaderSurf build   5007.16 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 18:08:32 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 110 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 4
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 1.440874
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 4 saved
+    CPU time for BaderSurf build   3869.93 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 18:24:39 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 5
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 0.713911
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 5 saved
+    CPU time for BaderSurf build   5007.30 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 18:45:31 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 6
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 1.440493
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 6 saved
+    CPU time for BaderSurf build   3862.15 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 19:01:37 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 7
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 0.713771
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 7 saved
+    CPU time for BaderSurf build   5078.50 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 19:22:47 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 8
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 1.442029
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 8 saved
+    CPU time for BaderSurf build   3865.71 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 19:38:53 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 9
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 0.713854
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 9 saved
+    CPU time for BaderSurf build   4575.68 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 19:57:57 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 10
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572
+Rmin for surface 1.441382
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 10 saved
+    CPU time for BaderSurf build   3246.16 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Fri Jan  4 20:11:29 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file crco6.chk
+Max_memory 32000 MB (current use 121 MB)
+* Molecular Info
+Num atoms 13
+Num electrons 108
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 24 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 6 position : 0.000000  3.799294  0.000000
+Nuclei 2 with charge 8 position : 0.000000  5.953582  0.000000
+Nuclei 3 with charge 6 position : 0.000000  -3.799294  0.000000
+Nuclei 4 with charge 8 position : 0.000000  -5.953582  0.000000
+Nuclei 5 with charge 6 position : -3.799294  0.000000  0.000000
+Nuclei 6 with charge 8 position : -5.953582  0.000000  0.000000
+Nuclei 7 with charge 6 position : 3.799294  0.000000  0.000000
+Nuclei 8 with charge 8 position : 5.953582  0.000000  0.000000
+Nuclei 9 with charge 6 position : 0.000000  0.000000  3.799294
+Nuclei 10 with charge 8 position : 0.000000  0.000000  5.953582
+Nuclei 11 with charge 6 position : 0.000000  0.000000  -3.799294
+Nuclei 12 with charge 8 position : 0.000000  0.000000  -5.953582
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1161
+Number of molecular primitives 1161
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 101 101
+Npang points 10201
+Surface file crco6.chk.h5
+Surface for nuc 11
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 0.000010
+ODE solver rkck
+ODE tool 0.000010
+Max steps in ODE solver 200
+
+Check rho position 0.000000 0.000000 0.000000
+Setting xyrho for atom to imput coords
+Good rho position 0.000000 3.799305 0.000000
+Good rho position 0.000000 5.953572 -0.000000
+Good rho position 0.000000 -3.799305 0.000000
+Good rho position 0.000000 -5.953572 -0.000000
+Good rho position -3.799305 -0.000000 0.000000
+Good rho position -5.953572 -0.000000 0.000000
+Good rho position 3.799305 -0.000000 0.000000
+Good rho position 5.953572 -0.000000 0.000000
+Good rho position -0.000000 -0.000000 3.799305
+Good rho position 0.000000 -0.000000 5.953572
+Good rho position -0.000000 -0.000000 -3.799305
+Good rho position 0.000000 -0.000000 -5.953572

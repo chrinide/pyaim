@@ -316,25 +316,25 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'crco6.chk'
     bas = Basin(name)
     bas.verbose = 4
-    bas.nrad = 121
+    bas.nrad = 221
     bas.iqudr = 'legendre'
     bas.mapr = 'exp'
     bas.bnrad = 121
-    bas.bnpang = 5810
+    bas.bnpang = 3074
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
     bas.non0tab = False
-
-    bas.inuc = 0
-    bas.kernel()
-
-    bas.inuc = 1
-    bas.kernel()
- 
-    bas.inuc = 2
-    bas.kernel()
+    for i in range(13):
+        bas.inuc = i
+        bas.kernel()
+    #bas.inuc = 0
+    #bas.kernel()
+    #bas.inuc = 1
+    #bas.kernel()
+    #bas.inuc = 2
+    #bas.kernel()
 

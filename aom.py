@@ -321,7 +321,7 @@ class Aom(lib.StreamObject):
                 self.aom[j,i] = self.aom[i,j]
                 idx += 1
         if (not self.full):
-            dump_tri(self.stdout, self.aom)
+            dump_tri(self.stdout, self.aom, ncol=15, digits=5, start=0)
 
         logger.info(self,'Write info to HDF5 file')
         atom_dic = {'aom':self.aom}
@@ -336,25 +336,25 @@ class Aom(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'crco6.chk'
     bas = Aom(name)
     bas.verbose = 4
-    bas.nrad = 121
+    bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'becke'
+    bas.mapr = 'exp'
     bas.bnrad = 121
     bas.bnpang = 3074
     bas.biqudr = 'legendre'
-    bas.bmapr = 'becke'
+    bas.bmapr = 'exp'
     bas.non0tab = False
     bas.full = False
-
-    bas.inuc = 0
-    bas.kernel()
- 
-    bas.inuc = 1
-    bas.kernel()
- 
-    bas.inuc = 2
-    bas.kernel()
+    for i in range(13):
+        bas.inuc = i
+        bas.kernel()
+    #bas.inuc = 0
+    #bas.kernel()
+    #bas.inuc = 1
+    #bas.kernel()
+    #bas.inuc = 2
+    #bas.kernel()
 

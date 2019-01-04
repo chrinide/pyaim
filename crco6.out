@@ -1,0 +1,166 @@
+#INFO: **** input file is /home/jluis/tmp/pyaim/crco6.py ****
+#!/usr/bin/env python
+
+import numpy, time, h5py, os, sys
+from pyscf import gto, scf, lib, dft, ao2mo
+
+name = 'crco6'
+bco = 1.14
+bcc = 2.0105
+
+mol = gto.Mole()
+mol.atom = [
+    ['Cr',(  0.000000,  0.000000,  0.000000)],
+    ['C', (  bcc     ,  0.000000,  0.000000)],
+    ['O', (  bcc+bco ,  0.000000,  0.000000)],
+    ['C', ( -bcc     ,  0.000000,  0.000000)],
+    ['O', ( -bcc-bco ,  0.000000,  0.000000)],
+    ['C', (  0.000000,  bcc     ,  0.000000)],
+    ['O', (  0.000000,  bcc+bco ,  0.000000)],
+    ['C', (  0.000000, -bcc     ,  0.000000)],
+    ['O', (  0.000000, -bcc-bco ,  0.000000)],
+    ['C', (  0.000000,  0.000000,  bcc     )],
+    ['O', (  0.000000,  0.000000,  bcc+bco )],
+    ['C', (  0.000000,  0.000000, -bcc     )],
+    ['O', (  0.000000,  0.000000, -bcc-bco )],
+]
+dirnow = os.path.realpath(os.path.join(__file__, '..'))
+basfile = os.path.join(dirnow, 'sqzp.dat')
+mol.basis = basfile
+mol.verbose = 4
+mol.spin = 0
+mol.symmetry = 1
+mol.charge = 0
+mol.build()
+
+mf = scf.RHF(mol).density_fit() 
+#mf.with_df.auxbasis = 'aug-cc-pvdz-jkfit'
+mf.max_cycle = 150
+mf.chkfile = name+'.chk'
+ehf = mf.kernel()
+
+#INFO: ******************** input file end ********************
+
+
+System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5~bpo8+1 (2017-09-28)', 'x86_64', '')  Threads 4
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+numpy 1.15.4  scipy 1.2.0
+Date: Fri Jan  4 04:22:07 2019
+PySCF version 1.6
+PySCF path  /home/jluis/src/pyscf/dev/pyscf
+GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
+GIT HEAD      ref: refs/heads/dev
+GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
+
+[ENV] PYSCF_MAX_MEMORY 32000
+[ENV] PYSCF_TMPDIR /scratch-ssd/jluis
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 13
+[INPUT] num. electrons = 108
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry 1 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT]  1 Cr     0.000000000000   0.000000000000   0.000000000000 AA    0.000000000000   0.000000000000   0.000000000000 Bohr
+[INPUT]  2 C      0.000000000000   2.010500000000   0.000000000000 AA    0.000000000000   3.799294373438   0.000000000000 Bohr
+[INPUT]  3 O      0.000000000000   3.150500000000   0.000000000000 AA    0.000000000000   5.953582155442   0.000000000000 Bohr
+[INPUT]  4 C      0.000000000000  -2.010500000000   0.000000000000 AA    0.000000000000  -3.799294373438   0.000000000000 Bohr
+[INPUT]  5 O      0.000000000000  -3.150500000000   0.000000000000 AA    0.000000000000  -5.953582155442   0.000000000000 Bohr
+[INPUT]  6 C     -2.010500000000   0.000000000000   0.000000000000 AA   -3.799294373438   0.000000000000   0.000000000000 Bohr
+[INPUT]  7 O     -3.150500000000   0.000000000000   0.000000000000 AA   -5.953582155442   0.000000000000   0.000000000000 Bohr
+[INPUT]  8 C      2.010500000000   0.000000000000   0.000000000000 AA    3.799294373438   0.000000000000   0.000000000000 Bohr
+[INPUT]  9 O      3.150500000000   0.000000000000   0.000000000000 AA    5.953582155442   0.000000000000   0.000000000000 Bohr
+[INPUT] 10 C      0.000000000000   0.000000000000   2.010500000000 AA    0.000000000000   0.000000000000   3.799294373438 Bohr
+[INPUT] 11 O      0.000000000000   0.000000000000   3.150500000000 AA    0.000000000000   0.000000000000   5.953582155442 Bohr
+[INPUT] 12 C      0.000000000000   0.000000000000  -2.010500000000 AA    0.000000000000   0.000000000000  -3.799294373438 Bohr
+[INPUT] 13 O      0.000000000000   0.000000000000  -3.150500000000 AA    0.000000000000   0.000000000000  -5.953582155442 Bohr
+
+nuclear repulsion = 949.192898913972
+point group symmetry = Oh, use subgroup D2h
+num. orbitals of irrep Ag = 235
+num. orbitals of irrep B1g = 114
+num. orbitals of irrep B2g = 114
+num. orbitals of irrep B3g = 114
+num. orbitals of irrep Au = 74
+num. orbitals of irrep B1u = 170
+num. orbitals of irrep B2u = 170
+num. orbitals of irrep B3u = 170
+number of shells = 309
+number of NR pGTOs = 1638
+number of NR cGTOs = 1161
+basis = /home/jluis/tmp/pyaim/sqzp.dat
+ecp = {}
+CPU time:         0.51
+
+
+******** <class 'pyscf.df.df_jk.DFHF'> ********
+method = DFHF-SymAdaptedRHF-RHF
+initial guess = minao
+damping factor = 0
+level shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+DIIS start cycle = 1
+DIIS space = 8
+SCF tol = 1e-09
+SCF gradient tol = None
+max. SCF cycles = 150
+direct_scf = False
+chkfile to save SCF result = crco6.chk
+max_memory 32000 MB (current use 98 MB)
+Freeze 0 electrons in irreps []
+    108 free electrons in irreps Ag B1g B2g B3g Au B1u B2u B3u
+Set gradient conv threshold to 3.16228e-05
+******** <class 'pyscf.df.df.DF'> ********
+auxbasis = None
+max_memory = 32000
+_cderi_to_save = /scratch-ssd/jluis/tmps0ouzS
+Even tempered Gaussians are generated as DF auxbasis for  Cr C O
+init E= -1720.87378972828
+HOMO (B2g) = -0.150080265819325  LUMO (B2u) = -0.000178625737929054
+cycle= 1 E= -1718.00395598513  delta_E= 2.87  |g|=  3.2  |ddm|= 24.4
+HOMO (B1g) = -0.641868165750588  LUMO (B2g) = -0.641868165750468
+
+WARN: B1g HOMO -0.641868165750588 > system LUMO -0.641868165750468
+
+
+WARN: B2g LUMO -0.641868165750468 < system HOMO -0.641868165750588
+
+
+WARN: B3g LUMO -0.641868165750465 < system HOMO -0.641868165750588
+
+cycle= 2 E= -1696.95574675637  delta_E=   21  |g|= 12.3  |ddm|= 22.1
+HOMO (B1g) = -0.239631753685866  LUMO (Ag) = 0.0164942495108595
+cycle= 3 E= -1719.23974206953  delta_E= -22.3  |g|= 1.97  |ddm|= 16.7
+HOMO (B2g) = -0.284251728238996  LUMO (Ag) = 0.0181860370334336
+cycle= 4 E= -1719.8180251892  delta_E= -0.578  |g|= 0.704  |ddm|= 2.89
+HOMO (B2g) = -0.313935477489629  LUMO (Ag) = 0.0172335189972689
+cycle= 5 E= -1719.90123025742  delta_E= -0.0832  |g|= 0.299  |ddm|=  1.1
+HOMO (B2g) = -0.344260474105142  LUMO (Ag) = 0.0170283631265615
+cycle= 6 E= -1719.91945221641  delta_E= -0.0182  |g|= 0.118  |ddm|= 0.78
+HOMO (B2g) = -0.339220386206011  LUMO (Ag) = 0.0170814444272985
+cycle= 7 E= -1719.92038877715  delta_E= -0.000937  |g|= 0.103  |ddm|= 0.214
+HOMO (B2g) = -0.336546528480378  LUMO (Ag) = 0.0171087447789543
+cycle= 8 E= -1719.92123360648  delta_E= -0.000845  |g|= 0.0724  |ddm|= 0.0914
+HOMO (B2g) = -0.33361724874186  LUMO (Ag) = 0.0171208936167009
+cycle= 9 E= -1719.92195325814  delta_E= -0.00072  |g|= 0.017  |ddm|= 0.108
+HOMO (B2g) = -0.333205367899101  LUMO (Ag) = 0.0171214820792225
+cycle= 10 E= -1719.92199387473  delta_E= -4.06e-05  |g|= 0.000697  |ddm|= 0.0262
+HOMO (B2g) = -0.333124307786328  LUMO (Ag) = 0.0171230612977674
+cycle= 11 E= -1719.92199408682  delta_E= -2.12e-07  |g|= 0.000284  |ddm|= 0.00413
+HOMO (B2g) = -0.333167791339532  LUMO (Ag) = 0.0171225036556389
+cycle= 12 E= -1719.92199417052  delta_E= -8.37e-08  |g|= 0.0002  |ddm|= 0.00107
+HOMO (B2g) = -0.3331965467258  LUMO (Ag) = 0.0171226200576174
+cycle= 13 E= -1719.92199426407  delta_E= -9.35e-08  |g|= 0.000158  |ddm|= 0.000944
+HOMO (B2g) = -0.333296346391684  LUMO (Ag) = 0.017122406672233
+cycle= 14 E= -1719.92199438946  delta_E= -1.25e-07  |g|= 8.41e-05  |ddm|= 0.002
+HOMO (B2g) = -0.333313421407691  LUMO (Ag) = 0.017122523813811
+cycle= 15 E= -1719.92199440093  delta_E= -1.15e-08  |g|= 4.2e-05  |ddm|= 0.000475
+HOMO (B2g) = -0.333331532368234  LUMO (Ag) = 0.0171225132185094
+cycle= 16 E= -1719.9219944043  delta_E= -3.37e-09  |g|= 1.17e-05  |ddm|= 0.000366
+HOMO (B2g) = -0.333333706640977  LUMO (Ag) = 0.0171225159445827
+cycle= 17 E= -1719.9219944044  delta_E= -9.37e-11  |g|= 6.5e-06  |ddm|= 6.71e-05
+HOMO (B2g) = -0.333332654242867  LUMO (Ag) = 0.0171225209306122
+Extra cycle  E= -1719.9219944044  delta_E= -4.55e-12  |g|= 1.01e-05  |ddm|= 2.64e-05
+converged SCF energy = -1719.9219944044

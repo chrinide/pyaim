@@ -148,6 +148,35 @@ def chebyshev2(n):
 
   return x, w
 
+def compositetrap(a,b,n):
+
+    x = numpy.zeros(n)
+    w = numpy.zeros(n)
+    h = (b-a)/float(n)
+    x[0] = a
+    x[n-1] = b
+    w[0] = h/2.0
+    w[n-1] = w[0]
+    for i in range(1,n-1):
+        w[i] = h
+        x[i] = float(i)*h
+
+    return x,w
+
+# Change the -1,1 limits for quadratures
+def changelimits(a,b,x,w):  
+
+    nr = len(x)
+    for i in range(nr):
+        aa = (b-a)/2.0
+        bb = (b+a)/2.0
+        r = aa*x[i]+bb
+        #r = a + aa*(x[i]+1.0)
+        x[i] = r
+        w[i] = w[i]*aa
+
+    return x,w
+
 def anggrid(iqudt,nptheta,npphi):
 
     npang = nptheta*npphi
@@ -167,7 +196,7 @@ def anggrid(iqudt,nptheta,npphi):
        for it in range(nptheta):
           thang = x[it]
           agrids[tnpang,0] = thang
-          agrids[tnpang,1] = numpy.sqrt(1-thang*thang)
+          agrids[tnpang,1] = numpy.sqrt(1.0-thang*thang)
           agrids[tnpang,2] = numpy.cos(phi)
           agrids[tnpang,3] = numpy.sin(phi)
           agrids[tnpang,4] = w[it]*delphi
@@ -292,6 +321,17 @@ if __name__ == '__main__':
     print('Cheb points %s' % x)
     print('Cheb weigths %s' % w)
 
+    a = 0
+    b = 2*numpy.pi
+    x, w = changelimits(a,b,x,w)   
+    print('Cheb points %s' % x)
+    print('Cheb weigths %s' % w)
+
+    x, w = compositetrap(a,b,nr)
+    print('Trap points %s' % x)
+    print('Trap weigths %s' % w)
+
+    nr = 10
     x, w = legendre(nr) 
     print('Legendre points %s' % x)
     print('Legendre weigths %s' % w)

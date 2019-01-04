@@ -71,27 +71,10 @@ def print_properties(name, natm, nmo):
     dump_tri(sys.stdout, totaom)
 
 if __name__ == '__main__':
-    name = 'h2o.chk.h5'
-    inuc = 0
-    print_txt(name,inuc)
-    inuc = 1
-    print_txt(name,inuc)
-    inuc = 2
-    print_txt(name,inuc)
-
-    name = 'h2o.chk.h5'
-    natm = 3
-    nmo = 5
+    name = 'crco6.chk.h5'
+    natm = 13
+    nmo = 54
+    for i in range(natm):
+        print_txt(name,i)
     print_properties(name,natm,nmo)
-
-    #name = 'lif.chk.h5'
-    #inuc = 0
-    #print_txt(name,inuc)
-    #inuc = 1
-    #print_txt(name,inuc)
-
-    #name = 'lif.chk.h5'
-    #natm = 2
-    #nmo = 6
-    #print_properties(name,natm,nmo)
 

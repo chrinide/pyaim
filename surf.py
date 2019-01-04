@@ -20,7 +20,6 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
 libcgto = lib.load_library('libcgto')
-libdft = lib.load_library('libdft')
 
 OCCDROP = 1e-12
 GRADEPS = 1e-10
@@ -142,7 +141,11 @@ class BaderSurf(lib.StreamObject):
         self.inuc = 0
         self.epsiscp = 0.180
         self.ntrial = 11
+        self.leb = True
         self.npang = 5810
+        self.nptheta = 90
+        self.npphi = 180
+        self.iqudt = 'legendre'
         self.epsroot = 1e-4
         self.rmaxsurf = 10.0
         self.rprimer = 0.4
@@ -216,10 +219,16 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
 
         logger.info(self,'* Surface Info')
+        if (self.leb):
+            logger.info(self,'Lebedev quadrature')
+        else:
+            logger.info(self,'Theta quadrature %s' % self.iqudt)
+            logger.info(self,'Phi is always trapezoidal')
+            logger.info(self,'N(theta,phi) points %d %d' % (self.nptheta,self.npphi))
+        logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Surface file %s' % self.surfile)
         logger.info(self,'Surface for nuc %d' % self.inuc)
         logger.info(self,'Rmaxsurface %.6f' % self.rmaxsurf)
-        logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Ntrial %d' % self.ntrial)
         logger.info(self,'Rprimer %.6f' % self.rprimer)
         logger.debug(self,'Rpru : %s' % self.rpru) 
@@ -259,6 +268,8 @@ class BaderSurf(lib.StreamObject):
         self.nprims = nprims
         self.nmo = nmo
         self.cart = mol.cart
+        if (not self.leb):
+            self.npang = self.npphi*self.nptheta
 
         if (self.ntrial%2 == 0): self.ntrial += 1
         geofac = numpy.power(((self.rmaxsurf-0.1)/self.rprimer),(1.0/(self.ntrial-1.0)))
@@ -267,12 +278,23 @@ class BaderSurf(lib.StreamObject):
             self.rpru[i] = self.rprimer*numpy.power(geofac,(i+1)-1)
         self.rsurf = numpy.zeros((self.npang,self.ntrial), order='C')
         self.nlimsurf = numpy.zeros((self.npang), dtype=numpy.int32)
-        self.grids = grid.lebgrid(self.npang)
 
         if self.verbose >= logger.WARN:
             self.check_sanity()
         if self.verbose > logger.NOTE:
             self.dump_input()
+
+        if (self.iqudt == 'legendre'):
+            self.iqudt = 1
+        elif (self.iqudt == 'cheb1'):
+            self.iqudt = 2
+        elif (self.iqudt == 'cheb2'):
+            self.iqudt = 3
+
+        if (self.leb):
+            self.grids = grid.lebgrid(self.npang)
+        else:
+            self.grids = grid.anggrid(self.iqudt,self.nptheta,self.npphi)
 
         self.xyzrho = numpy.zeros((self.natm,3))
         for i in range(self.natm):
@@ -361,19 +383,22 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'crco6.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
     surf.verbose = 4
     surf.epsiscp = 0.220
-    surf.mstep = 100
-    surf.npang = 5810
-
-    surf.inuc = 0
-    surf.kernel()
-    surf.inuc = 1
-    surf.kernel()
-    surf.inuc = 2
-    surf.kernel()
+    surf.mstep = 200
+    surf.leb = False
+    #surf.npang = 5810
+    for i in range(13):
+        surf.inuc = i
+        surf.kernel()
+    #surf.inuc = 0
+    #surf.kernel()
+    #surf.inuc = 1
+    #surf.kernel()
+    #surf.inuc = 2
+    #surf.kernel()
 
