@@ -23,6 +23,8 @@ libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
 
 EPS = 1e-7
 
+################### On going work !!! ######################
+
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
@@ -81,12 +83,12 @@ def out_beta(self):
         sp_.ctypes.data_as(ctypes.c_void_p),
         slm.ctypes.data_as(ctypes.c_void_p)) 
     logger.debug(self,'Time finding outside RSH %.3f (sec)' % (time.time()-t1))
-    rprops = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
         coords = []
         weigths = []
-        islm = []
+        rslm = []
         for j in range(self.npang):
             inside = True
             inside = inbasin(self,r,j)
@@ -99,15 +101,15 @@ def out_beta(self):
                 xcoor[2] = r*cost    
                 p = self.xnuc + xcoor
                 coords.append(p)
-                islm.append(slm[j,0])
+                rslm.append(slm[j,:])
                 weigths.append(coordsang[j,4])
         coords = numpy.array(coords)
         weigths = numpy.array(weigths)
-        islm = numpy.array(islm)
-        val = rho(self,coords)*islm
-        props = numpy.einsum('i,i->', val, weigths)
+        rslm = numpy.array(rslm)
+        val = numpy.einsum('i,ip->ip',rho(self,coords),rslm)
+        props = numpy.einsum('ip,i->p', val, weigths)
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0) outside bsphere %8.5f ', rprops)    
+    logger.info(self,'*--> Qlm(0,0) outside bsphere %f', rprops[0])    
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
@@ -143,7 +145,7 @@ def int_beta(self):
         sp_.ctypes.data_as(ctypes.c_void_p),
         slm.ctypes.data_as(ctypes.c_void_p)) 
     logger.debug(self,'Time finding inside RSH %.3f (sec)' % (time.time()-t1))
-    rprops = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
         for j in range(npang): # j-loop can be changed to map
@@ -155,10 +157,10 @@ def int_beta(self):
             xcoor[2] = r*cost    
             p = self.xnuc + xcoor
             coords[j] = p
-        val = rho(self,coords)*slm[:,0]
-        props = numpy.einsum('i,i->', val, coordsang[:,4])
+        val = numpy.einsum('i,ip->ip',rho(self,coords),slm)
+        props = numpy.einsum('ip,i->p', val, coordsang[:,4])
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0) inside bsphere %8.5f ', rprops)    
+    logger.info(self,'*--> Qlm(0,0) inside bsphere %f', rprops[0])    
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
@@ -358,7 +360,7 @@ class Qlm(lib.StreamObject):
         #            'totprops':(brprops+rprops)}
         #lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
         #for i in range(NPROPS):
-        #    logger.info(self,'*-> Total %s density %8.5f ', PROPS[i], (rprops[i]+brprops[i]))    
+        logger.info(self,'*-> Total Qlm(0,0) %f' % (rprops[0]+brprops[0]))    
         logger.info(self,'')
         logger.info(self,'Qlm of atom %d done',self.inuc)
         logger.timer(self,'Qlm build', t0)
