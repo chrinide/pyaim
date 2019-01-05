@@ -34,10 +34,10 @@ void surf_driver(const int inuc,
                  int *ao_loc,
                  const double *mo_coeff, 
 							   const double *mo_occ, 
+		             const double occdrop,
                  int *nlimsurf, double *rsurf){
 
   int i, j;
-
 
   // Setup surface info
   natm_ = natm;
@@ -93,6 +93,7 @@ void surf_driver(const int inuc,
   assert(nlimsurf_ != NULL);
 
   // Basis info
+  occdrop_ = occdrop;
   nprims_ = nprims;
   nbas_= nbas;
   cart_ = cart;
@@ -119,7 +120,7 @@ void surf_driver(const int inuc,
   assert(mo_occ_ != NULL);
   int k = 0;
 	for (i=0; i<nmo; i++){ // Orbital
-    if (mo_occ[i] != 0){
+    if (fabs(mo_occ[i]) > occdrop_){
       mo_occ_[k] = mo_occ[i];
 		  for (j=0; j<nprims_; j++){
         mo_coeff_[k*nprims_+j] = mo_coeff[j*nprims_+i];

@@ -2,29 +2,29 @@
 
 import numpy, sys
 from pyscf import gto, scf, dft
-from pyscf.tools import wfn_format
 
 name = 'c2f4'
 
 mol = gto.Mole()
-mol.basis = 'aug-cc-pvtz'
-mol.atom = open('../geom/c2f4.xyz').read()
+mol.basis = 'def2-qzvppd'
+mol.atom = '''
+C     -0.662614     -0.000000     -0.000000
+C      0.662614     -0.000000     -0.000000
+F     -1.388214     -1.100388      0.000000
+F      1.388214     -1.100388      0.000000
+F     -1.388214      1.100388      0.000000
+F      1.388214      1.100388      0.000000
+'''
 mol.verbose = 4
 mol.spin = 0
 mol.symmetry = 1
 mol.charge = 0
 mol.build()
 
-mf = dft.RKS(mol).apply(scf.addons.remove_linear_dep_)
-mf.direct_scf = True
-mf.conv_tol = 1e-8
-mf.grids.radi_method = dft.mura_knowles
-mf.grids.becke_scheme = dft.stratmann
+mf = dft.RKS(mol)
+mf.chkfile = name+'.chk'
 mf.grids.level = 4
 mf.grids.prune = None
-mf.xc = 'm06l,m06l'
+mf.xc = 'pbe0'
 mf.kernel()
 
-wfn_file = name + '.wfn'
-with open(wfn_file, 'w') as f2:
-    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], mf.mo_occ[mf.mo_occ>0])

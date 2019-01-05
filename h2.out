@@ -1,0 +1,88 @@
+#INFO: **** input file is /home/jluis/tmp/pyaim/h2.py ****
+#!/usr/bin/env python
+
+from pyscf import gto, scf
+
+name = 'h2'
+
+mol = gto.Mole()
+mol.basis = 'sto-3g'
+mol.atom = '''
+H      0.000000      0.000000      0.000000
+H      0.000000      0.000000      0.750000
+'''
+mol.verbose = 4
+mol.spin = 0
+mol.symmetry = 1
+mol.charge = 0
+mol.build()
+
+mf = scf.RHF(mol)
+mf.chkfile = name+'.chk'
+mf.kernel()
+
+#INFO: ******************** input file end ********************
+
+
+System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5~bpo8+1 (2017-09-28)', 'x86_64', '')  Threads 4
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+numpy 1.15.4  scipy 1.2.0
+Date: Sat Jan  5 03:21:47 2019
+PySCF version 1.6
+PySCF path  /home/jluis/src/pyscf/dev/pyscf
+GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
+GIT HEAD      ref: refs/heads/dev
+GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
+
+[ENV] PYSCF_MAX_MEMORY 32000
+[ENV] PYSCF_TMPDIR /scratch-ssd/jluis
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 2
+[INPUT] num. electrons = 2
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry 1 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT]  1 H      0.000000000000   0.000000000000  -0.375000000000 AA    0.000000000000   0.000000000000  -0.708647296712 Bohr
+[INPUT]  2 H      0.000000000000   0.000000000000   0.375000000000 AA    0.000000000000   0.000000000000   0.708647296712 Bohr
+
+nuclear repulsion = 0.70556961456
+point group symmetry = Dooh
+num. orbitals of irrep A1g = 1
+num. orbitals of irrep A1u = 1
+number of shells = 2
+number of NR pGTOs = 6
+number of NR cGTOs = 2
+basis = sto-3g
+ecp = {}
+CPU time:         0.30
+
+
+******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
+method = SymAdaptedRHF-RHF
+initial guess = minao
+damping factor = 0
+level shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+DIIS start cycle = 1
+DIIS space = 8
+SCF tol = 1e-09
+SCF gradient tol = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = h2.chk
+max_memory 32000 MB (current use 72 MB)
+Freeze 0 electrons in irreps []
+    2 free electrons in irreps A1g A1u
+Set gradient conv threshold to 3.16228e-05
+init E= -0.767333505738058
+HOMO (A1g) = -0.515193347080969  LUMO (A1u) = 0.582748478252325
+cycle= 1 E= -1.1161514489386  delta_E= -0.349  |g|=    0  |ddm|= 0.851
+HOMO (A1g) = -0.574436558274986  LUMO (A1u) = 0.660910051285003
+cycle= 2 E= -1.1161514489386  delta_E=    0  |g|=    0  |ddm|=    0
+HOMO (A1g) = -0.574436558274986  LUMO (A1u) = 0.660910051285003
+Extra cycle  E= -1.1161514489386  delta_E=    0  |g|=    0  |ddm|=    0
+converged SCF energy = -1.1161514489386

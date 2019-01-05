@@ -4,6 +4,7 @@
 int natm_;
 int nbas_;
 int nmo_;
+double occdrop_;
 int nprims_;
 int cart_;
 double *__restrict__ coords_;
@@ -78,6 +79,7 @@ void surf_driver(const int inuc,
                  int *ao_loc,
                  const double *mo_coeff, 
 							   const double *mo_occ, 
+                 const double occdrop,
                  int *nlimsurf, double *rsurf);
 
 void surface(void);

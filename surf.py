@@ -21,7 +21,6 @@ _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
 libcgto = lib.load_library('libcgto')
 
-OCCDROP = 1e-12
 GRADEPS = 1e-10
 RHOEPS = 1e-10
 MINSTEP = 1e-6
@@ -54,7 +53,7 @@ def rhograd(self, x):
     self.env.ctypes.data_as(ctypes.c_void_p))
 
     ao = numpy.swapaxes(ao, -1, -2)
-    pos = self.mo_occ > OCCDROP
+    pos = abs(self.mo_occ) > self.occdrop
 
     cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
     rho = numpy.zeros((4,1))
@@ -154,10 +153,13 @@ class BaderSurf(lib.StreamObject):
         self.epsilon = 1e-5 
         self.step = 0.1
         self.mstep = 120
+        self.corr = False
+        self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mo_coeff = None
         self.mo_occ = None
+        self.nocc = None
         self.natm = None
         self.coords = None
         self.charges = None
@@ -183,6 +185,7 @@ class BaderSurf(lib.StreamObject):
         self.nao = None
         self.non0tab = None
         self.cart = None
+        self.rdm1 = None
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -202,6 +205,7 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
+        logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -216,7 +220,10 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'* Basis Info')
         logger.info(self,'Is cartesian %s' % self.cart)
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
+        logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
+        logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
+        logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Surface Info')
         if (self.leb):
@@ -228,14 +235,14 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Surface file %s' % self.surfile)
         logger.info(self,'Surface for nuc %d' % self.inuc)
-        logger.info(self,'Rmaxsurface %.6f' % self.rmaxsurf)
+        logger.info(self,'Rmaxsurface %f' % self.rmaxsurf)
         logger.info(self,'Ntrial %d' % self.ntrial)
-        logger.info(self,'Rprimer %.6f' % self.rprimer)
+        logger.info(self,'Rprimer %f' % self.rprimer)
         logger.debug(self,'Rpru : %s' % self.rpru) 
-        logger.info(self,'Epsiscp %.6f' % self.epsiscp)
-        logger.info(self,'Epsroot %.6f' % self.epsroot)
+        logger.info(self,'Epsiscp %f' % self.epsiscp)
+        logger.info(self,'Epsroot %e' % self.epsroot)
         logger.info(self,'ODE solver %s' % self.backend)
-        logger.info(self,'ODE tool %.6f' % self.epsilon)
+        logger.info(self,'ODE tool %e' % self.epsilon)
         logger.info(self,'Max steps in ODE solver %d' % self.mstep)
         logger.info(self,'')
 
@@ -270,6 +277,16 @@ class BaderSurf(lib.StreamObject):
         self.cart = mol.cart
         if (not self.leb):
             self.npang = self.npphi*self.nptheta
+
+        if (self.corr):
+            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
+            natorb = numpy.dot(self.mo_coeff, natorb)
+            self.mo_coeff = natorb
+            self.mo_occ = natocc
+        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+        nocc = len(nocc)
+        self.nocc = nocc
 
         if (self.ntrial%2 == 0): self.ntrial += 1
         geofac = numpy.power(((self.rmaxsurf-0.1)/self.rprimer),(1.0/(self.ntrial-1.0)))
@@ -350,6 +367,7 @@ class BaderSurf(lib.StreamObject):
                 self.ao_loc.ctypes.data_as(ctypes.c_void_p),
                 self.mo_coeff.ctypes.data_as(ctypes.c_void_p),
                 self.mo_occ.ctypes.data_as(ctypes.c_void_p),
+                ctypes.c_double(self.occdrop), 
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
@@ -383,7 +401,7 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'h2.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
@@ -391,7 +409,7 @@ if __name__ == '__main__':
     surf.epsiscp = 0.220
     surf.mstep = 200
     surf.npang = 5810
-    for i in range(3):
+    for i in range(2):
         surf.inuc = i
         surf.kernel()
 

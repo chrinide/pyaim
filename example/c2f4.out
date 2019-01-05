@@ -1,0 +1,128 @@
+#INFO: **** input file is /home/jluis/tmp/pyaim/example/c2f4.py ****
+#!/usr/bin/env python
+
+import numpy, sys
+from pyscf import gto, scf, dft
+
+name = 'c2f4'
+
+mol = gto.Mole()
+mol.basis = 'def2-qzvppd'
+mol.atom = '''
+C     -0.662614     -0.000000     -0.000000
+C      0.662614     -0.000000     -0.000000
+F     -1.388214     -1.100388      0.000000
+F      1.388214     -1.100388      0.000000
+F     -1.388214      1.100388      0.000000
+F      1.388214      1.100388      0.000000
+'''
+mol.verbose = 4
+mol.spin = 0
+mol.symmetry = 1
+mol.charge = 0
+mol.build()
+
+mf = dft.RKS(mol)
+mf.chkfile = name+'.chk'
+mf.grids.level = 4
+mf.grids.prune = None
+mf.xc = 'pbe0'
+mf.kernel()
+
+#INFO: ******************** input file end ********************
+
+
+System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5~bpo8+1 (2017-09-28)', 'x86_64', '')  Threads 4
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+numpy 1.15.4  scipy 1.2.0
+Date: Sat Jan  5 01:06:25 2019
+PySCF version 1.6
+PySCF path  /home/jluis/src/pyscf/dev/pyscf
+GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
+GIT HEAD      ref: refs/heads/dev
+GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
+
+[ENV] PYSCF_MAX_MEMORY 32000
+[ENV] PYSCF_TMPDIR /scratch-ssd/jluis
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 6
+[INPUT] num. electrons = 48
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry 1 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT]  1 C     -0.662614000000   0.000000000000   0.000000000000 AA   -1.252158986303   0.000000000000   0.000000000000 Bohr
+[INPUT]  2 C      0.662614000000   0.000000000000   0.000000000000 AA    1.252158986303   0.000000000000   0.000000000000 Bohr
+[INPUT]  3 F     -1.388214000000  -1.100388000000   0.000000000000 AA   -2.623344262287  -2.079431950758   0.000000000000 Bohr
+[INPUT]  4 F      1.388214000000  -1.100388000000   0.000000000000 AA    2.623344262287  -2.079431950758   0.000000000000 Bohr
+[INPUT]  5 F     -1.388214000000   1.100388000000   0.000000000000 AA   -2.623344262287   2.079431950758   0.000000000000 Bohr
+[INPUT]  6 F      1.388214000000   1.100388000000   0.000000000000 AA    2.623344262287   2.079431950758   0.000000000000 Bohr
+
+nuclear repulsion = 244.231842625808
+point group symmetry = D2h
+num. orbitals of irrep Ag = 70
+num. orbitals of irrep B1g = 57
+num. orbitals of irrep B2g = 37
+num. orbitals of irrep B3g = 31
+num. orbitals of irrep Au = 31
+num. orbitals of irrep B1u = 37
+num. orbitals of irrep B2u = 57
+num. orbitals of irrep B3u = 70
+number of shells = 118
+number of NR pGTOs = 510
+number of NR cGTOs = 390
+basis = def2-qzvppd
+ecp = {}
+CPU time:         0.29
+
+
+******** <class 'pyscf.dft.rks_symm.SymAdaptedRKS'> ********
+method = SymAdaptedRKS-SymAdaptedRHF-RHF
+initial guess = minao
+damping factor = 0
+level shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+DIIS start cycle = 1
+DIIS space = 8
+SCF tol = 1e-09
+SCF gradient tol = None
+max. SCF cycles = 50
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = c2f4.chk
+max_memory 32000 MB (current use 76 MB)
+XC functionals = pbe0
+radial grids: 
+    Treutler-Ahlrichs (JCP 102, 346 (M4)) radial grids
+    
+becke partition: Becke, JCP, 88, 2547 (1988)
+pruning grids: None
+grids dens level: 4
+symmetrized grids: 1
+atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2adf7eef5140>
+Freeze 0 electrons in irreps []
+    48 free electrons in irreps Ag B1g B2g B3g Au B1u B2u B3u
+Set gradient conv threshold to 3.16228e-05
+tot grids = 318600
+init E= -476.409116418247
+HOMO (B1u) = -0.261936244257734  LUMO (B2u) = -0.0128037061459087
+cycle= 1 E= -475.232722520589  delta_E= 1.18  |g|= 0.648  |ddm|= 1.76
+HOMO (B1u) = -0.292539305616673  LUMO (B2g) = -0.0089110219264923
+cycle= 2 E= -475.169271248868  delta_E= 0.0635  |g|= 0.926  |ddm|= 0.551
+HOMO (B1u) = -0.277477758181703  LUMO (Ag) = 0.00140425783667238
+cycle= 3 E= -475.290057203306  delta_E= -0.121  |g|= 0.0555  |ddm|= 0.323
+HOMO (B1u) = -0.282490095059764  LUMO (Ag) = 0.00107118732608107
+cycle= 4 E= -475.290526902807  delta_E= -0.00047  |g|= 0.00691  |ddm|= 0.0394
+HOMO (B1u) = -0.281880977885817  LUMO (Ag) = 0.0011853277356439
+cycle= 5 E= -475.290535147918  delta_E= -8.25e-06  |g|= 0.000991  |ddm|= 0.0044
+HOMO (B1u) = -0.281951481671618  LUMO (Ag) = 0.00116813546778017
+cycle= 6 E= -475.290535282822  delta_E= -1.35e-07  |g|= 0.000149  |ddm|= 0.000552
+HOMO (B1u) = -0.281926413741558  LUMO (Ag) = 0.00117272466845649
+cycle= 7 E= -475.290535286073  delta_E= -3.25e-09  |g|= 4.39e-05  |ddm|= 0.000104
+HOMO (B1u) = -0.281935373085941  LUMO (Ag) = 0.00117082509414517
+cycle= 8 E= -475.290535286372  delta_E= -2.99e-10  |g|= 8.65e-06  |ddm|= 2.61e-05
+HOMO (B1u) = -0.281933202812296  LUMO (Ag) = 0.00117118447460512
+Extra cycle  E= -475.290535286376  delta_E= -4.77e-12  |g|= 8.09e-06  |ddm|= 6.4e-06
+converged SCF energy = -475.290535286376

@@ -18,7 +18,6 @@ if sys.version_info >= (3,):
 
 NPROPS = 3
 PROPS = ['density', 'kinetic', 'laplacian']
-OCCDROP = 1e-6
 EPS = 1e-7
 
 # TODO: screaning of points
@@ -26,7 +25,7 @@ def rho(self,x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao(self.mol, x, deriv=2)
     ngrids, nao = ao[0].shape
-    pos = self.mo_occ > OCCDROP
+    pos = self.mo_occ > self.occdrop
     cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
     rho = numpy.zeros((3,ngrids))
     c0 = numpy.dot(ao[0], cpos)
@@ -62,6 +61,7 @@ def out_beta(self):
     logger.info(self,'* Go outside betasphere')
     xcoor = numpy.zeros(3)
     nrad = self.nrad
+    npang = self.npang
     iqudr = self.iqudr
     mapr = self.mapr
     r0 = self.brad
@@ -75,7 +75,7 @@ def out_beta(self):
         r = rmesh[n]
         coords = []
         weigths = []
-        for j in range(self.npang):
+        for j in range(npang):
             inside = True
             inside = inbasin(self,r,j)
             if (inside == True):
@@ -101,7 +101,8 @@ def out_beta(self):
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
     xcoor = numpy.zeros(3)
-    coords = numpy.empty((self.bnpang,3))
+    npang = self.bnpang
+    coords = numpy.empty((npang,3))
     nrad = self.bnrad
     iqudr = self.biqudr
     mapr = self.bmapr
@@ -110,11 +111,11 @@ def int_beta(self):
     rad = self.rad
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
-    coordsang = grid.lebgrid(self.bnpang)
+    coordsang = grid.lebgrid(npang)
     rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
-        for j in range(self.bnpang): # j-loop can be changed to map
+        for j in range(npang): # j-loop can be changed to map
             cost = coordsang[j,0]
             sintcosp = coordsang[j,1]*coordsang[j,2]
             sintsinp = coordsang[j,1]*coordsang[j,3]
@@ -151,8 +152,12 @@ class Basin(lib.StreamObject):
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
         self.non0tab = False
+        self.corr = False
+        self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
+        self.rdm1 = None
+        self.nocc = None
         self.mol = None
         self.mo_coeff = None
         self.mo_occ = None
@@ -194,6 +199,7 @@ class Basin(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
+        logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -207,29 +213,32 @@ class Basin(lib.StreamObject):
 
         logger.info(self,'* Basis Info')
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
+        logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
+        logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
+        logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
-        logger.info(self,'Surface for nuc %d' % self.inuc)
+        logger.info(self,'Properties for nuc %d' % self.inuc)
         logger.info(self,'Nuclear coordinate %.6f  %.6f  %.6f', *self.xnuc)
         logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho[self.inuc])
         logger.info(self,'Npang points %d' % self.npang)
         logger.info(self,'Ntrial %d' % self.ntrial)
-        logger.info(self,'Rmin for surface %.6f', self.rmin)
-        logger.info(self,'Rmax for surface %.6f', self.rmax)
-        logger.info(self,'Npang points inside %d' % self.bnpang)
+        logger.info(self,'Rmin for surface %f', self.rmin)
+        logger.info(self,'Rmax for surface %f', self.rmax)
 
-        logger.info(self,'* Radial grid Info')
+        logger.info(self,'* Radial and angular grid Info')
+        logger.info(self,'Npang points inside %d' % self.bnpang)
         logger.info(self,'Number of radial points outside %d', self.nrad)
         logger.info(self,'Number of radial points inside %d', self.bnrad)
         logger.info(self,'Radial outside quadrature %s', self.iqudr)
         logger.info(self,'Radial outside mapping %s', self.mapr)
         logger.info(self,'Radial inside quadrature %s', self.biqudr)
         logger.info(self,'Radial inside mapping %s', self.bmapr)
-        logger.info(self,'Slater-Bragg radii %.6f', self.rad) 
-        logger.info(self,'Beta-Sphere factor %.6f', self.betafac)
-        logger.info(self,'Beta-Sphere radi %.6f', self.brad)
+        logger.info(self,'Slater-Bragg radii %f', self.rad) 
+        logger.info(self,'Beta-Sphere factor %f', self.betafac)
+        logger.info(self,'Beta-Sphere radi %f', self.brad)
         logger.info(self,'')
 
         return self
@@ -255,6 +264,16 @@ class Basin(lib.StreamObject):
             self.rad = grid.BRAGG[self.charges[self.inuc]]
         else:
             self.rad = grid.BRAGG[self.charges[self.inuc]]*0.5
+
+        if (self.corr):
+            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
+            natorb = numpy.dot(self.mo_coeff, natorb)
+            self.mo_coeff = natorb
+            self.mo_occ = natocc
+        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+        nocc = len(nocc)
+        self.nocc = nocc
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:

@@ -1,0 +1,360 @@
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 02:43:56 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 73 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature legendre
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.181 (sec)
+Time finding surface 564.586 (sec)
+Rmin for surface 0.820444
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build   2259.24 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 02:53:21 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 77 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.181 (sec)
+Time finding surface 562.759 (sec)
+Rmin for surface 0.820594
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build   2252.05 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 03:02:44 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 79 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 2
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.182 (sec)
+Time finding surface 351.165 (sec)
+Rmin for surface 1.670197
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 2 saved
+    CPU time for BaderSurf build   1405.81 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 03:08:35 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 83 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 3
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.181 (sec)
+Time finding surface 350.578 (sec)
+Rmin for surface 1.670122
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 3 saved
+    CPU time for BaderSurf build   1403.27 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 03:14:26 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 85 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 4
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.183 (sec)
+Time finding surface 351.231 (sec)
+Rmin for surface 1.670197
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 4 saved
+    CPU time for BaderSurf build   1406.01 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Sat Jan  5 03:20:17 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file c2f4.chk
+Max_memory 32000 MB (current use 86 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 6
+Num electrons 48
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 6 position : -1.252159  0.000000  0.000000
+Nuclei 1 with charge 6 position : 1.252159  0.000000  0.000000
+Nuclei 2 with charge 9 position : -2.623344  -2.079432  0.000000
+Nuclei 3 with charge 9 position : 2.623344  -2.079432  0.000000
+Nuclei 4 with charge 9 position : -2.623344  2.079432  0.000000
+Nuclei 5 with charge 9 position : 2.623344  2.079432  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 390
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 24
+Number of molecular primitives 390
+* Surface Info
+Theta quadrature 1
+Phi is always trapezoidal
+N(theta,phi) points 121 121
+Npang points 14641
+Surface file c2f4.chk.h5
+Surface for nuc 5
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position -1.252162 0.000000 0.000000
+Good rho position 1.252162 -0.000000 0.000000
+Good rho position -2.623343 -2.079430 0.000000
+Good rho position 2.623343 -2.079430 0.000000
+Good rho position -2.623343 2.079430 0.000000
+Good rho position 2.623343 2.079430 0.000000
+Time finding nucleus 0.181 (sec)
+Time finding surface 357.773 (sec)
+Rmin for surface 1.670122
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 5 saved
+    CPU time for BaderSurf build   1431.94 sec

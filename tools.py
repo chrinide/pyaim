@@ -73,6 +73,23 @@ def print_properties(name, natm, nmo):
         log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
     log.info('Follow total AOM')
     dump_tri(sys.stdout, totaom, ncol=NCOL, digits=DIGITS, start=0)
+    i = numpy.identity(nmo)
+    diff = numpy.linalg.norm(totaom-i)
+    log.info('Diff in S matrix : %8.5f', diff)
+
+def print_basin(name, natm):                
+    props = numpy.zeros((natm,NPROPS))
+    totprops = numpy.zeros((NPROPS))
+    with h5py.File(name) as f:
+        for i in range(natm):
+            idx = 'atom_props'+str(i)
+            props[i] = f[idx+'/totprops'].value
+    for i in range(natm):
+        for j in range(NPROPS):
+            log.info('Nuclei %d prop %s value : %8.5f', i, PROPS[j], props[i,j])
+            totprops[j] += props[i,j]
+    for j in range(NPROPS):
+        log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
 
 if __name__ == '__main__':
     name = 'h2o.chk.h5'
