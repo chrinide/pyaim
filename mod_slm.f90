@@ -16,16 +16,15 @@ module mod_slm
   integer, parameter :: rp = c_double
 
   integer(kind=ip), parameter :: mxfact = 100
-  integer(kind=ip), parameter :: mcomb = 12
   real(kind=rp), parameter :: pi = 3.14159265358979323846264338328_rp
+  real(kind=rp), parameter :: eps = 1d-7
 
   real(kind=rp), allocatable, dimension(:) :: rshnorm, sqrin
   real(kind=rp), allocatable, dimension(:,:) :: deltam
   integer(kind=ip), allocatable, dimension(:) :: il0, pil0
-  integer(kind=ip), allocatable, dimension(:,:) :: jlm, islm
+  integer(kind=ip), allocatable, dimension(:,:) :: jlm
   
   real(kind=rp) :: fact(0:mxfact)
-  real(kind=rp) :: comb(0:mcomb,0:mcomb)
 
   public :: eval_rsh
 
@@ -66,8 +65,6 @@ contains
     integer(kind=ip), intent(in) :: lmax
     real(kind=rp), intent(out) :: slm (0:lmax*(lmax+2))
  
-    real(kind=rp), parameter :: eps = 1d-7
-
     integer(kind=ip) :: i, ifac, il, im, l, l2, ll, m, m2, ipp
     real(kind=rp) :: a1, a2, cc, facsqrt, fifac, fifac1, ss, tmp
 
@@ -134,7 +131,7 @@ contains
         tmp = cc*cf - ss*sf
         ss = ss*cf + cc*sf
         cc = tmp
-        m2 = m+m
+        m2 = m + m
         ipp = il0(m-1)+m
         do l2 = m2,lmax+lmax,2
           ipp = ipp + l2
@@ -162,18 +159,11 @@ contains
     real(kind=rp), parameter :: twopi = 2.0*pi
 
     real(kind=rp) :: temp
-    integer(kind=ip) :: l, m, i, il, l1, l12, l2, l22, lmax, ls, j, ij
+    integer(kind=ip) :: l, m, i, il, l1, l12, l2, l22, lmax, ls
 
     fact(0) = 1.0
     do i = 1,mxfact
       fact(i) = fact(i-1)*real(i,rp)
-    end do
-    do i = 0,mcomb
-      do j = 0,i/2
-        ij = i - j
-        comb(i,j) = fact(i)/fact(j)/fact(ij)
-        if (j.ne.ij) comb(i,ij) = comb(i,j)
-      end do
     end do
 
     l = 0
@@ -200,14 +190,14 @@ contains
       pil0(l) = pil0(l-1) + l + l - 1
       rshnorm(il) = 1.0
       do m = 1,l
-        rshnorm(il+m) = rshnorm(il) * sqrt(2.0)
+        rshnorm(il+m) = rshnorm(il)*sqrt(2.0)
         rshnorm(il-m) = rshnorm(il+m)
       end do
     end do
 
     ! Compute square root of integer from 0 to (2*lmax+1).
     do i = 0,2*lmax+1
-      sqrin(i) = sqrt(dble(i))
+      sqrin(i) = sqrt(real(i,rp))
     end do
 
     ! Compute deltam
@@ -241,8 +231,6 @@ contains
   if (ier.ne.0) stop "cannot alloc memory"
   allocate (jlm(0:maxl*(maxl+2),2),stat=ier) 
   if (ier.ne.0) stop "cannot alloc memory"
-  allocate (islm(0:maxl*(maxl+2),0:maxl*(maxl+2)),stat=ier) 
-  if (ier.ne.0) stop "cannot alloc memory"
   end subroutine allocate_space_for_slm
 
   subroutine deallocate_space_for_slm
@@ -253,7 +241,6 @@ contains
   deallocate (il0,stat=ier) 
   deallocate (pil0,stat=ier)
   deallocate (jlm,stat=ier) 
-  deallocate (islm,stat=ier) 
   end subroutine deallocate_space_for_slm
 
 end module mod_slm

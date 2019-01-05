@@ -382,6 +382,8 @@ if __name__ == '__main__':
     bas.bmapr = 'exp'
     bas.betafac = 0.4
     bas.non0tab = False
+    bas.lmax = 10
+    bas.blmax = 10
     for i in range(2):
         bas.inuc = i
         bas.kernel()
