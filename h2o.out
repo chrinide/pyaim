@@ -1,0 +1,105 @@
+#INFO: **** input file is /home/jluis/tmp/pyaim/h2o.py ****
+#!/usr/bin/env python
+
+from pyscf import gto, scf, lib, dft, ao2mo
+
+name = 'h2o'
+
+mol = gto.Mole()
+mol.atom = '''
+O      0.000000      0.000000      0.118351
+H      0.000000      0.761187     -0.469725
+H      0.000000     -0.761187     -0.469725
+'''
+mol.basis = 'aug-cc-pv5z'
+mol.verbose = 4
+mol.spin = 0
+mol.symmetry = 1
+mol.charge = 0
+mol.build()
+
+mf = scf.RHF(mol)
+mf.max_cycle = 150
+mf.chkfile = name+'.chk'
+mf.kernel()
+
+#INFO: ******************** input file end ********************
+
+
+System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5~bpo8+1 (2017-09-28)', 'x86_64', '')  Threads 4
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+numpy 1.15.4  scipy 1.2.0
+Date: Sun Jan  6 00:31:59 2019
+PySCF version 1.6
+PySCF path  /home/jluis/src/pyscf/dev/pyscf
+GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
+GIT HEAD      ref: refs/heads/dev
+GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
+
+[ENV] PYSCF_MAX_MEMORY 32000
+[ENV] PYSCF_TMPDIR /scratch-ssd/jluis
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 3
+[INPUT] num. electrons = 10
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry 1 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT]  1 O      0.000000000000   0.000000000000   0.117615200000 AA    0.000000000000   0.000000000000   0.222260516086 Bohr
+[INPUT]  2 H      0.761187000000   0.000000000000  -0.470460800000 AA    1.438434959579   0.000000000000  -0.889042064344 Bohr
+[INPUT]  3 H     -0.761187000000   0.000000000000  -0.470460800000 AA   -1.438434959579   0.000000000000  -0.889042064344 Bohr
+
+nuclear repulsion = 9.14985900416406
+point group symmetry = C2v
+num. orbitals of irrep A1 = 96
+num. orbitals of irrep A2 = 49
+num. orbitals of irrep B1 = 81
+num. orbitals of irrep B2 = 61
+number of shells = 66
+number of NR pGTOs = 310
+number of NR cGTOs = 287
+basis = aug-cc-pv5z
+ecp = {}
+CPU time:         0.30
+
+
+******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
+method = SymAdaptedRHF-RHF
+initial guess = minao
+damping factor = 0
+level shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+DIIS start cycle = 1
+DIIS space = 8
+SCF tol = 1e-09
+SCF gradient tol = None
+max. SCF cycles = 150
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = h2o.chk
+max_memory 32000 MB (current use 74 MB)
+Freeze 0 electrons in irreps []
+    10 free electrons in irreps A1 A2 B1 B2
+Set gradient conv threshold to 3.16228e-05
+init E= -75.8792600070444
+HOMO (B2) = -0.478516405901788  LUMO (A1) = 0.0118606851545151
+cycle= 1 E= -76.0304909344796  delta_E= -0.151  |g|= 0.442  |ddm|= 0.647
+HOMO (B2) = -0.434358405698953  LUMO (A1) = 0.021739426153789
+cycle= 2 E= -76.0561043979903  delta_E= -0.0256  |g|= 0.265  |ddm|= 0.206
+HOMO (B2) = -0.518985050385396  LUMO (A1) = 0.0227823458510768
+cycle= 3 E= -76.0667331232742  delta_E= -0.0106  |g|= 0.0321  |ddm|= 0.0806
+HOMO (B2) = -0.508966828982598  LUMO (A1) = 0.0235528482640089
+cycle= 4 E= -76.0669362466936  delta_E= -0.000203  |g|= 0.00606  |ddm|= 0.0116
+HOMO (B2) = -0.509812078443883  LUMO (A1) = 0.0235697850111585
+cycle= 5 E= -76.0669511791273  delta_E= -1.49e-05  |g|= 0.00112  |ddm|= 0.00414
+HOMO (B2) = -0.510036715396617  LUMO (A1) = 0.0235646678266009
+cycle= 6 E= -76.0669519712348  delta_E= -7.92e-07  |g|= 0.000208  |ddm|= 0.00106
+HOMO (B2) = -0.510101126156642  LUMO (A1) = 0.0235649253850075
+cycle= 7 E= -76.0669520013139  delta_E= -3.01e-08  |g|= 3.35e-05  |ddm|= 0.000238
+HOMO (B2) = -0.510103756401653  LUMO (A1) = 0.0235652520761406
+cycle= 8 E= -76.0669520019555  delta_E= -6.42e-10  |g|= 3.59e-06  |ddm|= 3.58e-05
+HOMO (B2) = -0.510103824137718  LUMO (A1) = 0.0235653282675791
+Extra cycle  E= -76.0669520019619  delta_E= -6.37e-12  |g|= 1.28e-06  |ddm|= 5.57e-06
+converged SCF energy = -76.0669520019619

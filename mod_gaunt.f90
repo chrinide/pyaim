@@ -313,7 +313,7 @@ contains
     integer(kind=ip), intent(in) :: l1, m1, l2, m2, l3, m3
 
     integer(kind=ip) :: m1a, m2a, m3a, masum, mprod, msum
-    real(kind=rp) :: dvalue, csupk
+    real(kind=rp) :: dvalue
  
     ! Initialize variables
     mprod = m1*m2*m3
