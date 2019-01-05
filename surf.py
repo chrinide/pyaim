@@ -320,15 +320,17 @@ class BaderSurf(lib.StreamObject):
                     raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
             else:
                 logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-                logger.info(self,'Setting xyrho for atom to imput coords')
+                logger.info(self,'Setting xyzrho for atom to imput coords')
                 self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
         if (self.backend == 'rkck'):
             backend = 1
+        if (self.backend == 'rkdp'):
+            backend = 2
         else:
-            raise NotImplementedError('Only rkck ODE solver yet available') 
+            raise NotImplementedError('Only rkck or rkdp ODE solver yet available') 
         
         ct_ = numpy.asarray(self.grids[:,0], order='C')
         st_ = numpy.asarray(self.grids[:,1], order='C')

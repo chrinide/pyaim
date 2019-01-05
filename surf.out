@@ -1,7 +1,7 @@
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Sat Jan  5 03:22:40 2019
+Date Sat Jan  5 04:25:04 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -43,17 +43,17 @@ Check rho position 0.000000 0.000000 -0.627370
 Setting xyrho for atom to imput coords
 Check rho position 0.000000 0.000000 0.627370
 Setting xyrho for atom to imput coords
-Time finding nucleus 0.076 (sec)
-Time finding surface 10.341 (sec)
+Time finding nucleus 0.041 (sec)
+Time finding surface 7.075 (sec)
 Rmin for surface 0.708646
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 0 saved
-    CPU time for BaderSurf build     41.85 sec
+    CPU time for BaderSurf build     28.58 sec
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Sat Jan  5 03:22:50 2019
+Date Sat Jan  5 04:25:12 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -61,7 +61,7 @@ Number of threads 4
 Verbose level 4
 Scratch dir /scratch-ssd/jluis
 Input data file h2.chk
-Max_memory 32000 MB (current use 73 MB)
+Max_memory 32000 MB (current use 72 MB)
 Correlated ? False
 * Molecular Info
 Num atoms 2
@@ -95,10 +95,10 @@ Check rho position 0.000000 0.000000 -0.627370
 Setting xyrho for atom to imput coords
 Check rho position 0.000000 0.000000 0.627370
 Setting xyrho for atom to imput coords
-Time finding nucleus 0.067 (sec)
-Time finding surface 10.363 (sec)
+Time finding nucleus 0.041 (sec)
+Time finding surface 7.067 (sec)
 Rmin for surface 0.708646
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 1 saved
-    CPU time for BaderSurf build     42.11 sec
+    CPU time for BaderSurf build     28.66 sec

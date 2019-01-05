@@ -306,7 +306,7 @@ void surface(){
 
 }
 
-inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
+void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
 	double ao_[nprims_*4];
   double c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
@@ -427,7 +427,11 @@ void rkqs(double *y, double *dydx, double *x,
   errmax = 0.0;
 
 	for (;;){
-		steeper_rkck(y, dydx, h, ytemp, yerr);
+    if (backend_ == 1) {
+			steeper_rkck(y, dydx, h, ytemp, yerr);
+		} else if (backend_ == 2) {
+			steeper_rkdp(y, dydx, h, ytemp, yerr);
+		}
 		errmax = 0.0;
 		for (i=0; i<3; i++) {
 		  errmax = fmax(errmax, fabs(yerr[i]/yscal[i]));
@@ -457,6 +461,115 @@ void rkqs(double *y, double *dydx, double *x,
 	}
 }
 
+void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
+
+  static const double b21 = 1.0/5.0;
+  static const double b31 = 3.0/40.0;
+  static const double b32 = 9.0/40.0;
+  static const double b41 = 44.0/45.0;
+  static const double b42 = -56.0/15.0;
+  static const double b43 = 32.0/9.0;
+  static const double b51 = 19372.0/6561.0;
+  static const double b52 = -25360.0/2187.0;
+  static const double b53 = 64448.0/6561.0;
+  static const double b54 = -212.0/729.0;
+  static const double b61 = 9017.0/3168.0;
+  static const double b62 = -355.0/33.0;
+  static const double b63 = 46732.0/5247.0;
+  static const double b64 = 49.0/176.0;
+  static const double b65 = -5103.0/18656.0;
+  static const double b71 = 35.0/384.0;
+  static const double b73 = 500.0/1113.0;
+  static const double b74 = 125.0/192.0;
+  static const double b75 = -2187.0/6784.0;
+  static const double b76 = 11.0/84.0;
+
+  static const double c1 = 35.0/384.0;
+  static const double c3 = 500.0/1113.0;
+  static const double c4 = 125.0/192.0;
+  static const double c5 = -2187.0/6784.0;
+  static const double c6 = 11.0/84.0;
+  static const double c7 = 0.0;
+
+  static const double b1 = 5179.0/57600.0;
+  static const double b3 = 7571.0/16695.0;
+  static const double b4 = 393.0/640.0;
+  static const double b5 = -92097.0/339200.0;
+  static const double b6 = 187.0/2100.0;
+  static const double b7 = 1.0/40.0;
+
+  static double dc1 = c1-b1;
+  static double dc3 = c3-b3;
+  static double dc4 = c4-b4;
+  static double dc5 = c5-b5;
+  static double dc6 = c6-b6;
+  static double dc7 = -b7;
+
+  double rho, grad[3], gradmod;
+
+  xout[0] = xpoint[0] + h0*b21*grdt[0];
+  xout[1] = xpoint[1] + h0*b21*grdt[1];
+  xout[2] = xpoint[2] + h0*b21*grdt[2];
+
+  double ak2[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak2[0] = grad[0];
+  ak2[1] = grad[1];
+  ak2[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b31*grdt[0]+b32*ak2[0]);
+  xout[1] = xpoint[1] + h0*(b31*grdt[1]+b32*ak2[1]);
+  xout[2] = xpoint[2] + h0*(b31*grdt[2]+b32*ak2[2]);
+  
+  double ak3[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak3[0] = grad[0]; 
+  ak3[1] = grad[1]; 
+  ak3[2] = grad[2]; 
+  xout[0] = xpoint[0] + h0*(b41*grdt[0]+b42*ak2[0]+b43*ak3[0]);
+  xout[1] = xpoint[1] + h0*(b41*grdt[1]+b42*ak2[1]+b43*ak3[1]);
+  xout[2] = xpoint[2] + h0*(b41*grdt[2]+b42*ak2[2]+b43*ak3[2]);
+
+  double ak4[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak4[0] = grad[0];
+  ak4[1] = grad[1];
+  ak4[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b51*grdt[0]+b52*ak2[0]+b53*ak3[0]+b54*ak4[0]);
+  xout[1] = xpoint[1] + h0*(b51*grdt[1]+b52*ak2[1]+b53*ak3[1]+b54*ak4[1]);
+  xout[2] = xpoint[2] + h0*(b51*grdt[2]+b52*ak2[2]+b53*ak3[2]+b54*ak4[2]);
+
+  double ak5[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak5[0] = grad[0];
+  ak5[1] = grad[1];
+  ak5[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b61*grdt[0]+b62*ak2[0]+b63*ak3[0]+b64*ak4[0]+b65*ak5[0]);
+  xout[1] = xpoint[1] + h0*(b61*grdt[1]+b62*ak2[1]+b63*ak3[1]+b64*ak4[1]+b65*ak5[1]);
+  xout[2] = xpoint[2] + h0*(b61*grdt[2]+b62*ak2[2]+b63*ak3[2]+b64*ak4[2]+b65*ak5[2]);
+
+  double ak6[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak6[0] = grad[0];
+  ak6[1] = grad[1];
+  ak6[2] = grad[2];
+  xout[0] = xpoint[0] + h0*(b71*grdt[0]+b73*ak3[0]+b74*ak4[0]+b75*ak5[0]+b76*ak6[0]);
+  xout[1] = xpoint[1] + h0*(b71*grdt[1]+b73*ak3[1]+b74*ak4[1]+b75*ak5[1]+b76*ak6[1]);
+  xout[2] = xpoint[2] + h0*(b71*grdt[2]+b73*ak3[2]+b74*ak4[2]+b75*ak5[2]+b76*ak6[2]);
+
+  double ak7[3] = {0.0};
+  rho_grad(xout, &rho, grad, &gradmod);
+  ak7[0] = grad[0];
+  ak7[1] = grad[1];
+  ak7[2] = grad[2];
+  xerr[0] = h0*(dc1*grdt[0]+dc3*ak3[0]+dc4*ak4[0]+dc5*ak5[0]+dc6*ak6[0]+dc7*ak7[0]);
+  xerr[1] = h0*(dc1*grdt[1]+dc3*ak3[1]+dc4*ak4[1]+dc5*ak5[1]+dc6*ak6[1]+dc7*ak7[1]);
+  xerr[2] = h0*(dc1*grdt[2]+dc3*ak3[2]+dc4*ak4[2]+dc5*ak5[2]+dc6*ak6[2]+dc7*ak7[2]);
+  xout[0] += xerr[0];
+  xout[1] += xerr[1];
+  xout[2] += xerr[2];
+
+}                         
+
 void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
 
   static const double b21 = 1.0/5.0;
@@ -478,11 +591,11 @@ void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double 
   static const double c3 = 250.0/621.0;
   static const double c4 = 125.0/594.0;
   static const double c6 = 512.0/1771.0;
-  double dc1 = c1-(2825.0/27648.0);
-  double dc3 = c3-(18575.0/48384.0);
-  double dc4 = c4-(13525.0/55296.0);
-  double dc5 = -277.0/14336.0;
-  double dc6 = c6-(1.0/4.0);
+  static double dc1 = c1-(2825.0/27648.0);
+  static double dc3 = c3-(18575.0/48384.0);
+  static double dc4 = c4-(13525.0/55296.0);
+  static double dc5 = -277.0/14336.0;
+  static double dc6 = c6-(1.0/4.0);
   
   double rho, grad[3], gradmod;
 

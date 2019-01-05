@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from pyscf import gto, scf
+from pyscf.tools import wfn_format
 
 name = 'h2'
 
@@ -19,4 +20,9 @@ mol.build()
 mf = scf.RHF(mol)
 mf.chkfile = name+'.chk'
 mf.kernel()
+
+wfn_file = name + '.wfn'
+with open(wfn_file, 'w') as f2:
+    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], \
+    mo_occ=mf.mo_occ[mf.mo_occ>0], mo_energy=mf.mo_energy[mf.mo_occ>0])
 

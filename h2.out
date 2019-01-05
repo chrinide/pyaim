@@ -2,6 +2,7 @@
 #!/usr/bin/env python
 
 from pyscf import gto, scf
+from pyscf.tools import wfn_format
 
 name = 'h2'
 
@@ -21,6 +22,11 @@ mf = scf.RHF(mol)
 mf.chkfile = name+'.chk'
 mf.kernel()
 
+wfn_file = name + '.wfn'
+with open(wfn_file, 'w') as f2:
+    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], \
+    mo_occ=mf.mo_occ[mf.mo_occ>0], mo_energy=mf.mo_energy[mf.mo_occ>0])
+
 #INFO: ******************** input file end ********************
 
 
@@ -28,7 +34,7 @@ System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 numpy 1.15.4  scipy 1.2.0
-Date: Sat Jan  5 03:21:47 2019
+Date: Sat Jan  5 04:20:43 2019
 PySCF version 1.6
 PySCF path  /home/jluis/src/pyscf/dev/pyscf
 GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
@@ -57,7 +63,7 @@ number of NR pGTOs = 6
 number of NR cGTOs = 2
 basis = sto-3g
 ecp = {}
-CPU time:         0.30
+CPU time:         0.24
 
 
 ******** <class 'pyscf.scf.hf_symm.SymAdaptedRHF'> ********
@@ -74,7 +80,7 @@ max. SCF cycles = 50
 direct_scf = True
 direct_scf_tol = 1e-13
 chkfile to save SCF result = h2.chk
-max_memory 32000 MB (current use 72 MB)
+max_memory 32000 MB (current use 73 MB)
 Freeze 0 electrons in irreps []
     2 free electrons in irreps A1g A1u
 Set gradient conv threshold to 3.16228e-05

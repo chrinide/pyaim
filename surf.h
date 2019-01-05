@@ -91,6 +91,7 @@ void rkqs(double *y, double *dydx, double *x,
           double htry, double eps,
 	        double *yscal, double *hnext);
 void steeper_rkck(double *y, double *dydx, double h, double *yout, double *yerr);
+void steeper_rkdp(double *y, double *dydx, double h, double *yout, double *yerr);
 
 void rho_grad(double *point, double *rho, double *grad, double *gradmod);
 

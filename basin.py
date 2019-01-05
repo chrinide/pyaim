@@ -332,7 +332,7 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'h2.chk'
     bas = Basin(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -344,7 +344,7 @@ if __name__ == '__main__':
     bas.bmapr = 'exp'
     bas.betafac = 0.4
     bas.non0tab = False
-    for i in range(3):
+    for i in range(2):
         bas.inuc = i
         bas.kernel()
 
