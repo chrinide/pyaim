@@ -11,22 +11,23 @@ module mod_slm
   implicit none
   private
 
-  integer, parameter :: ip = c_int
+  integer, parameter, public :: ip = c_int
   integer, parameter :: size_t = c_size_t
-  integer, parameter :: rp = c_double
+  integer, parameter, public :: rp = c_double
 
-  integer(kind=ip), parameter :: mxfact = 100
-  real(kind=rp), parameter :: pi = 3.14159265358979323846264338328_rp
-  real(kind=rp), parameter :: eps = 1d-7
+  integer(kind=ip), parameter, public :: mxfact = 100
+  real(kind=rp), parameter, public :: pi = 3.14159265358979323846264338328_rp
+  real(kind=rp), parameter, public :: eps = 1d-7
 
   real(kind=rp), allocatable, dimension(:) :: rshnorm, sqrin
-  real(kind=rp), allocatable, dimension(:,:) :: deltam
-  integer(kind=ip), allocatable, dimension(:) :: il0, pil0
-  integer(kind=ip), allocatable, dimension(:,:) :: jlm
+  real(kind=rp), allocatable, dimension(:,:), public :: deltam
+  integer(kind=ip), allocatable, dimension(:), public :: il0
+  integer(kind=ip), allocatable, dimension(:) :: pil0
+  integer(kind=ip), allocatable, dimension(:,:), public :: jlm
   
-  real(kind=rp) :: fact(0:mxfact)
+  real(kind=rp), public :: fact(0:mxfact)
 
-  public :: eval_rsh
+  public :: eval_rsh, rsh, init_slm, allocate_space_for_slm, deallocate_space_for_slm
 
 contains
 

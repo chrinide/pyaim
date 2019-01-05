@@ -11,7 +11,7 @@ LFLAGS = -shared -L/home/jluis/src/pyscf/dev/pyscf/lib -lcgto -lgfortran
 all: libaim.so
 
 COBJECTS = surf.o 
-FOBJECTS = mod_gaunt.o mod_slm.o 
+FOBJECTS = mod_slm.o mod_gaunt.o 
 
 libaim.so: $(COBJECTS) $(FOBJECTS)
 	$(LD) $(LFLAGS) -o libaim.so $(COBJECTS) $(FOBJECTS)
@@ -20,6 +20,7 @@ clean:
 	/bin/rm -f *.so *.o *.pyc 
 
 surf.o: surf.h
+mod_gaunt.o: mod_slm.o
 
 .SUFFIXES:
 .SUFFIXES: .c .o .f90
