@@ -45,7 +45,6 @@ contains
     do j = 1,npang
       call rsh (ct(j),st(j),cp(j),sp(j),slm(0,j),lmax)
     end do
-  
     call deallocate_space_for_slm ()
 
   end subroutine eval_rsh

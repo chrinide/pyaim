@@ -1,0 +1,153 @@
+#INFO: **** input file is /home/jluis/tmp/pyaim/ref-qlm/co.py ****
+#!/usr/bin/env python
+
+import numpy, os
+from pyscf import gto, scf, lib, dft
+from pyscf.tools import wfn_format
+
+name = 'co'
+
+mol = gto.Mole()
+mol.atom = '''
+C      0.000000      0.000000     -0.642367
+O      0.000000      0.000000      0.481196
+'''
+dirnow = os.path.realpath(os.path.join(__file__, '..'))
+basfile = os.path.join(dirnow, 'sqzp.dat')
+mol.basis = basfile
+mol.verbose = 4
+mol.spin = 0
+mol.symmetry = 1
+mol.charge = 0
+mol.build()
+
+mf = dft.RKS(mol)
+mf.xc = 'wb97x'
+mf.grids.prune = None
+mf.grids.level = 5
+mf.max_cycle = 150
+mf.chkfile = name+'.chk'
+mf.kernel()
+dm = mf.make_rdm1()
+
+wfn_file = name + '.wfn'
+with open(wfn_file, 'w') as f2:
+    wfn_format.write_mo(f2, mol, mf.mo_coeff[:,mf.mo_occ>0], \
+    mo_occ=mf.mo_occ[mf.mo_occ>0], mo_energy=mf.mo_energy[mf.mo_occ>0])
+
+unit = 1.0
+charges = mol.atom_charges()
+coords  = mol.atom_coords()
+charge_center = numpy.einsum('i,ij->j', charges, coords)/charges.sum()
+origin = charge_center
+mol.set_common_orig(origin)
+lib.logger.info(mf,'Setting origing to charge center: %.4f, %.4f, %.4f', *origin)
+
+ao_dip = mol.intor_symmetric('int1e_r', comp=3)
+el_dip = numpy.einsum('xij,ji->x', ao_dip, dm)
+lib.logger.info(mf,'Electronic Dipole moment(X, Y, Z, Au): %.4f, %.4f, %.4f', *el_dip*unit)
+nucl_dip = numpy.einsum('i,ix->x', charges, coords)
+lib.logger.info(mf,'Nuclear Dipole moment(X, Y, Z, Au): %.4f, %.4f, %.4f', *nucl_dip*unit)
+mol_dip = (nucl_dip - el_dip) * unit
+lib.logger.info(mf,'Total Dipole moment(X, Y, Z, Au): %.4f, %.4f, %.4f', *mol_dip)
+
+#INFO: ******************** input file end ********************
+
+
+System: ('Linux', 'cromo', '4.9.0-0.bpo.3-amd64', '#1 SMP Debian 4.9.30-2+deb9u5~bpo8+1 (2017-09-28)', 'x86_64', '')  Threads 4
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+numpy 1.15.4  scipy 1.2.0
+Date: Sat Jan  5 19:42:21 2019
+PySCF version 1.6
+PySCF path  /home/jluis/src/pyscf/dev/pyscf
+GIT ORIG_HEAD 21b86f213f74edcb007f36d31e83475226de7b3a
+GIT HEAD      ref: refs/heads/dev
+GIT dev branch  b2420273effddedd05459f6520b493977f9258d7
+
+[ENV] PYSCF_MAX_MEMORY 32000
+[ENV] PYSCF_TMPDIR /scratch-ssd/jluis
+[CONFIG] conf_file None
+[INPUT] verbose = 4
+[INPUT] num. atoms = 2
+[INPUT] num. electrons = 14
+[INPUT] charge = 0
+[INPUT] spin (= nelec alpha-beta = 2S) = 0
+[INPUT] symmetry 1 subgroup None
+[INPUT] Mole.unit = angstrom
+[INPUT]  1 C      0.000000000000   0.000000000000  -0.642036000000 AA    0.000000000000   0.000000000000  -1.213272202111 Bohr
+[INPUT]  2 O      0.000000000000   0.000000000000   0.481527000000 AA    0.000000000000   0.000000000000   0.909954151583 Bohr
+
+nuclear repulsion = 22.6071044740348
+point group symmetry = Coov
+num. orbitals of irrep A1 = 46
+num. orbitals of irrep E1x = 30
+num. orbitals of irrep E1y = 30
+num. orbitals of irrep E2x = 18
+num. orbitals of irrep E2y = 18
+num. orbitals of irrep E3x = 10
+num. orbitals of irrep E3y = 10
+num. orbitals of irrep E4x = 4
+num. orbitals of irrep E4y = 4
+number of shells = 46
+number of NR pGTOs = 240
+number of NR cGTOs = 170
+basis = /home/jluis/tmp/pyaim/ref-qlm/sqzp.dat
+ecp = {}
+CPU time:         0.28
+
+
+******** <class 'pyscf.dft.rks_symm.SymAdaptedRKS'> ********
+method = SymAdaptedRKS-SymAdaptedRHF-RHF
+initial guess = minao
+damping factor = 0
+level shift factor = 0
+DIIS = <class 'pyscf.scf.diis.CDIIS'>
+DIIS start cycle = 1
+DIIS space = 8
+SCF tol = 1e-09
+SCF gradient tol = None
+max. SCF cycles = 150
+direct_scf = True
+direct_scf_tol = 1e-13
+chkfile to save SCF result = co.chk
+max_memory 32000 MB (current use 73 MB)
+XC functionals = wb97x
+radial grids: 
+    Treutler-Ahlrichs (JCP 102, 346 (M4)) radial grids
+    
+becke partition: Becke, JCP, 88, 2547 (1988)
+pruning grids: None
+grids dens level: 5
+symmetrized grids: 1
+atomic radii adjust function: <function treutler_atomic_radii_adjust at 0x2b38222b61b8>
+Freeze 0 electrons in irreps []
+    14 free electrons in irreps A1 E1x E1y E2x E2y E3x E3y E4x E4y
+Set gradient conv threshold to 3.16228e-05
+tot grids = 161700
+init E= -113.409751557789
+HOMO (A1) = -0.412960945432378  LUMO (E1y) = -0.0415699030529513
+cycle= 1 E= -113.29201274126  delta_E= 0.118  |g|= 0.476  |ddm|= 1.06
+HOMO (A1) = -0.49801863840624  LUMO (E1x) = 0.0554363580436514
+cycle= 2 E= -113.247195107208  delta_E= 0.0448  |g|= 0.727  |ddm|= 0.375
+HOMO (A1) = -0.490908086492028  LUMO (E1x) = 0.0526248654780932
+cycle= 3 E= -113.332618727585  delta_E= -0.0854  |g|= 0.0219  |ddm|= 0.202
+HOMO (A1) = -0.494127807043061  LUMO (E1y) = 0.0522538169922858
+cycle= 4 E= -113.33271198027  delta_E= -9.33e-05  |g|= 0.00428  |ddm|= 0.0267
+HOMO (A1) = -0.492589537821325  LUMO (E1y) = 0.0527626813377579
+cycle= 5 E= -113.332718630856  delta_E= -6.65e-06  |g|= 0.000833  |ddm|= 0.00795
+HOMO (A1) = -0.492908945670384  LUMO (E1x) = 0.0525702768907982
+cycle= 6 E= -113.332718964053  delta_E= -3.33e-07  |g|= 0.000215  |ddm|= 0.00238
+HOMO (A1) = -0.492861304073913  LUMO (E1y) = 0.0525881550753219
+cycle= 7 E= -113.332718980758  delta_E= -1.67e-08  |g|= 4.47e-05  |ddm|= 0.00044
+HOMO (A1) = -0.492868770576739  LUMO (E1y) = 0.0525834557480176
+cycle= 8 E= -113.332718981962  delta_E= -1.2e-09  |g|= 5.48e-06  |ddm|= 0.000135
+HOMO (A1) = -0.492868583724574  LUMO (E1y) = 0.0525833579825497
+cycle= 9 E= -113.332718981982  delta_E= -2.05e-11  |g|= 6.66e-07  |ddm|= 1.4e-05
+HOMO (A1) = -0.492868808232866  LUMO (E1x) = 0.0525832538312027
+Extra cycle  E= -113.332718981983  delta_E= -3.98e-13  |g|= 2.94e-07  |ddm|= 1.33e-06
+converged SCF energy = -113.332718981983
+Setting origing to charge center: 0.0000, 0.0000, -0.0000
+Electronic Dipole moment(X, Y, Z, Au): 0.0000, 0.0000, -0.0414
+Nuclear Dipole moment(X, Y, Z, Au): 0.0000, 0.0000, -0.0000
+Total Dipole moment(X, Y, Z, Au): 0.0000, 0.0000, 0.0414

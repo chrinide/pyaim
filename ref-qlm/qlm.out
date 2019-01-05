@@ -1,0 +1,170 @@
+
+******** <class '__main__.Qlm'> flags ********
+* General Info
+Date Sat Jan  5 19:55:53 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file h2.chk
+Max_memory 32000 MB (current use 71 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  -0.708647
+Nuclei 1 with charge 1 position : 0.000000  0.000000  0.708647
+* Basis Info
+Number of molecular orbitals 2
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 1
+Number of molecular primitives 2
+* Surface Info
+Surface file h2.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  -0.708647
+Rho nuclear coordinate 0.000000  0.000000  -0.708647
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.708646
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.283459
+* Real Spherical Harmonics expansion
+Lmax inside 10
+Lmax outside 10
+
+* Go with inside betasphere
+*--> Qlm(0,0)  (s)      inside bsphere 0.029450
+*--> Qlm(1,-1) (py)     inside bsphere 0.000000
+*--> Qlm(1,0)  (pz)     inside bsphere 0.000216
+*--> Qlm(1,1)  (px)     inside bsphere 0.000000
+*--> Qlm(2,-2) (dxy)    inside bsphere 0.000000
+*--> Qlm(2,-1) (dyz)    inside bsphere 0.000000
+*--> Qlm(2,0)  (dz2)    inside bsphere 0.000005
+*--> Qlm(2,1)  (dxz)    inside bsphere 0.000000
+*--> Qlm(2,2)  (dx2-y2) inside bsphere 0.000000
+Time in Bsphere 0.751 (sec)
+* Go outside betasphere
+*--> Qlm(0,0)  (s)      outside bsphere 0.970592
+*--> Qlm(1,-1) (py)     outside bsphere 0.000000
+*--> Qlm(1,0)  (pz)     outside bsphere -0.103684
+*--> Qlm(1,1)  (px)     outside bsphere 0.000000
+*--> Qlm(2,-2) (dxy)    outside bsphere 0.000000
+*--> Qlm(2,-1) (dyz)    outside bsphere 0.000000
+*--> Qlm(2,0)  (dz2)    outside bsphere -0.306242
+*--> Qlm(2,1)  (dxz)    outside bsphere 0.000000
+*--> Qlm(2,2)  (dx2-y2) outside bsphere 0.000000
+Time out Bsphere 4.727 (sec)
+Write info to HDF5 file
+*-> Total Qlm(0,0)  (s)      1.000041
+*-> Total Qlm(1,-1) (py)     0.000000
+*-> Total Qlm(1,0)  (pz)     -0.103468
+*-> Total Qlm(1,1)  (px)     0.000000
+*-> Total Qlm(2,-2) (dxy)    0.000000
+*-> Total Qlm(2,-1) (dyz)    0.000000
+*-> Total Qlm(2,0)  (dz2)    -0.306237
+*-> Total Qlm(2,1)  (xz)     0.000000
+*-> Total Qlm(2,2)  (dx2-y2) 0.000000
+
+Qlm of atom 0 done
+    CPU time for Qlm build     21.88 sec
+
+******** <class '__main__.Qlm'> flags ********
+* General Info
+Date Sat Jan  5 19:55:59 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file h2.chk
+Max_memory 32000 MB (current use 74 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  -0.708647
+Nuclei 1 with charge 1 position : 0.000000  0.000000  0.708647
+* Basis Info
+Number of molecular orbitals 2
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 1
+Number of molecular primitives 2
+* Surface Info
+Surface file h2.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  0.708647
+Rho nuclear coordinate 0.000000  0.000000  0.708647
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.708646
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.283459
+* Real Spherical Harmonics expansion
+Lmax inside 10
+Lmax outside 10
+
+* Go with inside betasphere
+*--> Qlm(0,0)  (s)      inside bsphere 0.029450
+*--> Qlm(1,-1) (py)     inside bsphere 0.000000
+*--> Qlm(1,0)  (pz)     inside bsphere -0.000216
+*--> Qlm(1,1)  (px)     inside bsphere 0.000000
+*--> Qlm(2,-2) (dxy)    inside bsphere 0.000000
+*--> Qlm(2,-1) (dyz)    inside bsphere 0.000000
+*--> Qlm(2,0)  (dz2)    inside bsphere 0.000005
+*--> Qlm(2,1)  (dxz)    inside bsphere 0.000000
+*--> Qlm(2,2)  (dx2-y2) inside bsphere -0.000000
+Time in Bsphere 0.736 (sec)
+* Go outside betasphere
+*--> Qlm(0,0)  (s)      outside bsphere 0.970592
+*--> Qlm(1,-1) (py)     outside bsphere 0.000000
+*--> Qlm(1,0)  (pz)     outside bsphere 0.103684
+*--> Qlm(1,1)  (px)     outside bsphere 0.000000
+*--> Qlm(2,-2) (dxy)    outside bsphere 0.000000
+*--> Qlm(2,-1) (dyz)    outside bsphere 0.000000
+*--> Qlm(2,0)  (dz2)    outside bsphere -0.306242
+*--> Qlm(2,1)  (dxz)    outside bsphere 0.000000
+*--> Qlm(2,2)  (dx2-y2) outside bsphere 0.000000
+Time out Bsphere 4.787 (sec)
+Write info to HDF5 file
+*-> Total Qlm(0,0)  (s)      1.000041
+*-> Total Qlm(1,-1) (py)     0.000000
+*-> Total Qlm(1,0)  (pz)     0.103468
+*-> Total Qlm(1,1)  (px)     0.000000
+*-> Total Qlm(2,-2) (dxy)    0.000000
+*-> Total Qlm(2,-1) (dyz)    0.000000
+*-> Total Qlm(2,0)  (dz2)    -0.306237
+*-> Total Qlm(2,1)  (xz)     0.000000
+*-> Total Qlm(2,2)  (dx2-y2) 0.000000
+
+Qlm of atom 1 done
+    CPU time for Qlm build     22.12 sec

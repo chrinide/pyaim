@@ -23,8 +23,6 @@ libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
 
 EPS = 1e-7
 
-################### On going work !!! ######################
-
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
@@ -108,8 +106,21 @@ def out_beta(self):
         rslm = numpy.array(rslm)
         val = numpy.einsum('i,ip->ip',rho(self,coords),rslm)
         props = numpy.einsum('ip,i->p', val, weigths)
+        for l in range(lmax+1):
+            ll = l*(l+1)
+            for m in range(-l,l+1,1):
+                lm = ll + m
+                props[lm] *= r**l
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0) outside bsphere %f', rprops[0])    
+    logger.info(self,'*--> Qlm(0,0)  (s)      outside bsphere %f', rprops[0])    
+    logger.info(self,'*--> Qlm(1,-1) (py)     outside bsphere %f', rprops[1])    
+    logger.info(self,'*--> Qlm(1,0)  (pz)     outside bsphere %f', rprops[2])    
+    logger.info(self,'*--> Qlm(1,1)  (px)     outside bsphere %f', rprops[3])    
+    logger.info(self,'*--> Qlm(2,-2) (dxy)    outside bsphere %f', rprops[4])    
+    logger.info(self,'*--> Qlm(2,-1) (dyz)    outside bsphere %f', rprops[5])    
+    logger.info(self,'*--> Qlm(2,0)  (dz2)    outside bsphere %f', rprops[6])    
+    logger.info(self,'*--> Qlm(2,1)  (dxz)    outside bsphere %f', rprops[7])    
+    logger.info(self,'*--> Qlm(2,2)  (dx2-y2) outside bsphere %f', rprops[8])    
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
@@ -159,8 +170,22 @@ def int_beta(self):
             coords[j] = p
         val = numpy.einsum('i,ip->ip',rho(self,coords),slm)
         props = numpy.einsum('ip,i->p', val, coordsang[:,4])
+        for l in range(lmax+1):
+            ll = l*(l+1)
+            for m in range(-l,l+1,1):
+                lm = ll + m
+                #print "m,lm,slm",m,lm,slm[0,lm]
+                props[lm] *= r**l
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0) inside bsphere %f', rprops[0])    
+    logger.info(self,'*--> Qlm(0,0)  (s)      inside bsphere %f', rprops[0])    
+    logger.info(self,'*--> Qlm(1,-1) (py)     inside bsphere %f', rprops[1])    
+    logger.info(self,'*--> Qlm(1,0)  (pz)     inside bsphere %f', rprops[2])    
+    logger.info(self,'*--> Qlm(1,1)  (px)     inside bsphere %f', rprops[3])    
+    logger.info(self,'*--> Qlm(2,-2) (dxy)    inside bsphere %f', rprops[4])    
+    logger.info(self,'*--> Qlm(2,-1) (dyz)    inside bsphere %f', rprops[5])    
+    logger.info(self,'*--> Qlm(2,0)  (dz2)    inside bsphere %f', rprops[6])    
+    logger.info(self,'*--> Qlm(2,1)  (dxz)    inside bsphere %f', rprops[7])    
+    logger.info(self,'*--> Qlm(2,2)  (dx2-y2) inside bsphere %f', rprops[8])    
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
@@ -354,14 +379,25 @@ class Qlm(lib.StreamObject):
             brprops = int_beta(self)
             rprops = out_beta(self)
 
-        #logger.info(self,'Write info to HDF5 file')
-        #atom_dic = {'inprops':brprops,
-        #            'outprops':rprops,
-        #            'totprops':(brprops+rprops)}
-        #lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
-        #for i in range(NPROPS):
-        logger.info(self,'*-> Total Qlm(0,0) %f' % (rprops[0]+brprops[0]))    
+        logger.info(self,'Write info to HDF5 file')
+        atom_dic = {'inprops':brprops,
+                    'outprops':rprops,
+                    'blmax':self.blmax,
+                    'lmax':self.lmax,
+                    'totprops':(brprops+rprops)}
+        lib.chkfile.save(self.surfile, 'qlm'+str(self.inuc), atom_dic)
+
+        logger.info(self,'*-> Total Qlm(0,0)  (s)      %f' % (rprops[0]+brprops[0]))   
+        logger.info(self,'*-> Total Qlm(1,-1) (py)     %f' % (rprops[1]+brprops[1]))   
+        logger.info(self,'*-> Total Qlm(1,0)  (pz)     %f' % (rprops[2]+brprops[2]))   
+        logger.info(self,'*-> Total Qlm(1,1)  (px)     %f' % (rprops[3]+brprops[3]))   
+        logger.info(self,'*-> Total Qlm(2,-2) (dxy)    %f' % (rprops[4]+brprops[4]))   
+        logger.info(self,'*-> Total Qlm(2,-1) (dyz)    %f' % (rprops[5]+brprops[5]))   
+        logger.info(self,'*-> Total Qlm(2,0)  (dz2)    %f' % (rprops[6]+brprops[6]))   
+        logger.info(self,'*-> Total Qlm(2,1)  (xz)     %f' % (rprops[7]+brprops[7]))   
+        logger.info(self,'*-> Total Qlm(2,2)  (dx2-y2) %f' % (rprops[8]+brprops[8]))   
         logger.info(self,'')
+
         logger.info(self,'Qlm of atom %d done',self.inuc)
         logger.timer(self,'Qlm build', t0)
 
