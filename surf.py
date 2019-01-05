@@ -327,7 +327,7 @@ class BaderSurf(lib.StreamObject):
 
         if (self.backend == 'rkck'):
             backend = 1
-        if (self.backend == 'rkdp'):
+        elif (self.backend == 'rkdp'):
             backend = 2
         else:
             raise NotImplementedError('Only rkck or rkdp ODE solver yet available') 

@@ -306,7 +306,7 @@ void surface(){
 
 }
 
-void rho_grad(double *point, double *rho, double *grad, double *gradmod){
+inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
 	double ao_[nprims_*4];
   double c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
@@ -461,7 +461,7 @@ void rkqs(double *y, double *dydx, double *x,
 	}
 }
 
-void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
+inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
 
   static const double b21 = 1.0/5.0;
   static const double b31 = 3.0/40.0;
@@ -570,7 +570,7 @@ void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, double 
 
 }                         
 
-void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
+inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, double *xerr){
 
   static const double b21 = 1.0/5.0;
   static const double b31 = 3.0/40.0;

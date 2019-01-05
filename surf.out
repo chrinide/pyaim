@@ -1,7 +1,7 @@
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Sat Jan  5 04:25:04 2019
+Date Sat Jan  5 04:52:37 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -9,7 +9,7 @@ Number of threads 4
 Verbose level 4
 Scratch dir /scratch-ssd/jluis
 Input data file h2.chk
-Max_memory 32000 MB (current use 70 MB)
+Max_memory 32000 MB (current use 69 MB)
 Correlated ? False
 * Molecular Info
 Num atoms 2
@@ -40,20 +40,20 @@ ODE tool 1.000000e-05
 Max steps in ODE solver 200
 
 Check rho position 0.000000 0.000000 -0.627370
-Setting xyrho for atom to imput coords
+Setting xyzrho for atom to imput coords
 Check rho position 0.000000 0.000000 0.627370
-Setting xyrho for atom to imput coords
+Setting xyzrho for atom to imput coords
 Time finding nucleus 0.041 (sec)
-Time finding surface 7.075 (sec)
+Time finding surface 7.047 (sec)
 Rmin for surface 0.708646
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 0 saved
-    CPU time for BaderSurf build     28.58 sec
+    CPU time for BaderSurf build     28.47 sec
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Sat Jan  5 04:25:12 2019
+Date Sat Jan  5 04:52:45 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -92,13 +92,13 @@ ODE tool 1.000000e-05
 Max steps in ODE solver 200
 
 Check rho position 0.000000 0.000000 -0.627370
-Setting xyrho for atom to imput coords
+Setting xyzrho for atom to imput coords
 Check rho position 0.000000 0.000000 0.627370
-Setting xyrho for atom to imput coords
+Setting xyzrho for atom to imput coords
 Time finding nucleus 0.041 (sec)
-Time finding surface 7.067 (sec)
+Time finding surface 7.082 (sec)
 Rmin for surface 0.708646
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 1 saved
-    CPU time for BaderSurf build     28.66 sec
+    CPU time for BaderSurf build     28.70 sec
