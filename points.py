@@ -5,7 +5,8 @@ import time
 import h5py
 import numpy
 import signal
-from pyscf import lib, dft
+from pyscf import lib
+from pyscf import dft
 from pyscf.lib import logger
 
 import grid
@@ -15,6 +16,34 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
+
+EPS = 1e-7
+
+def rho(self,x):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
+    ngrids, nao = ao.shape
+    pos = self.mo_occ > self.occdrop
+    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
+    rho = numpy.zeros(ngrids)
+    c0 = numpy.dot(ao, cpos)
+    rho = numpy.einsum('pi,pi->p', c0, c0)
+    return rho
+
+def prune_small_rho_grids(self):
+    rhop = rho(self,self.p)
+    #n = numpy.dot(rhop, self.w)
+    #logger.info(self,'Non pruned integrated den %f' % n)
+    rhop *= self.w
+    idx = abs(rhop) > self.small_rho_cutoff/self.w.size
+    logger.info(self,'Dropped grids %d' % (self.w.size - numpy.count_nonzero(idx)))
+    self.p = numpy.asarray(self.p[idx], order='C')
+    self.w = numpy.asarray(self.w[idx], order='C')
+    #logger.info(self,'Pruned number of grids %d' % self.w.size)
+    #rhop = rho(self,self.p)
+    #n = numpy.dot(rhop, self.w)
+    #logger.info(self,'Pruned integrated den %f' % n)
+    return self
 
 def inbasin(self,r,j):
     isin = False
@@ -60,13 +89,13 @@ def out_beta(self):
                 xcoor[2] = r*cost    
                 p = self.xnuc + xcoor
                 coords.append(p)
-                weigths.append(coordsang[j,4])
+                weigths.append(coordsang[j,4]*dvol[n]*rwei[n])
     coords = numpy.array(coords)
     weigths = numpy.array(weigths)
-    npoints = len(weights)
+    npoints = len(weigths)
     logger.info(self,'Outside number of points %d' % npoints)
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
-    return coords, weights
+    return coords, weigths
     
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
@@ -95,13 +124,13 @@ def int_beta(self):
             xcoor[2] = r*cost    
             p = self.xnuc + xcoor
             coords.append(p)
-            weigths.append(coordsang[j,4])
-    coords = numpy.array(coords)
-    weigths = numpy.array(weigths)
-    npoints = len(weights)
+            weigths.append(coordsang[j,4]*dvol[n]*rwei[n])
+    coords = numpy.asarray(coords)
+    weigths = numpy.asarray(weigths)
+    npoints = len(weigths)
     logger.info(self,'Inside number of points %d' % npoints)
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
-    return coords, weights
+    return coords, weigths
 
 class Points(lib.StreamObject):
 
@@ -122,9 +151,14 @@ class Points(lib.StreamObject):
         self.bnpang = 3074
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
+        self.occdrop = 1e-6
+        self.small_rho_cutoff = 1e-6
+        self.prune = False
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mol = None
+        self.mo_coeff = None
+        self.mo_occ = None
         self.ntrial = None
         self.npang = None
         self.natm = None
@@ -142,6 +176,8 @@ class Points(lib.StreamObject):
         self.spin = None
         self.rad = None
         self.brad = None
+        self.w = None
+        self.p = None
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -161,7 +197,6 @@ class Points(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
-        logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -184,6 +219,8 @@ class Points(lib.StreamObject):
         logger.info(self,'Rmax for surface %f', self.rmax)
 
         logger.info(self,'* Radial and angular grid Info')
+        logger.info(self,'Will be the grid pruned ? %s' % self.prune)
+        logger.info(self,'Rho*W cutoff %e' % self.small_rho_cutoff)
         logger.info(self,'Npang points inside %d' % self.bnpang)
         logger.info(self,'Number of radial points outside %d', self.nrad)
         logger.info(self,'Number of radial points inside %d', self.bnrad)
@@ -204,6 +241,8 @@ class Points(lib.StreamObject):
         lib.logger.TIMER_LEVEL = 3
 
         self.mol = lib.chkfile.load_mol(self.chkfile)
+        self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
+        self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
         self.nelectron = self.mol.nelectron 
         self.charge = self.mol.charge    
         self.spin = self.mol.spin      
@@ -256,11 +295,17 @@ class Points(lib.StreamObject):
             bpoints, bweigths = int_beta(self)
             points, weigths = out_beta(self)
 
-        #logger.info(self,'Write info to HDF5 file')
-        #atom_dic = {'inprops':brprops,
-        #            'outprops':rprops,
-        #            'totprops':(brprops+rprops)}
-        #lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
+        self.w = numpy.hstack((bweigths, weigths))
+        self.p = numpy.vstack((bpoints, points))
+        logger.info(self,'Total number of points for atom %d %d' % (self.inuc,len(self.w)))
+        if (self.prune):
+            prune_small_rho_grids(self)
+            logger.info(self,'Total number pruned points for atom %d %d' % (self.inuc,len(self.w)))
+
+        logger.info(self,'Write info to HDF5 file')
+        atom_dic = {'w':self.w,
+                    'p':self.p}
+        lib.chkfile.save(self.surfile, 'grid'+str(self.inuc), atom_dic)
         logger.info(self,'Points of atom %d done',self.inuc)
         logger.timer(self,'Points build', t0)
 
@@ -269,6 +314,7 @@ class Points(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
+    natm = 3
     name = 'h2o.chk'
     bas = Points(name)
     bas.verbose = 4
@@ -280,7 +326,13 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    for i in range(2):
+    bas.prune = True
+    for i in range(natm):
         bas.inuc = i
         bas.kernel()
+        t0 = time.time()
+        rhop = rho(bas,bas.p)
+        rhov = numpy.dot(rhop,bas.w)
+        logger.info(bas,'Atom %d density %f' % (i,rhov))
+        logger.info(bas,'Time for density using precomputed grid %.3f (sec)' % (time.time()-t0))
 

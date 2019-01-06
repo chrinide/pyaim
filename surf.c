@@ -101,7 +101,8 @@ void surf_driver(const int inuc,
   bas_ = bas;
   env_ = env;
   ao_loc_ = ao_loc;
-	non0tab_ = (int8_t *) malloc(sizeof(int8_t)*nbas_);
+	//non0tab_ = (int8_t *) malloc(sizeof(int8_t)*nbas_);
+	non0tab_ = (char *) malloc(sizeof(char)*nbas_);
   assert(non0tab_ != NULL);
   for (i=0; i<nbas_; i++){
     non0tab_[i] = 1.0;
@@ -195,7 +196,6 @@ void surface(){
     double sintsinp = st_[i]*sp_[i];
     int ia = inuc_, ib;
     double ra = 0.0, rb;
-    double rho, gradmod;
 	  for (j=0; j<ntrial_; j++){
       double ract = rpru_[j];
       xpoint[0] = xnuc_[0] + ract*sintcosp; 
@@ -489,7 +489,6 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   static const double c4 = 125.0/192.0;
   static const double c5 = -2187.0/6784.0;
   static const double c6 = 11.0/84.0;
-  static const double c7 = 0.0;
 
   static const double b1 = 5179.0/57600.0;
   static const double b3 = 7571.0/16695.0;

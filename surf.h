@@ -14,7 +14,8 @@ int *__restrict__ bas_;
 double *__restrict__ env_;
 double *__restrict__ mo_coeff_;
 double *__restrict__ mo_occ_;
-int8_t *__restrict__ non0tab_;
+//int8_t *__restrict__ non0tab_;
+char *__restrict__ non0tab_;
 int *__restrict__ shls_;
 int *__restrict__ ao_loc_;
 

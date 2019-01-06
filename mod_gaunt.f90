@@ -42,6 +42,7 @@ contains
     allocate (coeff(0:lmax2,0:lmax2), stat=ier)
     if (ier.ne.0) stop 'cannot allocate coeff'
     allocate (sgaunt(0:lmax,lmaxgaunt),stat=ier)
+    sgaunt = 0.0
     call init_slm (lmax)
     call init_gaunt (lmax)
     ! Obtain coefficients of the multipolar expansion
@@ -72,7 +73,7 @@ contains
 
   subroutine sumgaunt (lmax,rint,sgaunt,lmaxgaunt)
 
-    use mod_slm, only: rsh, deltam, eps, pi, il0
+    use mod_slm, only: rsh, eps, pi, il0
     implicit none
     integer(kind=ip), intent(in) :: lmax
     integer(kind=ip), intent(in) :: lmaxgaunt
