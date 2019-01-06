@@ -30,6 +30,42 @@ def rho(self,x):
     rho = numpy.einsum('pi,pi->p', c0, c0)
     return rho
 
+def mom(self,x,w,origin):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
+    ngrids, nao = ao.shape
+    pos = self.mo_occ > self.occdrop
+    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
+    rho = numpy.zeros(ngrids)
+    c0 = numpy.dot(ao, cpos)
+    rho = numpy.einsum('pi,pi->p', c0, c0)
+    r = numpy.zeros(ngrids)
+    for i in range(ngrids):
+        r[i] = numpy.linalg.norm(x[i,:]-origin)
+    mom1 = numpy.dot(rho,r*w)
+    mom2 = numpy.dot(rho,r*r*w) 
+    mom3 = numpy.dot(rho,r*r*r*w) 
+    print "dip,moment", mom1,mom2,mom3
+    return 
+
+def xc(self,x,w):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
+    ngrids, nao = ao[0].shape
+    pos = self.mo_occ > self.occdrop
+    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
+    rho = numpy.zeros((4,ngrids))
+    c0 = numpy.dot(ao[0], cpos)
+    rho[0] = numpy.einsum('pi,pi->p', c0, c0)
+    for i in range(1, 4):
+        c1 = numpy.dot(ao[i], cpos)
+        rho[i] += numpy.einsum('pi,pi->p', c0, c1)*2.0
+    ex, vx = dft.libxc.eval_xc('rPW86,', rho)[:2]
+    ec, vc = dft.libxc.eval_xc(',PBE', rho)[:2]
+    ex = numpy.einsum('i,i,i->', ex, rho[0], w)
+    ec = numpy.einsum('i,i,i->', ec, rho[0], w)
+    print "x,c", ex,ec
+
 def prune_small_rho_grids(self):
     rhop = rho(self,self.p)
     #n = numpy.dot(rhop, self.w)
@@ -335,4 +371,6 @@ if __name__ == '__main__':
         rhov = numpy.dot(rhop,bas.w)
         logger.info(bas,'Atom %d density %f' % (i,rhov))
         logger.info(bas,'Time for density using precomputed grid %.3f (sec)' % (time.time()-t0))
+        mom(bas,bas.p,bas.w,[0,0,0])
+        #xc(bas,bas.p,bas.w)
 

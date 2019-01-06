@@ -406,21 +406,22 @@ class Qlm(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2.chk'
+    name = 'h2o.chk'
+    natm = 3
     bas = Qlm(name)
     bas.verbose = 4
     bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'exp'
+    bas.mapr = 'becke'
     bas.bnrad = 121
     bas.bnpang = 3074
     bas.biqudr = 'legendre'
-    bas.bmapr = 'exp'
+    bas.bmapr = 'becke'
     bas.betafac = 0.4
     bas.non0tab = False
     bas.lmax = 10
     bas.blmax = 10
-    for i in range(2):
+    for i in range(natm):
         bas.inuc = i
         bas.kernel()
 
