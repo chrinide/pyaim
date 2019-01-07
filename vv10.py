@@ -23,7 +23,7 @@ if sys.version_info >= (3,):
 
 def rho_grad(self,x):
     x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
+    ao = dft.numint.eval_ao(self.mol, x, deriv=1)
     ngrids, nao = ao[0].shape
     pos = self.mo_occ > self.occdrop
     cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))

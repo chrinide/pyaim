@@ -25,27 +25,67 @@ HMINIMAL = numpy.finfo(numpy.float64).eps
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    ngrids, nao = ao.shape
+    ao = dft.numint.eval_ao(self.mol, x, deriv=2)
+    ngrids, nao = ao[0].shape
     pos = self.mo_occ > self.occdrop
     cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros(ngrids)
-    c0 = numpy.dot(ao, cpos)
-    rho = numpy.einsum('pi,pi->p', c0, c0)
+    rho = numpy.zeros((6,ngrids))
+    c0 = numpy.dot(ao[0], cpos)
+    rho[0] = numpy.einsum('pi,pi->p', c0, c0)
+    for i in range(1, 4):
+        c1 = numpy.dot(ao[i], cpos)
+        rho[i] += numpy.einsum('pi,pi->p', c0, c1)*2.0
+        rho[4] += numpy.einsum('pi,pi->p', c1, c1)
+    XX, YY, ZZ = 4, 7, 9
+    ao2 = ao[XX] + ao[YY] + ao[ZZ]
+    c1 = numpy.dot(ao2, cpos)
+    rho[5] = numpy.einsum('pi,pi->p', c0, c1)
+    rho[5] += rho[4]
+    rho[5] *= 2
+    rho[4] *= 0.5
     return rho
+
+#def prange(start, end, step):
+#    for i in range(start, end, step):
+#        yield i, min(i+step, end)
+#blksize = min(8000, ngrids)
+#buffer = numpy.empty(ngrids)
+#for ip0, ip1 in lib.prange(0, ngrids, blksize):
+#    ao = numint.eval_ao(mol, coords[ip0:ip1])
+#    buffer[ip0:ip1] = numpy.dot(ao, coeff)
+#def prune_small_rho_grids(self):
+#    rhop = rho(self,self.p)
+#    rhop *= self.w
+#    idx = abs(rhop) > self.small_rho_cutoff/self.w.size
+#    logger.info(self,'Dropped grids %d' % (self.w.size - numpy.count_nonzero(idx)))
+#    self.p = numpy.asarray(self.p[idx], order='C')
+#    self.w = numpy.asarray(self.w[idx], order='C')
+#    return self
+
+def vfree(self):    
+    self.vfree = numpy.zeros(self.natm)
+    chf = self.chf
+    libaim.frevol.restype = ctypes.c_double
+    for i in range(self.natm):
+        self.vfree[i] = libaim.frevol(ctypes.c_int(self.charges[i]), ctypes.c_double(chf))
+    return self
 
 def integrate(self):
     rhop = rho(self,self.grids.coords)
-    rhoval = numpy.dot(rhop,self.grids.weights)
+    rhoval = numpy.dot(rhop[0],self.grids.weights)
     logger.info(self,'Integral of rho %f' % rhoval)
     ftmp = setweights(self)
     atomq = numpy.zeros(self.natm)
+    atomk = numpy.zeros(self.natm)
+    atoml = numpy.zeros(self.natm)
     npoints = len(self.grids.weights)
     hirshfeld = numpy.zeros(npoints)
     for i in range(self.natm):
         hirshfeld[:] = ftmp['weight'+str(i)]
-        atomq[i] = numpy.dot(rhop,self.grids.weights*hirshfeld)
-        logger.info(self,'Charge of atom %d %.6f' % (i,atomq[i]))
+        atomq[i] = numpy.dot(rhop[0],self.grids.weights*hirshfeld)
+        atomk[i] = numpy.dot(rhop[4],self.grids.weights*hirshfeld)
+        atoml[i] = numpy.dot(rhop[5],self.grids.weights*hirshfeld)
+        logger.info(self,'Q,K,L of atom %d %f %f %f' % (i,atomq[i],atomk[i],atoml[i]))
     return self
 
 def setweights(self):
@@ -86,9 +126,13 @@ class Hirshfeld(lib.StreamObject):
         self.corr = False
         self.occdrop = 1e-6
         self.mol = lib.chkfile.load_mol(self.chkfile)
+        self.chf = 0.0
+        self.small_rho_cutoff = 1e-6
+        self.prune = False
 ##################################################
 # don't modify the following attributes, they are not input options
         self.grids = dft.Grids(self.mol)
+        self.vfree = None
         self.rdm1 = None
         self.nocc = None
         self.mo_coeff = None
@@ -129,8 +173,8 @@ class Hirshfeld(lib.StreamObject):
         logger.info(self,'Spin %d ' % self.spin)
         logger.info(self,'Atom Coordinates (Bohr)')
         for i in range(self.natm):
-            logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
-                        self.charges[i], *self.coords[i])
+            logger.info(self,'Nuclei %d with charge %d with Vfree %f and position : %.6f  %.6f  %.6f', i, 
+                        self.charges[i], self.vfree[i], *self.coords[i])
 
         logger.info(self,'* Basis Info')
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
@@ -185,6 +229,8 @@ class Hirshfeld(lib.StreamObject):
         self.grids.verbose = 0
         self.grids.stdout = self.stdout
         self.grids.build()
+
+        vfree(self)
 
         if self.verbose >= logger.WARN:
             self.check_sanity()
