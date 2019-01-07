@@ -20,10 +20,11 @@ _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
 libcgto = lib.load_library('libcgto')
 
-idx = 0
-jdx = 1
-        
 name = 'h2o.chk.h5'
+
+idx = 1
+jdx = 2
+        
 idx1 = 'qlm'+str(idx)
 idx2 = 'qlm'+str(jdx)
 with h5py.File(name) as f:
@@ -48,7 +49,6 @@ coeff = numpy.zeros((NPROPS,NPROPS))
 coulm = numpy.zeros((NPROPS,NPROPS))
 jlm = numpy.zeros((NPROPS),dtype=numpy.int32)
 coulp = numpy.zeros(lmax+1)
-tcoulp = numpy.zeros(lmax+1)
 
 feval = 'eval_gaunt'
 drv = getattr(libaim, feval)
