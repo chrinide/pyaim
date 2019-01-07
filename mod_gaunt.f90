@@ -12,26 +12,25 @@ module mod_gaunt
 
 contains
 
-  subroutine eval_gaunt (lmax, ncent, xyzrho, inan, jnan) bind(c)
+  subroutine eval_gaunt (lmax, rint, coeff, output) bind(c)
 
     use mod_slm, only: init_slm, il0, jlm, deltam, &
                        allocate_space_for_slm, deallocate_space_for_slm
     implicit none
-    integer(kind=ip), intent(in), value :: lmax, ncent, inan, jnan
-    real(kind=rp), intent(in) :: xyzrho(3,ncent)
+    integer(kind=ip), intent(in), value :: lmax
+    real(kind=rp), intent(in) :: rint(3)
+    real(kind=rp), intent(out) :: coeff(0:lmax*(lmax+2),0:lmax*(lmax+2))
+    integer(kind=ip), intent(out) :: output(0:lmax*(lmax+2))
 
-    real(kind=rp) :: tmp, term, rint(3), r3
+    real(kind=rp) :: tmp, term, r3
     integer(kind=ip) :: lmaxgaunt, lmax21
     integer(kind=ip) :: lmax2, lm1, lm2, l1, il1, l2, ll, ilm, l, lm, ier
     real(kind=rp), dimension(:), allocatable :: sql
-    real(kind=rp), dimension(:,:), allocatable :: coeff, sgaunt
+    real(kind=rp), dimension(:,:), allocatable :: sgaunt
 
     lmax2 = lmax*(lmax+2)
     lmax21 = lmax2 + 1
     lmaxgaunt = lmax21*lmax21
-    rint(1) = xyzrho(1,jnan) - xyzrho(1,inan)
-    rint(2) = xyzrho(2,jnan) - xyzrho(2,inan)
-    rint(3) = xyzrho(3,jnan) - xyzrho(3,inan)
     r3 = rint(1)*rint(1) + rint(2)*rint(2) + rint(3)*rint(3)
     r3 = sqrt(r3)
 
@@ -39,8 +38,6 @@ contains
     call allocate_space_for_gaunt (lmax)
     allocate (sql(0:lmax2),stat=ier)
     if (ier.ne.0) stop 'cannot allocate sql'
-    allocate (coeff(0:lmax2,0:lmax2), stat=ier)
-    if (ier.ne.0) stop 'cannot allocate coeff'
     allocate (sgaunt(0:lmax,lmaxgaunt),stat=ier)
     sgaunt = 0.0
     call init_slm (lmax)
@@ -65,7 +62,8 @@ contains
         coeff(lm1,lm2) = term*(r3**(-1-l1-l2))
       end do
     end do
-    deallocate (sql, coeff, sgaunt)
+    output(:) = jlm(:,1)
+    deallocate (sql, sgaunt)
     call deallocate_space_for_gaunt ()
     call deallocate_space_for_slm ()
 

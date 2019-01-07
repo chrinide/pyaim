@@ -174,7 +174,6 @@ def int_beta(self):
             ll = l*(l+1)
             for m in range(-l,l+1,1):
                 lm = ll + m
-                #print "m,lm,slm",m,lm,slm[0,lm]
                 props[lm] *= r**l
         rprops += props*dvol[n]*rwei[n]
     logger.info(self,'*--> Qlm(0,0)  (s)      inside bsphere %f', rprops[0])    
