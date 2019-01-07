@@ -64,21 +64,6 @@
 
  subroutine propts(m,nr,r,rho,b)
    
-    ! 0 - closed, 1 - open, 2 - restricted open, 3 - fractional
-      ! contribution to the density, etc.
-      prho = 0d0
-      pb = 0d0
-      taup = 0d0
-      gg = 0d0
-      hh = 0d0
-      if (m%wfntyp == 0) then
-         do imo = 1, m%nmo
-            aocc = m%occ(imo) * 0.5d0
-            prho(1) = prho(1) + aocc * phi(imo,1) * phi(imo,1)
-            gg = gg + 2 * aocc * phi(imo,1) * phi(imo,2:4) 
-            hh = hh + 2 * aocc * (phi(imo,1)*phi(imo,5:7)+phi(imo,2:4)**2)
-            taup = taup + aocc * (phi(imo,2)*phi(imo,2)+phi(imo,3)*phi(imo,3)+phi(imo,4)*phi(imo,4))
-         enddo
          prho(2) = prho(1)
          if (prho(1) > small) then
             drho2 = gg(1)*gg(1)+gg(2)*gg(2)+gg(3)*gg(3)
@@ -88,81 +73,6 @@
             call bhole(prho(1),quads,1d0,pb(1))
             pb(2) = pb(1)
          endif
-      else if (m%wfntyp == 1) then
-         nmo1 = (m%nmo + m%mult - 1)/2
-         do imo = 1, nmo1
-            aocc = m%occ(imo)
-            prho(1) = prho(1) + aocc * phi(imo,1) * phi(imo,1)
-            gg = gg + 2 * aocc * phi(imo,1) * phi(imo,2:4) 
-            hh = hh + 2 * aocc * (phi(imo,1)*phi(imo,5:7)+phi(imo,2:4)**2)
-            taup = taup + aocc * (phi(imo,2)*phi(imo,2)+phi(imo,3)*phi(imo,3)+phi(imo,4)*phi(imo,4))
-         enddo
-         if (prho(1) > small) then
-            drho2 = gg(1)*gg(1)+gg(2)*gg(2)+gg(3)*gg(3)
-            d2rho = hh(1)+hh(2)+hh(3)
-            dsigs = taup - 0.25d0 * drho2 / max(prho(1),1d-30)
-            quads = (d2rho - 2d0 * dsigs) / 6d0
-            call bhole(prho(1),quads,1d0,pb(1))
-         endif
-         taup = 0d0
-         gg = 0d0
-         hh = 0d0
-         do imo = nmo1+1, m%nmo
-            aocc = m%occ(imo)
-            prho(2) = prho(2) + aocc * phi(imo,1) * phi(imo,1)
-            gg = gg + 2 * aocc * phi(imo,1) * phi(imo,2:4) 
-            hh = hh + 2 * aocc * (phi(imo,1)*phi(imo,5:7)+phi(imo,2:4)**2)
-            taup = taup + aocc * (phi(imo,2)*phi(imo,2)+phi(imo,3)*phi(imo,3)+phi(imo,4)*phi(imo,4))
-         enddo
-         if (prho(2) > small) then
-            drho2 = gg(1)*gg(1)+gg(2)*gg(2)+gg(3)*gg(3)
-            d2rho = hh(1)+hh(2)+hh(3)
-            dsigs = taup - 0.25d0 * drho2 / max(prho(2),1d-30)
-            quads = (d2rho - 2d0 * dsigs) / 6d0
-            call bhole(prho(2),quads,1d0,pb(2))
-         endif
-      else if (m%wfntyp == 2) then
-         nmo1 = m%nmo - m%mult + 1
-         do imo = 1, nmo1
-            aocc = m%occ(imo) * 0.5d0
-            prho(2) = prho(2) + aocc * phi(imo,1) * phi(imo,1)
-            gg = gg + 2 * aocc * phi(imo,1) * phi(imo,2:4) 
-            hh = hh + 2 * aocc * (phi(imo,1)*phi(imo,5:7)+phi(imo,2:4)**2)
-            taup = taup + aocc * (phi(imo,2)*phi(imo,2)+phi(imo,3)*phi(imo,3)+phi(imo,4)*phi(imo,4))
-         enddo
-         if (prho(2) > small) then
-            drho2 = gg(1)*gg(1)+gg(2)*gg(2)+gg(3)*gg(3)
-            d2rho = hh(1)+hh(2)+hh(3)
-            dsigs = taup - 0.25d0 * drho2 / max(prho(2),1d-30)
-            quads = (d2rho - 2d0 * dsigs) / 6d0
-            call bhole(prho(2),quads,1d0,pb(2))
-         endif
-         prho(1) = prho(2)
-         do imo = nmo1+1, m%nmo
-            aocc = m%occ(imo)
-            prho(1) = prho(1) + aocc * phi(imo,1) * phi(imo,1)
-            gg = gg + 2 * aocc * phi(imo,1) * phi(imo,2:4) 
-            hh = hh + 2 * aocc * (phi(imo,1)*phi(imo,5:7)+phi(imo,2:4)**2)
-            taup = taup + aocc * (phi(imo,2)*phi(imo,2)+phi(imo,3)*phi(imo,3)+phi(imo,4)*phi(imo,4))
-         enddo
-         if (prho(1) > small) then
-            drho2 = gg(1)*gg(1)+gg(2)*gg(2)+gg(3)*gg(3)
-            d2rho = hh(1)+hh(2)+hh(3)
-            dsigs = taup - 0.25d0 * drho2 / max(prho(1),1d-30)
-            quads = (d2rho - 2d0 * dsigs) / 6d0
-            call bhole(prho(1),quads,1d0,pb(1))
-         endif
-      else
-         call error("evalwfn","wfn type not implemented",2)
-      endif
-      !$omp critical (write)
-      rho(i,:) = prho(:)
-      b(i,:) = pb(:)
-      !$omp end critical (write)
-   enddo ! i = 1, nr
-   !$omp end parallel do
-
- end subroutine propts
 
  subroutine bhole(rho,quad,hnorm,b)
    use param

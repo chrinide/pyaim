@@ -7,8 +7,32 @@ import h5py
 import numpy
 import ctypes
 import signal
+
 from pyscf import lib, dft
 from pyscf.lib import logger
+from pyscf.lib.parameters import BOHR
+
+# Free Atomic Polarizabilities from
+# CRC Handbook of Chemistry and Physics, 88th Ed.
+# untis are AA^3, then transformed to au (0.529...)^3.
+FREPOL = (1.0/BOHR**3) * numpy.array((0,
+    0.6668,   0.2051,  24.3300,   5.6000,   3.0300,   1.7600, 
+    1.1000,   0.8020,   0.5570,   0.3956,  24.1100,  10.6000, 
+    6.8000,   5.3800,   3.6300,   2.9000,   2.1800,   1.6411, 
+   43.4000,  22.8000,  17.8000,  14.6000,  12.4000,  11.6000, 
+    9.4000,   8.4000,   7.5000,   6.8000,   6.2000,   5.7500, 
+    8.1200,   6.0700,   4.3100,   3.7700,   3.0500,   2.4844, 
+   47.3000,  27.6000,  22.7000,  17.9000,  15.7000,  12.8000, 
+   11.4000,   9.6000,   8.6000,   4.8000,   7.2000,   7.3600, 
+   10.2000,   7.7000,   6.6000,   5.5000,   5.3500,   4.0440, 
+   59.4200,  39.7000,  31.1000,  29.6000,  28.2000,  31.4000, 
+   30.1000,  28.8000,  27.7000,  23.5000,  25.5000,  24.5000, 
+   23.6000,  22.7000,  21.8000,  21.0000,  21.9000,  16.2000, 
+   13.1000,  11.1000,   9.7000,   8.5000,   7.6000,   6.5000, 
+    5.8000,   5.0200,   7.6000,   6.8000,   7.4000,   6.8000, 
+    6.0000,   5.3000,  48.6000,  38.3000,  32.1000,  32.1000, 
+   25.4000,  24.9000,  24.8000,  24.5000,  23.3000,  23.0000, 
+   22.7000,  20.5000,  19.7000,  23.8000,  18.2000,  17.5000)) 
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -63,11 +87,11 @@ def rho(self,x):
 #    return self
 
 def vfree(self):    
-    self.vfree = numpy.zeros(self.natm)
+    self.frevol = numpy.zeros(self.natm)
     chf = self.chf
     libaim.frevol.restype = ctypes.c_double
     for i in range(self.natm):
-        self.vfree[i] = libaim.frevol(ctypes.c_int(self.charges[i]), ctypes.c_double(chf))
+        self.frevol[i] = libaim.frevol(ctypes.c_int(self.charges[i]), ctypes.c_double(chf))
     return self
 
 def integrate(self):
@@ -125,14 +149,14 @@ class Hirshfeld(lib.StreamObject):
         self.non0tab = False
         self.corr = False
         self.occdrop = 1e-6
-        self.mol = lib.chkfile.load_mol(self.chkfile)
         self.chf = 0.0
         self.small_rho_cutoff = 1e-6
         self.prune = False
 ##################################################
 # don't modify the following attributes, they are not input options
+        self.mol = lib.chkfile.load_mol(self.chkfile)
         self.grids = dft.Grids(self.mol)
-        self.vfree = None
+        self.frevol = None
         self.rdm1 = None
         self.nocc = None
         self.mo_coeff = None
@@ -174,7 +198,7 @@ class Hirshfeld(lib.StreamObject):
         logger.info(self,'Atom Coordinates (Bohr)')
         for i in range(self.natm):
             logger.info(self,'Nuclei %d with charge %d with Vfree %f and position : %.6f  %.6f  %.6f', i, 
-                        self.charges[i], self.vfree[i], *self.coords[i])
+                        self.charges[i], self.frevol[i], *self.coords[i])
 
         logger.info(self,'* Basis Info')
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
@@ -184,13 +208,14 @@ class Hirshfeld(lib.StreamObject):
         logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Grid Info')
-        logger.info(self,'Grids dens level %d', self.grids.level)
+        logger.info(self,'Pruning grids %s', self.grids.prune)
         if self.grids.atom_grid:
             logger.info(self,'User specified grid scheme %s', str(self.grids.atom_grid))
+        else:
+            logger.info(self,'Grids dens level %d', self.grids.level)
         logger.info(self,'Number of points %s', len(self.grids.weights))
         logger.info(self,'Radial grids %s', self.grids.radi_method)
         logger.info(self,'Becke partition %s', self.grids.becke_scheme)
-        logger.info(self,'Pruning grids %s', self.grids.prune)
         if self.grids.radii_adjust is not None:
             logger.info(self,'Atomic radii adjust function %s',
                         self.grids.radii_adjust)
@@ -252,5 +277,6 @@ if __name__ == '__main__':
     bas = Hirshfeld(name)
     bas.verbose = 4
     bas.grids.level = 4
+    bas.grids.prune = None
     bas.kernel()
 

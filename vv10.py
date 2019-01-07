@@ -188,6 +188,6 @@ if __name__ == '__main__':
     name = 'h2o.chk'
     bas = VV10(name)
     bas.verbose = 4
-    bas.inucs = [0,0]
+    bas.inucs = [0,1]
     bas.kernel()
 
