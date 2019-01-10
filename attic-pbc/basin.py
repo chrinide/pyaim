@@ -5,9 +5,11 @@ import time
 import h5py
 import numpy
 import signal
+
 from pyscf import lib
-from pyscf import dft
+from pyscf.pbc import dft
 from pyscf.lib import logger
+from pyscf.pbc import lib as libpbc
 
 import grid
 
@@ -19,56 +21,11 @@ if sys.version_info >= (3,):
 
 EPS = 1e-7
 
+# TODO: screaning of points
 def rho(self,x):
-    x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    ngrids, nao = ao.shape
-    pos = self.mo_occ > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros(ngrids)
-    c0 = numpy.dot(ao, cpos)
-    rho = numpy.einsum('pi,pi->p', c0, c0)
+    ao = dft.numint.eval_ao(self.cell, x, deriv=0)
+    rho = dft.numint.eval_rho2(self.cell, ao, self.mo_coeff, self.mo_occ, xctype='LDA') 
     return rho
-
-def mom(self,x,w,origin):
-    x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    ngrids, nao = ao.shape
-    pos = self.mo_occ > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros(ngrids)
-    c0 = numpy.dot(ao, cpos)
-    rho = numpy.einsum('pi,pi->p', c0, c0)
-    r = numpy.zeros(ngrids)
-    for i in range(ngrids):
-        r[i] = numpy.linalg.norm(x[i,:]-origin)
-    mom1 = numpy.dot(rho,r*w)
-    mom2 = numpy.dot(rho,r*r*w) 
-    mom3 = numpy.dot(rho,r*r*r*w) 
-    return mom1,mom2,mom3
-
-def dip(self,x,w,origin):
-    x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    ngrids, nao = ao.shape
-    pos = self.mo_occ > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros(ngrids)
-    c0 = numpy.dot(ao, cpos)
-    rho = numpy.einsum('pi,pi->p', c0, c0)
-    xx = numpy.dot(rho,(x[:,0]-origin[0])*w)
-    yy = numpy.dot(rho,(x[:,1]-origin[1])*w) 
-    zz = numpy.dot(rho,(x[:,2]-origin[2])*w) 
-    return xx,yy,zz
-
-def prune_small_rho_grids(self):
-    rhop = rho(self,self.p)
-    rhop *= self.w
-    idx = abs(rhop) > self.small_rho_cutoff/self.w.size
-    logger.info(self,'Dropped grids %d' % (self.w.size - numpy.count_nonzero(idx)))
-    self.p = numpy.asarray(self.p[idx], order='C')
-    self.w = numpy.asarray(self.w[idx], order='C')
-    return self
 
 def inbasin(self,r,j):
     isin = False
@@ -98,10 +55,11 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    coords = []
-    weigths = []
+    rprops = 0.0
     for n in range(nrad):
         r = rmesh[n]
+        coords = []
+        weigths = []
         for j in range(npang):
             inside = True
             inside = inbasin(self,r,j)
@@ -114,13 +72,15 @@ def out_beta(self):
                 xcoor[2] = r*cost    
                 p = self.xnuc + xcoor
                 coords.append(p)
-                weigths.append(coordsang[j,4]*dvol[n]*rwei[n])
-    coords = numpy.array(coords)
-    weigths = numpy.array(weigths)
-    npoints = len(weigths)
-    logger.info(self,'Outside number of points %d' % npoints)
+                weigths.append(coordsang[j,4])
+        coords = numpy.array(coords)
+        weigths = numpy.array(weigths)
+        val = rho(self,coords)
+        props = numpy.einsum('i,i->', val, weigths)
+        rprops += props*dvol[n]*rwei[n]
+    logger.info(self,'*--> Density outside bsphere %8.5f', rprops)    
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
-    return coords, weigths
+    return rprops
     
 def int_beta(self): 
     logger.info(self,'* Go with inside betasphere')
@@ -136,8 +96,7 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    coords = []
-    weigths = []
+    rprops = 0.0
     for n in range(nrad):
         r = rmesh[n]
         for j in range(npang): # j-loop can be changed to map
@@ -148,16 +107,15 @@ def int_beta(self):
             xcoor[1] = r*sintsinp
             xcoor[2] = r*cost    
             p = self.xnuc + xcoor
-            coords.append(p)
-            weigths.append(coordsang[j,4]*dvol[n]*rwei[n])
-    coords = numpy.asarray(coords)
-    weigths = numpy.asarray(weigths)
-    npoints = len(weigths)
-    logger.info(self,'Inside number of points %d' % npoints)
+            coords[j] = p
+        val = rho(self,coords)
+        props = numpy.einsum('i,i->', val, coordsang[:,4])
+        rprops += props*dvol[n]*rwei[n]
+    logger.info(self,'*--> Density inside bsphere %8.5f', rprops)    
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
-    return coords, weigths
+    return rprops
 
-class Points(lib.StreamObject):
+class Basin(lib.StreamObject):
 
     def __init__(self, datafile):
         self.verbose = logger.NOTE
@@ -176,12 +134,14 @@ class Points(lib.StreamObject):
         self.bnpang = 3074
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
+        self.non0tab = False
+        self.corr = False
         self.occdrop = 1e-6
-        self.small_rho_cutoff = 1e-6
-        self.prune = False
 ##################################################
 # don't modify the following attributes, they are not input options
-        self.mol = None
+        self.rdm1 = None
+        self.nocc = None
+        self.cell = None
         self.mo_coeff = None
         self.mo_occ = None
         self.ntrial = None
@@ -199,10 +159,10 @@ class Points(lib.StreamObject):
         self.nelectron = None
         self.charge = None
         self.spin = None
+        self.nprims = None
+        self.nmo = None
         self.rad = None
         self.brad = None
-        self.w = None
-        self.p = None
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -222,8 +182,9 @@ class Points(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
+        logger.info(self,'Correlated ? %s' % self.corr)
 
-        logger.info(self,'* Molecular Info')
+        logger.info(self,'* Cell Info')
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -232,6 +193,13 @@ class Points(lib.StreamObject):
         for i in range(self.natm):
             logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
                         self.charges[i], *self.coords[i])
+
+        logger.info(self,'* Basis Info')
+        logger.info(self,'Number of molecular orbitals %d' % self.nmo)
+        logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
+        #logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
+        logger.info(self,'Number of molecular primitives %d' % self.nprims)
+        #logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
@@ -244,8 +212,6 @@ class Points(lib.StreamObject):
         logger.info(self,'Rmax for surface %f', self.rmax)
 
         logger.info(self,'* Radial and angular grid Info')
-        logger.info(self,'Will be the grid pruned ? %s' % self.prune)
-        logger.info(self,'Rho*W cutoff %e' % self.small_rho_cutoff)
         logger.info(self,'Npang points inside %d' % self.bnpang)
         logger.info(self,'Number of radial points outside %d', self.nrad)
         logger.info(self,'Number of radial points inside %d', self.bnrad)
@@ -265,19 +231,32 @@ class Points(lib.StreamObject):
         t0 = time.clock()
         lib.logger.TIMER_LEVEL = 3
 
-        self.mol = lib.chkfile.load_mol(self.chkfile)
+        self.cell = libpbc.chkfile.load_cell(self.chkfile)
+        self.nelectron = self.cell.nelectron 
+        self.charge = self.cell.charge    
+        self.spin = self.cell.spin      
+        self.natm = self.cell.natm		
+        self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in self.cell._atom])
+        self.charges = self.cell.atom_charges()
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
-        self.nelectron = self.mol.nelectron 
-        self.charge = self.mol.charge    
-        self.spin = self.mol.spin      
-        self.natm = self.mol.natm		
-        self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in self.mol._atom])
-        self.charges = self.mol.atom_charges()
+        nprims, nmo = self.mo_coeff.shape 
+        self.nprims = nprims
+        self.nmo = nmo
         if self.charges[self.inuc] == 1:
             self.rad = grid.BRAGG[self.charges[self.inuc]]
         else:
             self.rad = grid.BRAGG[self.charges[self.inuc]]*0.5
+
+        #if (self.corr):
+        #    self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+        #    natocc, natorb = numpy.linalg.eigh(self.rdm1)
+        #    natorb = numpy.dot(self.mo_coeff, natorb)
+        #    self.mo_coeff = natorb
+        #    self.mo_occ = natocc
+        #nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+        #nocc = len(nocc)
+        #self.nocc = nocc
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
@@ -317,47 +296,34 @@ class Points(lib.StreamObject):
             self.bmapr = 0
 
         with lib.with_omp_threads(self.nthreads):
-            bpoints, bweigths = int_beta(self)
-            points, weigths = out_beta(self)
-
-        self.w = numpy.hstack((bweigths, weigths))
-        self.p = numpy.vstack((bpoints, points))
-        logger.info(self,'Total number of points for atom %d %d' % (self.inuc,len(self.w)))
-        if (self.prune):
-            prune_small_rho_grids(self)
-            logger.info(self,'Total number pruned points for atom %d %d' % (self.inuc,len(self.w)))
+            brprops = int_beta(self)
+            rprops = out_beta(self)
 
         logger.info(self,'Write info to HDF5 file')
-        atom_dic = {'w':self.w,
-                    'p':self.p}
-        lib.chkfile.save(self.surfile, 'grid'+str(self.inuc), atom_dic)
-        logger.info(self,'Points of atom %d done',self.inuc)
-        logger.timer(self,'Points build', t0)
+        #atom_dic = {'inprops':brprops,
+        #            'outprops':rprops,
+        #            'totprops':(brprops+rprops)}
+        #lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
+        logger.info(self,'*-> Total density %8.5f', (rprops+brprops))    
+        logger.info(self,'Basim properties of atom %d done',self.inuc)
+        logger.timer(self,'Basin build', t0)
 
         return self
 
     kernel = build
 
 if __name__ == '__main__':
-    natm = 3
-    name = 'h2o.chk'
-    bas = Points(name)
+    name = 'gamma.chk'
+    bas = Basin(name)
     bas.verbose = 4
-    bas.nrad = 101
+    bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'becke'
-    bas.bnrad = 101
-    bas.bnpang = 1202
+    bas.mapr = 'exp'
+    bas.bnrad = 121
+    bas.bnpang = 3074
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    bas.prune = True
-    for i in range(natm):
-        bas.inuc = i
-        bas.kernel()
-        t0 = time.time()
-        rhop = rho(bas,bas.p)
-        rhov = numpy.dot(rhop,bas.w)
-        logger.info(bas,'Atom %d density %f' % (i,rhov))
-        logger.info(bas,'Time for density using precomputed grid %.3f (sec)' % (time.time()-t0))
+    bas.inuc = 0
+    bas.kernel()
 

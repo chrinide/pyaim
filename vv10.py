@@ -34,8 +34,8 @@ def rho_grad(self,x):
         c1 = numpy.dot(ao[i], cpos)
         rho[i] += numpy.einsum('pi,pi->p', c0, c1)*2.0
     rho[4] = numpy.einsum('pi,pi->i',rho[-3:],rho[-3:])
-    rho[4] = numpy.sqrt(rho[4])
-    rho[4] *= rho[4]
+    #rho[4] = numpy.sqrt(rho[4])
+    #rho[4] *= rho[4]
     return rho
 
 def vv10_e(self):

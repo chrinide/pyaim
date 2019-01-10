@@ -26,6 +26,11 @@ double vv10(const int n1,
   double kappa_pref;
   kappa_pref = coef_B*(1.5*pi)/pow(9.0*pi,1.0/6.0);
 
+#pragma omp parallel default(none) reduction(+:vv10_e) \
+  private(idx,jdx) \
+  shared(coords11,coords22,rho11,rho22,weights11,weights22,gnorm211,gnorm222,kappa_pref,coef_beta) 
+{
+#pragma omp for nowait schedule(dynamic)
   for (idx=0; idx<n1; idx++){
     double point1x = coords11[idx*3+0];
     double point1y = coords11[idx*3+1];
@@ -38,10 +43,6 @@ double vv10(const int n1,
     double W01 = sqrt(Wg1 + Wp1);
     double kappa1 = pow(rho1,1.0/6.0)*kappa_pref;
     double kernel = 0.0;
-#pragma omp parallel default(none) reduction(+:kernel) \
-    shared(point1x,point1y,point1z,coords22,rho22,weights22,kappa_pref,gnorm222,kappa1,W01)
-{
-#pragma omp for nowait schedule(dynamic)
     for (jdx=0; jdx<n2; jdx++){
       double R = (point1x-coords22[jdx*3+0])*(point1x-coords22[jdx*3+0]);
       R += (point1y-coords22[jdx*3+1])*(point1y-coords22[jdx*3+1]);
@@ -57,10 +58,9 @@ double vv10(const int n1,
       double gp = W02*R + kappa2;
       kernel += -1.5*weigth2*rho2/(g*gp*(g+gp));
     }
-} 
     vv10_e += weigth1*rho1*(coef_beta + 0.5*kernel);
   }
- 
+}
   return vv10_e;
 
 }
