@@ -34,56 +34,38 @@ HMINIMAL = numpy.finfo(numpy.float64).eps
 def rhograd(self, x):
 
     x = numpy.reshape(x, (-1,3))
-    x = numpy.asarray(x, order='F')
-    kpts = numpy.reshape(self.kpts, (-1,3))
     if self.cart:
         feval = 'PBCGTOval_cart_deriv1'
     else:
         feval = 'PBCGTOval_sph_deriv1' 
-    kpts_lst = numpy.reshape(kpts, (-1,3))
-    nkpts = len(kpts_lst)
-    out = numpy.empty((nkpts,4,self.nao,1), dtype=numpy.complex128)
-    expLk = self.explk
-    rcut = self.rcut
+    out = numpy.empty((self.nkpts,4,self.nao,1), dtype=numpy.complex128)
 
     drv = getattr(libpbcgto, feval)
     drv(ctypes.c_int(1),
         (ctypes.c_int*2)(*self.shls_slice), self.ao_loc.ctypes.data_as(ctypes.c_void_p),
         self.ls.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(len(self.ls)),
-        expLk.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(nkpts),
+        self.explk.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nkpts),
         out.ctypes.data_as(ctypes.c_void_p),
         x.ctypes.data_as(ctypes.c_void_p),
-        rcut.ctypes.data_as(ctypes.c_void_p),
+        self.rcut.ctypes.data_as(ctypes.c_void_p),
         self.non0tab.ctypes.data_as(ctypes.c_void_p),
         self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
         self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
         self.env.ctypes.data_as(ctypes.c_void_p))
 
-    ao_kpts = []
-    for k, kpt in enumerate(kpts_lst):
-        v = out[k]
-        if abs(kpt).sum() < 1e-9:
-            v = numpy.asarray(v.real, order='C')
-        v = v.transpose(0,2,1)
-        ao_kpts.append(v)
-
-    rho = numpy.empty((4,1))
-    if nkpts == 1:  # A single k-point
-        ao_kpts = ao_kpts[0]
-        pos = self.mo_occ > self.occdrop
-        cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-        c0 = numpy.dot(ao_kpts[0], cpos)
-        rho[0] = numpy.einsum('pi,pi->p',c0, c0)
-        c1 = numpy.dot(ao_kpts[1], cpos)
-        rho[1] = numpy.einsum('pi,pi->p', c0, c1)*2
-        c1 = numpy.dot(ao_kpts[2], cpos)
-        rho[2] = numpy.einsum('pi,pi->p', c0, c1)*2
-        c1 = numpy.dot(ao_kpts[3], cpos)
-        rho[3] = numpy.einsum('pi,pi->p', c0, c1)*2
-        gradmod = numpy.linalg.norm(rho[-3:,0])
-    else:
-        pass
-
+    out = out[0].transpose(0,2,1).real
+    rho = numpy.zeros((4,1))
+    pos = self.mo_occ > self.occdrop
+    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
+    c0 = numpy.dot(out[0], cpos)
+    rho[0] = numpy.einsum('pi,pi->p',c0, c0)
+    c1 = numpy.dot(out[1], cpos)
+    rho[1] = numpy.einsum('pi,pi->p',c0, c1)*2
+    c1 = numpy.dot(out[2], cpos)
+    rho[2] = numpy.einsum('pi,pi->p',c0, c1)*2
+    c1 = numpy.dot(out[3], cpos)
+    rho[3] = numpy.einsum('pi,pi->p',c0, c1)*2
+    gradmod = numpy.linalg.norm(rho[-3:,0])
     return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod
 
 def gradrho(self, xpoint, h):
@@ -171,7 +153,9 @@ class BaderSurf(lib.StreamObject):
 ##################################################
 # don't modify the following attributes, they are not input options
         self.cell = None
+        self.vol = None
         self.a = None
+        self.b = None
         self.mo_coeff = None
         self.mo_occ = None
         self.nocc = None
@@ -228,10 +212,16 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Cell Info')
+        logger.info(self,'Lattice vectors (Bohr)')
         for i in range(3):
-            logger.info(self,'Cell %d axis : %.6f  %.6f  %.6f', i, *self.a[i])
-
-        logger.info(self,'Number of cells %d' % len(self.ls))
+            logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
+        logger.info(self,'Lattice reciprocal vectors (1/Bohr)')
+        for i in range(3):
+            logger.info(self,'Cell b%d axis : %.6f  %.6f  %.6f', i, *self.b[i])
+        logger.info(self,'Cell volume %g (Bohr^3)', self.vol)
+        logger.info(self,'Number of cell vectors %d' % len(self.ls))
+        logger.info(self,'Number of kpoints %d ' % self.nkpts)
+        logger.info(self,'K-point %d : %.6f  %.6f  %.6f', 1, *self.kpts)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -245,7 +235,7 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Is cartesian %s' % self.cart)
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
         logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
-        #logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
+        logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
         logger.debug(self,'Occs : %s' % self.mo_occ) 
 
@@ -280,16 +270,17 @@ class BaderSurf(lib.StreamObject):
         cell = libpbc.chkfile.load_cell(self.chkfile)
         cell.ecp = None
         self.cell = cell
-        self.a = numpy.array(cell.a)
-        self.nelectron = cell.nelectron 
-        self.charge = cell.charge    
-        self.spin = cell.spin      
-        self.natm = cell.natm		
+        self.a = self.cell.lattice_vectors()
+        self.b = self.cell.reciprocal_vectors()
+        self.vol = self.cell.vol
+        self.nelectron = self.cell.nelectron 
+        self.charge = self.cell.charge    
+        self.spin = self.cell.spin      
+        self.natm = self.cell.natm		
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
-        #self.kpts = lib.chkfile.load(self.chkfile, 'scf/kpts')
-        self.kpts = [0,0,0]
-        self.nkpts = 1
+        self.kpts = lib.chkfile.load(self.chkfile, 'kcell/kpts')
+        self.nkpts = len(self.kpts)
         self.ls = cell.get_lattice_Ls(dimension=3)
         self.ls = self.ls[numpy.argsort(lib.norm(self.ls, axis=1))]
         self.atm = numpy.asarray(cell._atm, dtype=numpy.int32, order='C')
@@ -312,6 +303,16 @@ class BaderSurf(lib.StreamObject):
         self.cart = cell.cart
         if (not self.leb):
             self.npang = self.npphi*self.nptheta
+
+        if (self.corr):
+            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
+            natorb = numpy.dot(self.mo_coeff, natorb)
+            self.mo_coeff = natorb
+            self.mo_occ = natocc
+        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+        nocc = len(nocc)
+        self.nocc = nocc
 
         self.rcut = _estimate_rcut(self)
         kpts = numpy.reshape(self.kpts, (-1,3))

@@ -19,13 +19,15 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 if sys.version_info >= (3,):
     unicode = str
 
+NPROPS = 3
+PROPS = ['density', 'kinetic', 'laplacian']
 EPS = 1e-7
 
 # TODO: screaning of points
 def rho(self,x):
-    ao = dft.numint.eval_ao(self.cell, x, deriv=0)
-    rho = dft.numint.eval_rho2(self.cell, ao, self.mo_coeff, self.mo_occ, xctype='LDA') 
-    return rho
+    ao = dft.numint.eval_ao(self.cell, x, deriv=2)
+    rho = dft.numint.eval_rho2(self.cell, ao, self.mo_coeff, self.mo_occ, xctype='MGGA') 
+    return numpy.array([rho[0],rho[5],rho[4]])
 
 def inbasin(self,r,j):
     isin = False
@@ -55,7 +57,7 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    rprops = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
         coords = []
@@ -76,9 +78,10 @@ def out_beta(self):
         coords = numpy.array(coords)
         weigths = numpy.array(weigths)
         val = rho(self,coords)
-        props = numpy.einsum('i,i->', val, weigths)
+        props = numpy.einsum('pi,i->p', val, weigths)
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Density outside bsphere %8.5f', rprops)    
+    for i in range(NPROPS):
+        logger.info(self,'*--> %s outside bsphere %8.5f ', PROPS[i], rprops[i])    
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
@@ -96,7 +99,7 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    rprops = 0.0
+    rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
         r = rmesh[n]
         for j in range(npang): # j-loop can be changed to map
@@ -109,9 +112,10 @@ def int_beta(self):
             p = self.xnuc + xcoor
             coords[j] = p
         val = rho(self,coords)
-        props = numpy.einsum('i,i->', val, coordsang[:,4])
+        props = numpy.einsum('pi,i->p', val, coordsang[:,4])
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Density inside bsphere %8.5f', rprops)    
+    for i in range(NPROPS):
+        logger.info(self,'*--> %s inside bsphere %8.5f ', PROPS[i], rprops[i])    
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
@@ -142,6 +146,12 @@ class Basin(lib.StreamObject):
         self.rdm1 = None
         self.nocc = None
         self.cell = None
+        self.a = None
+        self.b = None
+        self.cell = None
+        self.kpts = None
+        self.nkpts = None
+        self.ls = None
         self.mo_coeff = None
         self.mo_occ = None
         self.ntrial = None
@@ -185,6 +195,16 @@ class Basin(lib.StreamObject):
         logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Cell Info')
+        logger.info(self,'Lattice vectors (Bohr)')
+        for i in range(3):
+            logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
+        logger.info(self,'Lattice reciprocal vectors (1/Bohr)')
+        for i in range(3):
+            logger.info(self,'Cell b%d axis : %.6f  %.6f  %.6f', i, *self.b[i])
+        logger.info(self,'Cell volume %g (Bohr^3)', self.vol)
+        logger.info(self,'Number of cell vectors %d' % len(self.ls))
+        logger.info(self,'Number of kpoints %d ' % self.nkpts)
+        logger.info(self,'K-point %d : %.6f  %.6f  %.6f', 1, *self.kpts)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -197,9 +217,9 @@ class Basin(lib.StreamObject):
         logger.info(self,'* Basis Info')
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
         logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
-        #logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
+        logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
-        #logger.debug(self,'Occs : %s' % self.mo_occ) 
+        logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
@@ -232,10 +252,17 @@ class Basin(lib.StreamObject):
         lib.logger.TIMER_LEVEL = 3
 
         self.cell = libpbc.chkfile.load_cell(self.chkfile)
+        self.a = self.cell.lattice_vectors()
+        self.b = self.cell.reciprocal_vectors()
+        self.vol = self.cell.vol
         self.nelectron = self.cell.nelectron 
         self.charge = self.cell.charge    
         self.spin = self.cell.spin      
         self.natm = self.cell.natm		
+        self.ls = self.cell.get_lattice_Ls(dimension=3)
+        self.ls = self.ls[numpy.argsort(lib.norm(self.ls, axis=1))]
+        self.kpts = lib.chkfile.load(self.chkfile, 'kcell/kpts')
+        self.nkpts = len(self.kpts)
         self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in self.cell._atom])
         self.charges = self.cell.atom_charges()
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
@@ -248,15 +275,15 @@ class Basin(lib.StreamObject):
         else:
             self.rad = grid.BRAGG[self.charges[self.inuc]]*0.5
 
-        #if (self.corr):
-        #    self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
-        #    natocc, natorb = numpy.linalg.eigh(self.rdm1)
-        #    natorb = numpy.dot(self.mo_coeff, natorb)
-        #    self.mo_coeff = natorb
-        #    self.mo_occ = natocc
-        #nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        #nocc = len(nocc)
-        #self.nocc = nocc
+        if (self.corr):
+            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
+            natorb = numpy.dot(self.mo_coeff, natorb)
+            self.mo_coeff = natorb
+            self.mo_occ = natocc
+        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+        nocc = len(nocc)
+        self.nocc = nocc
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
@@ -300,11 +327,12 @@ class Basin(lib.StreamObject):
             rprops = out_beta(self)
 
         logger.info(self,'Write info to HDF5 file')
-        #atom_dic = {'inprops':brprops,
-        #            'outprops':rprops,
-        #            'totprops':(brprops+rprops)}
-        #lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
-        logger.info(self,'*-> Total density %8.5f', (rprops+brprops))    
+        atom_dic = {'inprops':brprops,
+                    'outprops':rprops,
+                    'totprops':(brprops+rprops)}
+        lib.chkfile.save(self.surfile, 'atom_props'+str(self.inuc), atom_dic)
+        for i in range(NPROPS):
+            logger.info(self,'*-> Total %s %8.5f ', PROPS[i], (rprops[i]+brprops[i]))    
         logger.info(self,'Basim properties of atom %d done',self.inuc)
         logger.timer(self,'Basin build', t0)
 
@@ -318,7 +346,7 @@ if __name__ == '__main__':
     bas.verbose = 4
     bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'exp'
+    bas.mapr = 'none'
     bas.bnrad = 121
     bas.bnpang = 3074
     bas.biqudr = 'legendre'

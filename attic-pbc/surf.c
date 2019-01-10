@@ -149,7 +149,6 @@ void surf_driver(const int inuc,
 	//printf("The number cell vectors is %d\n", nls_);
   nkpts_ = nkpts;
 	//printf("The number kpoints is %d\n", nkpts_);
-  //a
 	ls_ = (double *) malloc(sizeof(double)*nls_*3);
   assert(ls_ != NULL);
   for (i=0; i<nls_; i++){
@@ -158,7 +157,7 @@ void surf_driver(const int inuc,
     ls_[i*3+2] = ls[i*3+2];
 	  //printf("Coordinate of ls %d %g %g %g\n", i,ls_[i*3+0], ls_[i*3+1], ls_[i*3+2]);
   }
-	explk_ = (double complex *) malloc(sizeof(double complex)*nls_);
+	explk_ = (double complex *) malloc(sizeof(double complex)*nls_*nkpts_);
   assert(explk_ != NULL);
   for (i=0; i<nls_; i++){
     explk_[i] = explk[i];
@@ -191,6 +190,7 @@ void surf_driver(const int inuc,
       ij += 1;
 		}
   }
+
   //double point[3], grad[3], rho, gradmod;
   //point[0] = 0.0;
   //point[1] = 0.0;
@@ -232,7 +232,7 @@ void surf_driver(const int inuc,
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
 	double complex ao_[nprims_*4*nkpts_];
-  double complex c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
+  double c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
 
   if (cart_ == 1) {
     aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
@@ -251,10 +251,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[j+nprims_*0])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[j+nprims_*1])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[j+nprims_*2])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[j+nprims_*3])*mo_coeff_[i*nprims_+j];
+      c0_[i] += creal(ao_[j+nprims_*0])*mo_coeff_[i*nprims_+j];
+      c1_[i] += creal(ao_[j+nprims_*1])*mo_coeff_[i*nprims_+j];
+      c2_[i] += creal(ao_[j+nprims_*2])*mo_coeff_[i*nprims_+j];
+      c3_[i] += creal(ao_[j+nprims_*3])*mo_coeff_[i*nprims_+j];
     }
   }
 
@@ -265,10 +265,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   *gradmod = 0.0;
 
   for (i=0; i<nmo_; i++){
-    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
+    *rho += c0_[i]*c0_[i]*mo_occ_[i];
+    grad[0] += c1_[i]*c0_[i]*mo_occ_[i]*2.0;
+    grad[1] += c2_[i]*c0_[i]*mo_occ_[i]*2.0;
+    grad[2] += c3_[i]*c0_[i]*mo_occ_[i]*2.0;
   }
   
   *gradmod = grad[0]*grad[0];

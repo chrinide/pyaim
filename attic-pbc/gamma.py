@@ -25,21 +25,21 @@ cell.verbose = 4
 cell.symmetry = 0
 cell.build()
 
-mf = pbcscf.RHF(cell).mix_density_fit(auxbasis='def2-svp-jkfit')
+kpts = [0,0,0]
+dic = {'kpts':kpts}
+lib.chkfile.save(name+'.chk', 'kcell', dic)
+
+mf = pbcscf.RHF(cell).density_fit(auxbasis='def2-svp-jkfit')
 mf.exxdiv = None
 mf.max_cycle = 150
 mf.chkfile = name+'.chk'
 #mf.init_guess = 'chk'
-mf.with_df._cderi_to_save = name+'.h5'
-#mf.with_df._cderi = name+'.h5'
-mf.with_df.mesh = [10,10,10] # Tune PWs in MDF for performance/accuracy balance
+#mf.with_df._cderi_to_save = name+'.h5'
+mf.with_df._cderi = name+'.h5'
+#mf.with_df.mesh = [10,10,10] # Tune PWs in MDF for performance/accuracy balance
 mf = scf.addons.remove_linear_dep_(mf)
 mf.kernel()
-
 dm = mf.make_rdm1()
-k = cell.pbc_intor('int1e_kin')
-ekin = einsum('ij,ji->',k,dm)
-print('Kinetic energy : %12.6f' % ekin)
 
 ########################
 def point(r):
