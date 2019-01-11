@@ -124,12 +124,35 @@ void surf_driver(const int inuc,
   assert(shls_ != NULL);
   shls_[0] = 0;
   shls_[1] = nbas_;
-  nmo_ = 0;
-  for (i=0; i<nmo; i++){
-    if (fabs(mo_occ[i]) > occdrop_) nmo_ += 1;
+
+  // Crystal data
+  nls_ = nls;
+  nkpts_ = nkpts;
+	//printf("The number cell vectors is %d\n", nls_);
+	//printf("The number kpoints is %d\n", nkpts_);
+
+	nmo_ = (int *) malloc(sizeof(int)*nkpts_);
+  assert(nmo_ != NULL);
+  for (i=0; i<nkpts_; i++){
+	  nmo_[i] = 0;
+	}
+  for (i=0; i<nkpts_; i++){
+  	for (j=0; j<nmo; j++){
+    	if (fabs(mo_occ[i*nmo+j]) > occdrop_) nmo_[i] += 1;
+		}
+  }
+  for (i=0; i<nkpts_; i++){
+		printf("Number of occupied MO %d %d\n", i, nmo_[i]);
   }
 
-	//printf("Number of occupied MO %d\n", nmo_);
+	
+	// TODO: Change this in case of different occupations per k-point, ex:smearing
+	// For a 3D matrix L by N by M:
+	// matrix[ i ][ j ][ k ] = array[ i*(N*M) + j*M + k ]
+	//int *mat = (int *)malloc(rows * cols * sizeof(int));
+	//Then, you simulate the matrix using
+	//int offset = i * cols + j;
+	// now mat[offset] corresponds to m(i, j)
 	//mo_coeff_ = (double *) malloc(sizeof(double)*nmo_*nprims_);
   //assert(mo_coeff_ != NULL);
 	//mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
@@ -145,11 +168,6 @@ void surf_driver(const int inuc,
   //  }
 	//}
 
-  // Crystal data
-  nls_ = nls;
-	//printf("The number cell vectors is %d\n", nls_);
-  nkpts_ = nkpts;
-	//printf("The number kpoints is %d\n", nkpts_);
 	ls_ = (double *) malloc(sizeof(double)*nls_*3);
   assert(ls_ != NULL);
   for (i=0; i<nls_; i++){
@@ -216,6 +234,7 @@ void surf_driver(const int inuc,
   free(explk_);
   //free(mo_coeff_);
   //free(mo_occ_);
+  free(nmo_);
   free(coords_);
   free(xyzrho_);
   free(xyzrhoshell_);
@@ -237,7 +256,7 @@ void surf_driver(const int inuc,
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
 	double complex ao_[nprims_*4*nkpts_];
-  double complex c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
+  double complex c0_[nmo_[0]],c1_[nmo_[0]],c2_[nmo_[0]],c3_[nmo_[0]]; // TODO:change this
 
   if (cart_ == 1) {
     aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
@@ -249,8 +268,6 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   }
 
   int i, j, k;
-// For a 3D matrix L by N by M:
-// matrix[ i ][ j ][ k ] = array[ i*(N*M) + j*M + k ]
   // ao[0] on kpoint 0
   for (k=0; k<nprims_; k++){
     printf("%f +i%f \n", ao_[0*(4*nprims_)+0*nprims_+k]);

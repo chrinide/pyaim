@@ -3,7 +3,7 @@
 // Atm and basis info
 int natm_;
 int nbas_;
-int nmo_;
+int *__restrict__ nmo_;
 double occdrop_;
 int nprims_;
 int cart_;
