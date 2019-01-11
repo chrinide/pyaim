@@ -8,6 +8,7 @@ import ctypes
 import signal
 
 from pyscf.pbc import lib as libpbc
+from pyscf.pbc import dft
 from pyscf import lib
 from pyscf.lib import logger
 
@@ -417,6 +418,10 @@ class BaderSurf(lib.StreamObject):
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
+        r = numpy.array([0.00000, 0.00000, 0.00000]) 
+        r = numpy.reshape(r, (-1,3))
+        ao = dft.numint.eval_ao_kpts(self.cell, r, kpts=self.kpts, deriv=1)
+        print ao[0][0]
         print rhograd(self,[0,0,0]) 
              
         #self.rmin = 1000.0
