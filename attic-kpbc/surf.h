@@ -4,6 +4,7 @@
 int natm_;
 int nbas_;
 int *__restrict__ nmo_;
+int maxnmo_;
 double occdrop_;
 int nprims_;
 int cart_;

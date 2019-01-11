@@ -45,8 +45,8 @@ void surf_driver(const int inuc,
 						     const unsigned char *non0tab,
                  int *nlimsurf, double *rsurf){
 
-  int i, j;
-
+  int i, j, k;
+ 
   // Setup surface info
   natm_ = natm;
 	//printf("The number of atoms is %d\n", natm_);
@@ -141,30 +141,60 @@ void surf_driver(const int inuc,
     	if (fabs(mo_occ[i*nmo+j]) > occdrop_) nmo_[i] += 1;
 		}
   }
+  int max = nmo_[0];
+	maxnmo_ = max;
+  for (i=1; i<nkpts_; i++){
+		if (nmo_[i] >= max) {
+      max = nmo_[i];
+			maxnmo_ = max;
+    }
+	}
+	printf("Maximum occupied orbitals %d\n", maxnmo_);
   for (i=0; i<nkpts_; i++){
 		printf("Number of occupied MO %d %d\n", i, nmo_[i]);
   }
 
-	
-	// TODO: Change this in case of different occupations per k-point, ex:smearing
-	// For a 3D matrix L by N by M:
+	//For a 3D matrix L by N by M:
 	// matrix[ i ][ j ][ k ] = array[ i*(N*M) + j*M + k ]
-	//int *mat = (int *)malloc(rows * cols * sizeof(int));
-	//Then, you simulate the matrix using
-	//int offset = i * cols + j;
-	// now mat[offset] corresponds to m(i, j)
-	//mo_coeff_ = (double *) malloc(sizeof(double)*nmo_*nprims_);
-  //assert(mo_coeff_ != NULL);
-	//mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
-  //assert(mo_occ_ != NULL);
-  //int k = 0;
+  //For a 2D matrix row*cols
+	// maxtrix[i][j] = array[ i*cols + j ]
+	mo_coeff_ = (double complex *) malloc(sizeof(double complex)*maxnmo_*nprims_*nkpts_);
+  assert(mo_coeff_ != NULL);
+	mo_occ_ = (double *) malloc(sizeof(double)*maxnmo_*nkpts_);
+  assert(mo_occ_ != NULL);
+  int l = 0;
+	for (i=0; i<nkpts_; i++){
+    //printf("coeff value %g + i%g\n",mo_coeff[i*(nprims*nmo)+0*(nmo)+0]);
+    //printf("coeff value %g + i%g\n",mo_coeff[i*(nprims*nmo)+0*(nmo)+1]);
+    //printf("coeff value %g + i%g\n",mo_coeff[i*(nprims*nmo)+0*(nmo)+2]);
+		l = 0;
+		for (k=0; k<nmo; k++){
+      //printf("coeff value %g + i%g\n",mo_coeff[i*(nprims*nmo)+0*(nmo)+k]);
+      if (fabs(mo_occ[i*nmo+k]) > occdrop_){
+				mo_occ_[i*maxnmo_+l] = mo_occ[i*nmo+k];
+	 	    for (j=0; j<nprims_; j++){
+ 					int idx1 = i*(nprims_*nmo)+j*(nmo)+k;
+ 					int idx2 = i*(nprims_*maxnmo_)+j*(maxnmo_)+l;
+          mo_coeff_[idx2] = mo_coeff[idx1];
+				}
+				l += 1;
+			}
+		}
+	}
+	//exit(-1);
+	//for (i=0; i<nkpts_; i++){
+  //  printf("coeff value %g + i%g\n",mo_coeff_[i*(nprims*maxnmo_)+0*(maxnmo_)+0]);
+  //  printf("coeff value %g + i%g\n",mo_coeff_[i*(nprims*maxnmo_)+0*(maxnmo_)+1]);
+  //  printf("coeff value %g + i%g\n",mo_coeff_[i*(nprims*maxnmo_)+0*(maxnmo_)+2]);
+	//}
+
 	//for (i=0; i<nmo; i++){ // Orbital
   //  if (fabs(mo_occ[i]) > occdrop_){
-  //    mo_occ_[k] = mo_occ[i];
+  //    mo_occ_[l] = mo_occ[i];
 	//	  for (j=0; j<nprims_; j++){
-  //      mo_coeff_[k*nprims_+j] = mo_coeff[j*nprims_+i];
+  //      mo_coeff_[l*nprims_+j] = mo_coeff[j*nprims_+i];
   //    }
-  //    k += 1;
+  //    l += 1;
   //  }
 	//}
 
@@ -232,8 +262,8 @@ void surf_driver(const int inuc,
   free(rcut_);
   free(ls_);
   free(explk_);
-  //free(mo_coeff_);
-  //free(mo_occ_);
+  free(mo_coeff_);
+  free(mo_occ_);
   free(nmo_);
   free(coords_);
   free(xyzrho_);
@@ -256,7 +286,7 @@ void surf_driver(const int inuc,
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
 	double complex ao_[nprims_*4*nkpts_];
-  double complex c0_[nmo_[0]],c1_[nmo_[0]],c2_[nmo_[0]],c3_[nmo_[0]]; // TODO:change this
+  double complex c0_[maxnmo_],c1_[maxnmo_],c2_[maxnmo_],c3_[maxnmo_];
 
   if (cart_ == 1) {
     aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
@@ -270,7 +300,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   int i, j, k;
   // ao[0] on kpoint 0
   for (k=0; k<nprims_; k++){
-    printf("%f +i%f \n", ao_[0*(4*nprims_)+0*nprims_+k]);
+    //printf("%f +i%f \n", ao_[0*(4*nprims_)+0*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+1*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+2*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+3*nprims_+k]);
@@ -283,26 +313,28 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   *gradmod = 0.0;
 
 	for (k=0; k<nkpts_; k++){
-  	/*for (i=0; i<nmo_; i++){
+  	for (i=0; i<nmo_[k]; i++){
 	    c0_[i] = 0.0;
 	    c1_[i] = 0.0;
 	    c2_[i] = 0.0;
 	    c3_[i] = 0.0;
 	    for (j=0; j<nprims_; j++){
-	      c0_[i] += conj(ao_[j+nprims_*0])*mo_coeff_[i*nprims_+j];
-	      c1_[i] += conj(ao_[j+nprims_*1])*mo_coeff_[i*nprims_+j];
-	      c2_[i] += conj(ao_[j+nprims_*2])*mo_coeff_[i*nprims_+j];
-	      c3_[i] += conj(ao_[j+nprims_*3])*mo_coeff_[i*nprims_+j];
+        int idx1 = k*(nprims_*maxnmo_)+j*(maxnmo_)+i;
+	      c0_[i] += conj(ao_[k*(4*nprims_)+0*nprims_+j])*mo_coeff_[idx1];
+	      c1_[i] += conj(ao_[k*(4*nprims_)+1*nprims_+j])*mo_coeff_[idx1];
+	      c2_[i] += conj(ao_[k*(4*nprims_)+2*nprims_+j])*mo_coeff_[idx1];
+	      c3_[i] += conj(ao_[k*(4*nprims_)+3*nprims_+j])*mo_coeff_[idx1];
 	    }
 	  }
 	
-	  for (i=0; i<nmo_; i++){
-	    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-	    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-	    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-	    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
-	  }*/
+	  for (i=0; i<nmo_[k]; i++){
+	    *rho += conj(c0_[i])*c0_[i]*mo_occ_[k*maxnmo_+i];
+	    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[k*maxnmo_+i]*2.0;
+	    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[k*maxnmo_+i]*2.0;
+	    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[k*maxnmo_+i]*2.0;
+	  }
 	}
+
   *rho *= 1.0/(double)nkpts_;
   grad[0] *= 1.0/(double)nkpts_;
   grad[1] *= 1.0/(double)nkpts_;
@@ -776,15 +808,6 @@ bool checkcp(double *x, int *nuc){
   *nuc = -2;
   rho_grad(x, &rho, grad, &gradmod);
 
-  //for (i=0; i<natm_; i++){
-  //  if (fabs(x[0]-xyzrho_[i*3+0]) < epsiscp_ &&
-  //      fabs(x[1]-xyzrho_[i*3+1]) < epsiscp_ &&
-  //      fabs(x[2]-xyzrho_[i*3+2]) < epsiscp_){
-  //    iscp = true;
-  //    *nuc = i;
-  //    return iscp;
-  //  }
-  //}
   ij = 0;
   for (i=0; i<nls_; i++){
 		for (j=0; j<natm_; j++){
@@ -792,7 +815,6 @@ bool checkcp(double *x, int *nuc){
 			    fabs(x[1]-xyzrhoshell_[ij*3+1]) < epsiscp_ && 
 			    fabs(x[2]-xyzrhoshell_[ij*3+2]) < epsiscp_){  
 				iscp = true;
-			  //*nuc = idx_[ij];
 			  *nuc = ij;
 				return iscp;
 			}
