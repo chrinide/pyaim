@@ -149,10 +149,10 @@ void surf_driver(const int inuc,
 			maxnmo_ = max;
     }
 	}
-	printf("Maximum occupied orbitals %d\n", maxnmo_);
-  for (i=0; i<nkpts_; i++){
-		printf("Number of occupied MO %d %d\n", i, nmo_[i]);
-  }
+	//printf("Maximum occupied orbitals %d\n", maxnmo_);
+  //for (i=0; i<nkpts_; i++){
+		//printf("Number of occupied MO %d %d\n", i, nmo_[i]);
+  //}
 
 	//For a 3D matrix L by N by M:
 	// matrix[ i ][ j ][ k ] = array[ i*(N*M) + j*M + k ]
@@ -244,20 +244,20 @@ void surf_driver(const int inuc,
 		}
   }
 
-  double point[3], grad[3], rho, gradmod;
-  point[0] = 0.0;
-  point[1] = 0.0;
-  point[2] = 0.0;
-  rho_grad(point, &rho, grad, &gradmod);
-	printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
+  //double point[3], grad[3], rho, gradmod;
+  //point[0] = 0.0;
+  //point[1] = 0.0;
+  //point[2] = 0.0;
+  //rho_grad(point, &rho, grad, &gradmod);
+ //// printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
 
-  //surface();
-	//for (i=0; i<npang_; i++){
-  //  nlimsurf[i] = nlimsurf_[i];
-	//  for (j=0; j<ntrial_; j++){
-  //    rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
-  //  }
-  //}
+  surface();
+	for (i=0; i<npang_; i++){
+    nlimsurf[i] = nlimsurf_[i];
+	  for (j=0; j<ntrial_; j++){
+      rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
+    }
+  }
 
   free(rcut_);
   free(ls_);
@@ -299,12 +299,12 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
   int i, j, k;
   // ao[0] on kpoint 0
-  for (k=0; k<nprims_; k++){
+  //for (k=0; k<nprims_; k++){
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+0*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+1*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+2*nprims_+k]);
     //printf("%f +i%f \n", ao_[0*(4*nprims_)+3*nprims_+k]);
-  }
+  //}
 
   *rho = 0.0;
   grad[0] = 0.0;

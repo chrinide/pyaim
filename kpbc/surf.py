@@ -341,18 +341,18 @@ class BaderSurf(lib.StreamObject):
          
         self.xyzrho = numpy.zeros((self.natm,3))
         t = time.time()
-        #for i in range(self.natm):
-        #    self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
-        #    if (gradmod > 1e-4):
-        #        if (self.charges[i] > 2.0):
-        #            logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        else:
-        #            raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
-        #    else:
-        #        logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        logger.info(self,'Setting xyzrho for atom to imput coords')
-        #        self.xyzrho[i] = self.coords[i]
-        #self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
+        for i in range(self.natm):
+            self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
+            if (gradmod > 1e-4):
+                if (self.charges[i] > 2.0):
+                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                else:
+                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
+            else:
+                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                logger.info(self,'Setting xyzrho for atom to imput coords')
+                self.xyzrho[i] = self.coords[i]
+        self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
         if (self.backend == 'rkck'):
@@ -418,40 +418,32 @@ class BaderSurf(lib.StreamObject):
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
-        r = numpy.array([0.00000, 0.00000, 0.00000]) 
-        r = numpy.reshape(r, (-1,3))
-        ao = dft.numint.eval_ao_kpts(self.cell, r, kpts=self.kpts, deriv=1)
-        #print ao[0][0]
-        print mo_coeff[0,0,0]
-        print mo_coeff[0,0,1]
-        print mo_coeff[0,0,2]
-        print mo_coeff[1,0,0]
-        print mo_coeff[1,0,1]
-        print mo_coeff[1,0,2]
-        print rhograd(self,[0,0,0]) 
+        #r = numpy.array([0.00000, 0.00000, 0.00000]) 
+        #r = numpy.reshape(r, (-1,3))
+        #ao = dft.numint.eval_ao_kpts(self.cell, r, kpts=self.kpts, deriv=1)
+        #print rhograd(self,[0,0,0]) 
              
-        #self.rmin = 1000.0
-        #self.rmax = 0.0
-        #for i in range(self.npang):
-        #    nsurf = int(self.nlimsurf[i])
-        #    self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
-        #    self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
-        #logger.info(self,'Rmin for surface %.6f', self.rmin)
-        #logger.info(self,'Rmax for surface %.6f', self.rmax)
-        #
-        #logger.info(self,'Write HDF5 surface file')
-        #atom_dic = {'inuc':self.inuc,
-        #            'xnuc':self.xnuc,
-        #            'xyzrho':self.xyzrho,
-        #            'coords':self.grids,
-        #            'npang':self.npang,
-        #            'ntrial':self.ntrial,
-        #            'rmin':self.rmin,
-        #            'rmax':self.rmax,
-        #            'nlimsurf':self.nlimsurf,
-        #            'rsurf':self.rsurf}
-        #lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
-        #print self.explk.shape, self.ls.shape
+        self.rmin = 1000.0
+        self.rmax = 0.0
+        for i in range(self.npang):
+            nsurf = int(self.nlimsurf[i])
+            self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
+            self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
+        logger.info(self,'Rmin for surface %.6f', self.rmin)
+        logger.info(self,'Rmax for surface %.6f', self.rmax)
+        
+        logger.info(self,'Write HDF5 surface file')
+        atom_dic = {'inuc':self.inuc,
+                    'xnuc':self.xnuc,
+                    'xyzrho':self.xyzrho,
+                    'coords':self.grids,
+                    'npang':self.npang,
+                    'ntrial':self.ntrial,
+                    'rmin':self.rmin,
+                    'rmax':self.rmax,
+                    'nlimsurf':self.nlimsurf,
+                    'rsurf':self.rsurf}
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
         logger.info(self,'Surface of atom %d saved',self.inuc)
         logger.timer(self,'BaderSurf build', t0)
 
