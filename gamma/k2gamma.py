@@ -150,7 +150,7 @@ if __name__ == '__main__':
                    C     0.      1.7834  1.7834
                    C     0.8917  2.6751  2.6751'''
     cell.a = np.eye(3)*3.5668
-    cell.basis = 'def2-svp'
+    cell.basis = 'sto-3g'
     cell.verbose = 4
     cell.build()
 

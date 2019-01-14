@@ -40,9 +40,9 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 if sys.version_info >= (3,):
     unicode = str
 
+libcgto = lib.load_library('libcgto')
 _loaderpath = os.path.dirname(__file__)
 libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
-libcgto = lib.load_library('libcgto')
 
 HMINIMAL = numpy.finfo(numpy.float64).eps
 
@@ -110,6 +110,9 @@ def integrate(self):
         atomk[i] = numpy.dot(rhop[4],self.grids.weights*hirshfeld)
         atoml[i] = numpy.dot(rhop[5],self.grids.weights*hirshfeld)
         logger.info(self,'Q,K,L of atom %d %f %f %f' % (i,atomq[i],atomk[i],atoml[i]))
+    logger.info(self,'Total density %f' % atomq.sum())
+    logger.info(self,'Total kinetic %f' % atomk.sum())
+    logger.info(self,'Total laplacian %f' % atoml.sum())
     return self
 
 def setweights(self):
