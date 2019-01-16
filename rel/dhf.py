@@ -71,7 +71,6 @@ OCCDROP = 1e-6
 def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
 
     aoa, aob = ao
-    print aoa.shape
     xctype = xctype.upper()
     if xctype == 'LDA' or xctype == 'HF':
         ngrids, nao = aoa.shape[-2:]
@@ -79,20 +78,14 @@ def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
         ngrids, nao = aoa[0].shape[-2:]
 
     if (small == True):
-        mo_occ = numpy.zeros(nao)
-        #mo_occ[] = 0.5/lib.param.LIGHT_SPEED
-        pos = mo_occ > OCCDROP
-        #cposa = mo_coeff[nao:nao/2,pos]*c1**2
-        #cposb = mo_coeff[nao:,pos]*c1**2
-        aoa = aoa[:,:,nao/2:nao]
-        aob = aob[:,:,nao/2:nao]
+        pass
     else:
         pos = mo_occ > OCCDROP
+        print pos
         cposa = mo_coeff[0:nao/2,pos]
         cposb = mo_coeff[nao/2:nao,pos]
         aoa = aoa[:,:,0:nao/2]
         aob = aob[:,:,0:nao/2]
-        print aoa.shape
 
     if (xctype == 'LDA'):
         c0a = lib.dot(aoa, cposa)
@@ -111,15 +104,7 @@ def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
         c0b = lib.dot(aob[0], cposb)
         rhobb = numpy.einsum('pi,pi->p', cposb.real, c0b.real)
         rhobb += numpy.einsum('pi,pi->p', cposb.imag, c0b.imag)
-        print rhobb
         rho[0] = (rhoaa + rhobb)
-        for i in range(1, 4):
-            c1a = numpy.dot(aoa[i], cpos)
-            c1b = numpy.dot(aob[i], cpos)
-            rho[i] += numpy.einsum('pi,pi->p', c0a.real, c1a.real)*2 # *2 for +c.c.
-            rho[i] += numpy.einsum('pi,pi->p', c0a.imag, c1a.imag)*2 # *2 for +c.c.
-            rho[i] += numpy.einsum('pi,pi->p', c0b.real, c1b.real)*2 # *2 for +c.c.
-            rho[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
 
     return rho
 
@@ -148,11 +133,12 @@ mf.with_gaunt = False
 mf.with_breit = False
 mf.chkfile = name+'.chk'
 mf.kernel()
+print mf.mo_occ
 
 grids = dft.gen_grid.Grids(mol)
 grids.kernel()
 dm = mf.make_rdm1()
-print dm
+print dm, dm.shape
 coords = grids.coords
 weights = grids.weights
 
@@ -187,9 +173,9 @@ rhoS = eval_rho(mol, aoLS[2:], dmSS, xctype='GGA')
 print rho
 print rhoS
 print rho+rhoS
-#rho = eval_rho2(mol, aoLS[:2], mf.mo_coeff, mf.mo_occ, small=False, xctype='GGA')
+rho = eval_rho2(mol, aoLS[:2], mf.mo_coeff, mf.mo_occ, small=False, xctype='GGA')
 #rhoS = eval_rho2(mol, aoLS[2:], mf.mo_coeff, mf.mo_occ, small=True, xctype='GGA')
-#print rho
+print rho
 #print rhoS
 #print rho+rhoS
 
