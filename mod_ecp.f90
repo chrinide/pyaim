@@ -85,8 +85,11 @@ module mod_ecp
 contains
  
 subroutine edflib(iz,ncore,nfun,alf,coe) bind(c)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=8), intent(out), dimension(*) :: alf,coe
+integer(kind=4), intent(in), value :: iz
+integer(kind=4), intent(in), value :: ncore
+integer(kind=4), intent(out) :: nfun
 
 nfun = 0
 if(iz < 3 .or. iz > 120) return
