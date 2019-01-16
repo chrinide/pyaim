@@ -143,13 +143,13 @@ void surf_driver(const int inuc,
   //rho_grad(point, &rho, grad, &gradmod);
 	//printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
 
-  surface();
-	for (i=0; i<npang_; i++){
-    nlimsurf[i] = nlimsurf_[i];
-	  for (j=0; j<ntrial_; j++){
-      rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
-    }
-  }
+  //surface();
+	//for (i=0; i<npang_; i++){
+  //  nlimsurf[i] = nlimsurf_[i];
+	//  for (j=0; j<ntrial_; j++){
+  //    rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
+  //  }
+  //}
 
   free(mo_coeff_);
   free(mo_occ_);

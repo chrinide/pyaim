@@ -9,23 +9,15 @@ int nprims_;
 int cart_;
 double *__restrict__ coords_;
 double *__restrict__ xyzrho_;
-double *__restrict__ xyzrhoshell_;
-int *__restrict__ idx_;
 int *__restrict__ atm_;
 int *__restrict__ bas_;
 double *__restrict__ env_;
-double *__restrict__ mo_coeff_;
+double complex *__restrict__ mo_coeff_;
 double *__restrict__ mo_occ_;
 //int8_t *__restrict__ non0tab_;
-unsigned char *__restrict__ non0tab_;
+char *__restrict__ non0tab_;
 int *__restrict__ shls_;
 int *__restrict__ ao_loc_;
-int nls_;
-double *__restrict__ ls_;
-int nkpts_;
-double complex *__restrict__ explk_;
-double *__restrict__ rcut_;
-double a_[3][3];
 
 // Surface info
 #define EPS 1e-7
@@ -86,16 +78,9 @@ void surf_driver(const int inuc,
                  int *bas,
 								 double *env,
                  int *ao_loc,
-                 const double *mo_coeff, 
+                 const double complex *mo_coeff, 
 							   const double *mo_occ, 
                  const double occdrop,
-                 const double *a,
-                 const int nls,
-                 const double *ls,
-                 const int nkpts,
-                 const double complex *explk,
-                 const double *rcut,
-                 const unsigned char *non0tab,
                  int *nlimsurf, double *rsurf);
 
 void rho_grad(double *point, double *rho, double *grad, double *gradmod);
@@ -111,14 +96,6 @@ void steeper_rkck(double *y, double *dydx, double h, double *yout, double *yerr)
 void steeper_rkdp(double *y, double *dydx, double h, double *yout, double *yerr);
 
 // AO evaluators
-void aim_PBCGTOval_cart_deriv1(int ngrids, int *shls_slice, int *ao_loc,
-                           double *Ls, int nimgs, double complex *expLk, int nkpts,
-                           double complex *ao, double *coord,
-                           double *rcut, unsigned char *non0table,
-                           int *atm, int natm, int *bas, int nbas, double *env);
-void aim_PBCGTOval_sph_deriv1(int ngrids, int *shls_slice, int *ao_loc,
-                           double *Ls, int nimgs, double complex *expLk, int nkpts,
-                           double complex *ao, double *coord,
-                           double *rcut, unsigned char *non0table,
-                           int *atm, int natm, int *bas, int nbas, double *env);
-
+void aim_GTOval_spinor_deriv1(int ngrids, int *shls_slice, int *ao_loc,
+                          double complex *ao, double *coord, char *non0table,
+                          int *atm, int natm, int *bas, int nbas, double *env);

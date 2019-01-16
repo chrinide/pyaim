@@ -14,7 +14,7 @@ import grid
 
 libgto = lib.load_library('libcgto')
 _loaderpath = os.path.dirname(__file__)
-libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
+libaim = numpy.ctypeslib.load_library('libaim4c.so', _loaderpath)
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -30,11 +30,15 @@ SAFETY = 0.9
 ENLARGE = 1.6
 HMINIMAL = numpy.finfo(numpy.float64).eps
 
+def make_rdm1(mo_coeff, mo_occ):
+    mocc = mo_coeff[:,mo_occ>0]
+    return numpy.dot(mocc*mo_occ[mo_occ>0], mocc.T.conj())
+
 def rhograd(self, x):
     x = numpy.reshape(x, (-1,3))
-    feval = 'GTOval_spinor_deriv1'
-    ao = numpy.ndarray((2,4,self.nao,1), dtype=numpy.complex128)
 
+    ao = numpy.ndarray((2,4,1,self.nao), dtype=numpy.complex128)
+    feval = 'GTOval_spinor_deriv1'
     drv = getattr(libgto, feval)
     drv(ctypes.c_int(1),
     (ctypes.c_int*2)(*self.shls_slice), 
@@ -45,53 +49,58 @@ def rhograd(self, x):
     self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
     self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
     self.env.ctypes.data_as(ctypes.c_void_p))
+    aoLa, aoLb = ao
 
-    ao = numpy.swapaxes(ao, -1, -2)
-    aoa, aob = ao
-    pos = abs(self.mo_occ) > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros((4,1))
+    aoSa = numpy.ndarray((4,1,self.nao), dtype=numpy.complex128)
+    aoSb = numpy.ndarray((4,1,self.nao), dtype=numpy.complex128)
 
-    # Up
-    c0a = numpy.dot(aoa[0], cpos)
-    raa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
-    raa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
-    rho[0] += raa
-    c1 = numpy.dot(aoa[1], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aoa[2], cpos)
-    rho[2] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
-    rho[2] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aoa[3], cpos)
-    rho[3] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
-    rho[3] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
-    # Down
-    c0b = numpy.dot(aob[0], cpos)
-    rbb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
-    rbb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
-    rho[0] += rbb
-    c1 = numpy.dot(aob[1], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aob[2], cpos)
-    rho[2] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
-    rho[2] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aob[3], cpos)
-    rho[3] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
-    rho[3] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
-    gradmod = numpy.linalg.norm(rho[-3:,0])
-    # Magnetization
-    #rba = numpy.einsum('pi,pi->p', c0b, c0a.conj()) 
-    #rab = numpy.einsum('pi,pi->p', c0a, c0b.conj()) 
-    #mx = rab.real + rba.real
-    #my = rba.imag - rab.imag
-    #mz = raa - rbb
-    #m = numpy.vstack((mx, my, mz))
-    #mgradmod = numpy.linalg.norm(m)
-    #print m, m/(mgradmod+HMINIMAL)
+    ao = numpy.ndarray((2,1,self.nao), dtype=numpy.complex128)
+    feval = 'GTOval_sp_spinor'
+    drv = getattr(libgto, feval)
+    drv(ctypes.c_int(1),
+    (ctypes.c_int*2)(*self.shls_slice), 
+    self.ao_loc.ctypes.data_as(ctypes.c_void_p),
+    ao.ctypes.data_as(ctypes.c_void_p),
+    x.ctypes.data_as(ctypes.c_void_p),
+    self.non0tab.ctypes.data_as(ctypes.c_void_p),
+    self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
+    self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
+    self.env.ctypes.data_as(ctypes.c_void_p))
+    aoSa[0] = ao[0]
+    aoSb[0] = ao[1]
 
-    return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
+    ao = numpy.ndarray((2,3,1,self.nao), dtype=numpy.complex128)
+    feval = 'GTOval_ipsp_spinor'
+    drv = getattr(libgto, feval)
+    drv(ctypes.c_int(1),
+    (ctypes.c_int*2)(*self.shls_slice), 
+    self.ao_loc.ctypes.data_as(ctypes.c_void_p),
+    ao.ctypes.data_as(ctypes.c_void_p),
+    x.ctypes.data_as(ctypes.c_void_p),
+    self.non0tab.ctypes.data_as(ctypes.c_void_p),
+    self.atm.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.natm),
+    self.bas.ctypes.data_as(ctypes.c_void_p), ctypes.c_int(self.nbas),
+    self.env.ctypes.data_as(ctypes.c_void_p))
+    for k in range(1,4):
+        aoSa[k,:,:] = ao[0,k-1,:,:]
+        aoSb[k,:,:] = ao[1,k-1,:,:]
+
+    #rho = numpy.zeros((4,ngrids))
+    #c0a = lib.dot(aoa[0], dm)
+    #rhoaa = numpy.einsum('pi,pi->p', aoa[0].real, c0a.real)
+    #rhoaa += numpy.einsum('pi,pi->p', aoa[0].imag, c0a.imag)
+    #c0b = lib.dot(aob[0], dm)
+    #rhobb = numpy.einsum('pi,pi->p', aob[0].real, c0b.real)
+    #rhobb += numpy.einsum('pi,pi->p', aob[0].imag, c0b.imag)
+    #rho[0] = (rhoaa + rhobb)
+    #for i in range(1, 4):
+    #    rho[i] += numpy.einsum('pi,pi->p', aoa[i].real, c0a.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', aoa[i].imag, c0a.imag)
+    #    rho[i] += numpy.einsum('pi,pi->p', aob[i].real, c0b.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', aob[i].imag, c0b.imag)
+    #    rho[i] *= 2 
+
+    #return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
     #return rho[0,0], m[:,0]/(mgradmod+HMINIMAL), mgradmod 
 
 def gradrho(self, xpoint, h):
@@ -319,17 +328,17 @@ class BaderSurf(lib.StreamObject):
          
         self.xyzrho = numpy.zeros((self.natm,3))
         t = time.time()
-        for i in range(self.natm):
-            self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
-            if (gradmod > 1e-4):
-                if (self.charges[i] > 2.0):
-                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
-                else:
-                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
-            else:
-                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-                logger.info(self,'Setting xyzrho for atom to imput coords')
-                self.xyzrho[i] = self.coords[i]
+        #for i in range(self.natm):
+        #    self.xyzrho[i], gradmod = gradrho(self,self.coords[i],self.step)
+        #    if (gradmod > 1e-4):
+        #        if (self.charges[i] > 2.0):
+        #            logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
+        #        else:
+        #            raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
+        #    else:
+        #        logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+        #        logger.info(self,'Setting xyzrho for atom to imput coords')
+        #        self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
@@ -381,29 +390,30 @@ class BaderSurf(lib.StreamObject):
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
-#       print rhograd(self,[0,0,0])
+        print make_rdm1(self.mo_coeff, self.mo_occ)
+        print rhograd(self,[0,0,0])
              
-        self.rmin = 1000.0
-        self.rmax = 0.0
-        for i in range(self.npang):
-            nsurf = int(self.nlimsurf[i])
-            self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
-            self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
-        logger.info(self,'Rmin for surface %.6f', self.rmin)
-        logger.info(self,'Rmax for surface %.6f', self.rmax)
+        #self.rmin = 1000.0
+        #self.rmax = 0.0
+        #for i in range(self.npang):
+        #    nsurf = int(self.nlimsurf[i])
+        #    self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
+        #    self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
+        #logger.info(self,'Rmin for surface %.6f', self.rmin)
+        #logger.info(self,'Rmax for surface %.6f', self.rmax)
 
-        logger.info(self,'Write HDF5 surface file')
-        atom_dic = {'inuc':self.inuc,
-                    'xnuc':self.xnuc,
-                    'xyzrho':self.xyzrho,
-                    'coords':self.grids,
-                    'npang':self.npang,
-                    'ntrial':self.ntrial,
-                    'rmin':self.rmin,
-                    'rmax':self.rmax,
-                    'nlimsurf':self.nlimsurf,
-                    'rsurf':self.rsurf}
-        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
+        #logger.info(self,'Write HDF5 surface file')
+        #atom_dic = {'inuc':self.inuc,
+        #            'xnuc':self.xnuc,
+        #            'xyzrho':self.xyzrho,
+        #            'coords':self.grids,
+        #            'npang':self.npang,
+        #            'ntrial':self.ntrial,
+        #            'rmin':self.rmin,
+        #            'rmax':self.rmax,
+        #            'nlimsurf':self.nlimsurf,
+        #            'rsurf':self.rsurf}
+        #lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
         logger.info(self,'Surface of atom %d saved',self.inuc)
         logger.timer(self,'BaderSurf build', t0)
 
@@ -412,7 +422,7 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'x2c.chk'
+    name = 'dhf.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
