@@ -78,7 +78,14 @@
 !-----------------------------------------------------------------------------------------------------------------------------------
 module mod_ecp
 
+  use iso_c_binding, only: c_int, c_double
+  implicit none
   private
+
+  integer, parameter :: ip = c_int
+  integer, parameter :: rp = c_double
+
+  integer(kind=ip), parameter :: nmax = 100
 
   public :: edflib
 
@@ -86,10 +93,10 @@ contains
  
 subroutine edflib(iz,ncore,nfun,alf,coe) bind(c)
 implicit none
-real(kind=8), intent(out), dimension(*) :: alf,coe
-integer(kind=4), intent(in), value :: iz
-integer(kind=4), intent(in), value :: ncore
-integer(kind=4), intent(out) :: nfun
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(in), value :: ncore
+integer(kind=ip), intent(out) :: nfun
 
 nfun = 0
 if(iz < 3 .or. iz > 120) return
@@ -126,8 +133,10 @@ end
 !---  EDF data library: ncore =  2, iz =  3- 12
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB02(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(003)
@@ -265,8 +274,10 @@ end
 !---  EDF data library: ncore = 10, iz = 11- 36
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB10(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(011)
@@ -700,8 +711,10 @@ end
 !---  EDF data library: ncore = 18, iz = 19- 36
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB18(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(019)
@@ -1049,8 +1062,10 @@ end
 !---  EDF data library: ncore = 28, iz = 29- 71
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB28(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(029)
@@ -1846,8 +1861,10 @@ end
 !---  EDF data library: ncore = 36, iz = 37- 54
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB36(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(037)
@@ -2215,8 +2232,10 @@ end
 !---  EDF data library: ncore = 46, iz = 47- 58
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB46(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(047)
@@ -2474,8 +2493,10 @@ end
 !---  EDF data library: ncore = 54, iz = 55- 71
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB54(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(055)
@@ -2837,8 +2858,10 @@ end
 !---  EDF data library: ncore = 60, iz = 72-103
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB60(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(072)
@@ -3492,8 +3515,10 @@ end
 !---  EDF data library: ncore = 68, iz = 72- 86
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB68(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(072)
@@ -3815,8 +3840,10 @@ end
 !---  EDF data library: ncore = 78, iz = 79-118
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB78(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(079)
@@ -4678,8 +4705,10 @@ end
 !---  EDF data library: ncore = 92, iz =104-120
 !-----------------------------------------------------------------------------------------------------------------------------------
 subroutine EDFLIB92(iz,nfun,alf,coe)
-implicit real(kind=8) (a-h,o-z)
-real(kind=8) :: alf(*),coe(*)
+implicit none
+real(kind=rp), intent(out), dimension(nmax) :: alf,coe
+integer(kind=ip), intent(in), value :: iz
+integer(kind=ip), intent(out) :: nfun
 
 select case(iz)
   case(104)
