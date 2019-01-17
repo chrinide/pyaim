@@ -7,6 +7,7 @@ def eval_ao(mol, coords, deriv=0):
     comp = (deriv+1)*(deriv+2)*(deriv+3)//6
     feval = 'GTOval_spinor_deriv%d' % deriv
     aoLa, aoLb = mol.eval_gto(feval, coords, comp, shls_slice, non0tab)
+    print aoLa.shape, aoLb.shape
     return aoLa, aoLb
 
 def eval_rho(mol, ao, dm, xctype='LDA'):
@@ -67,6 +68,7 @@ mf.chkfile = name+'.chk'
 mf.kernel()
 
 dm = mf.make_rdm1()
+print dm.shape, mf.mo_coeff.shape
 a = numpy.zeros(3)
 a = a.reshape(-1,3)
 ao = eval_ao(mol, a, deriv=1)
