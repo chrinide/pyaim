@@ -6,6 +6,7 @@ int nbas_;
 int nmo_;
 double occdrop_;
 int nprims_;
+int n2c_;
 int cart_;
 double *__restrict__ coords_;
 double *__restrict__ xyzrho_;
@@ -20,7 +21,6 @@ double *__restrict__ mo_occ_;
 char *__restrict__ non0tab_;
 int *__restrict__ shls_;
 int *__restrict__ ao_loc_;
-int n2c_;
 
 // Surface info
 #define EPS 1e-7

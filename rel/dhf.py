@@ -135,7 +135,6 @@ mf.with_gaunt = False
 mf.with_breit = False
 mf.chkfile = name+'.chk'
 mf.kernel()
-mf.analyze()
 
 grids = dft.gen_grid.Grids(mol)
 grids.kernel()

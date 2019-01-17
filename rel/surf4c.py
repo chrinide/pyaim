@@ -161,6 +161,7 @@ def rhograd(self, x):
     self.env.ctypes.data_as(ctypes.c_void_p))
     aoSa[0] = ao[0]
     aoSb[0] = ao[1]
+    print aoSa[0]
 
     ao = numpy.ndarray((2,3,1,self.nao), dtype=numpy.complex128)
     feval = 'GTOval_ipsp_spinor'
@@ -215,6 +216,7 @@ def rhograd(self, x):
         rhoS[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
 
     rho = rhoL + rhoS
+    print rhoL, rhoS
     gradmod = numpy.linalg.norm(rho[-3:,0])
     #return rhoL, rhoS, rhoL + rhoS
     return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
@@ -416,16 +418,9 @@ class BaderSurf(lib.StreamObject):
         if (not self.leb):
             self.npang = self.npphi*self.nptheta
 
-        #if (self.corr):
-        #    self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
-        #    natocc, natorb = numpy.linalg.eigh(self.rdm1)
-        #    natorb = numpy.dot(self.mo_coeff, natorb)
-        #    self.mo_coeff = natorb
-        #    self.mo_occ = natocc
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        nocc = len(nocc)
-        self.nocc = nocc
-        pos = self.mo_occ > self.occdrop
+        self.nocc = len(nocc)
+        pos = abs(self.mo_occ) > self.occdrop
         n2c = self.n2c
         self.mo_coeffL = self.mo_coeff[:n2c,pos]
         c1 = 0.5/lib.param.LIGHT_SPEED
@@ -454,17 +449,17 @@ class BaderSurf(lib.StreamObject):
          
         self.xyzrho = numpy.zeros((self.natm,3))
         t = time.time()
-        for i in range(self.natm):
-            self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
-            if (gradmod > 1e-4):
-                if (self.charges[i] > 2.0):
-                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
-                else:
-                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
-            else:
-                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-                logger.info(self,'Setting xyzrho for atom to imput coords')
-                self.xyzrho[i] = self.coords[i]
+        #for i in range(self.natm):
+        #    self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
+        #    if (gradmod > 1e-4):
+        #        if (self.charges[i] > 2.0):
+        #            logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
+        #        else:
+        #            raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
+        #    else:
+        #        logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+        #        logger.info(self,'Setting xyzrho for atom to imput coords')
+        #        self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
@@ -515,7 +510,7 @@ class BaderSurf(lib.StreamObject):
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
-        print self.nao, self.n2c, self.nprims
+        #print self.mo_coeffS.shape, self.mo_coeffS[:,0]
         print rhograd(self,[0,0,0])
         print rhograd2(self,[0,0,0])
              

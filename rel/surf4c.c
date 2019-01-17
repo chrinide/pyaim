@@ -41,14 +41,14 @@ void surf_driver4c(const int inuc,
 
   // Setup surface info
   natm_ = natm;
-	printf("The number of atoms is %d\n", natm_);
+	//printf("The number of atoms is %d\n", natm_);
 	coords_ = (double *) malloc(sizeof(double)*natm_*3);
   assert(coords_ != NULL);
   for (i=0; i<natm_; i++) {
     coords_[i*3+0] = coords[i*3+0];
     coords_[i*3+1] = coords[i*3+1];
     coords_[i*3+2] = coords[i*3+2];
-		printf("Coordinate of atom %d %f %f %f\n", i, coords_[i*3+0], coords_[i*3+1], coords_[i*3+2]);
+		//printf("Coordinate of atom %d %f %f %f\n", i, coords_[i*3+0], coords_[i*3+1], coords_[i*3+2]);
   }
   xyzrho_ = (double *) malloc(sizeof(double)*natm_*3);
   assert(xyzrho_ != NULL);
@@ -56,14 +56,14 @@ void surf_driver4c(const int inuc,
     xyzrho_[i*3+0] = xyzrho[i*3+0];
     xyzrho_[i*3+1] = xyzrho[i*3+1];
     xyzrho_[i*3+2] = xyzrho[i*3+2];
-		printf("Coordinate of rho atom %d %f %f %f\n", i, xyzrho_[i*3+0], xyzrho_[i*3+1], xyzrho_[i*3+2]);
+		//printf("Coordinate of rho atom %d %f %f %f\n", i, xyzrho_[i*3+0], xyzrho_[i*3+1], xyzrho_[i*3+2]);
   }
   inuc_ = inuc;
-	printf("Surface for atom %d\n", inuc_);
+	//printf("Surface for atom %d\n", inuc_);
   xnuc_[0] = xyzrho[inuc_*3+0];
   xnuc_[1] = xyzrho[inuc_*3+1]; 
   xnuc_[2] = xyzrho[inuc_*3+2];
-	printf("Coordinate of rho %f %f %f\n", xnuc_[0], xnuc_[1], xnuc_[2]);
+	//printf("Coordinate of rho %f %f %f\n", xnuc_[0], xnuc_[1], xnuc_[2]);
   epsiscp_ = epsiscp;
   ntrial_ = ntrial;      
   npang_ = npang;
@@ -116,7 +116,8 @@ void surf_driver4c(const int inuc,
   shls_[0] = 0;
   shls_[1] = nbas_;
   nmo_ = nocc;
-	printf("Number of occupied MO %d\n", nmo_);
+	//printf("Number of occupied MO %d\n", nmo_);
+	//printf("N2C %d\n", n2c_);
 	mo_coeffL_ = (double complex *) malloc(sizeof(double complex)*nmo_*n2c_);
   assert(mo_coeffL_ != NULL);
 	mo_coeffS_ = (double complex *) malloc(sizeof(double complex)*nmo_*n2c_);
@@ -124,17 +125,21 @@ void surf_driver4c(const int inuc,
 
 	for (i=0; i<nmo_; i++){ // Orbital
 	  for (j=0; j<n2c_; j++){
-        mo_coeffL_[i*n2c_+j] = mo_coeffL[j*n2c_+i];
-        mo_coeffS_[i*n2c_+j] = mo_coeffS[j*n2c_+i];
+        mo_coeffL_[i*n2c_+j] = mo_coeffL[i*n2c_+j];
+        mo_coeffS_[i*n2c_+j] = mo_coeffS[j*nmo_+i];
     }
 	}
+	for (j=0; j<n2c_; j++){
+        //printf("%g+i%g  %g+i%g  %g+i%g  %g+ig\n", mo_coeffS[0*nmo_+j], mo_coeffS[0*n2c_+j], mo_coeffS[j*nmo_+0], mo_coeffS[j*n2c_+0]);
+        //printf("%g + i%g\n", mo_coeffS[j*nmo_+0]);
+        //printf("%g + i%g\n", mo_coeffS_[0*n2c_+j]);
+  }
 
   double point[3], grad[3], rho, gradmod;
   point[0] = 0.0;
   point[1] = 0.0;
   point[2] = 0.0;
   rho_grad(point, &rho, grad, &gradmod);
-	printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
 
   //surface();
 	//for (i=0; i<npang_; i++){
@@ -164,10 +169,7 @@ void surf_driver4c(const int inuc,
 
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
-	double complex ao_[n2c_*4*2];
   double complex c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
-
-	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
 
   *rho = 0.0;
   grad[0] = 0.0;
@@ -178,6 +180,11 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   int i, j;
 
   // Large 
+	double complex ao_[n2c_*4*2];
+	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
+  //for (j=0;j<n2c_;j++){
+  //  printf("%f + i%f\n", ao_[0*(4*n2c_)+0*n2c_+j]);
+  //}
 	// Up
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -185,10 +192,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[0*(4*n2c_)+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[0*(4*n2c_)+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[0*(4*n2c_)+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[0*(4*n2c_)+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += conj(ao_[0*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += conj(ao_[1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += conj(ao_[2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += conj(ao_[3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
@@ -198,7 +205,6 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
-
 	// Down
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -206,10 +212,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[1*(4*n2c_)+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[1*(4*n2c_)+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[1*(4*n2c_)+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[1*(4*n2c_)+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += conj(ao_[4*n2c_+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += conj(ao_[4*n2c_+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += conj(ao_[4*n2c_+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += conj(ao_[4*n2c_+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
@@ -220,8 +226,67 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
   
-  // Small
+	printf("Rhograd L %f %f %f %f\n", *rho, grad[0], grad[1], grad[2]);
+  *rho = 0.0;
+  grad[0] = 0.0;
+  grad[1] = 0.0;
+  grad[2] = 0.0;
+  *gradmod = 0.0;
 
+  // Small
+	double complex aoS1_[n2c_*2];
+	GTOval_sp_spinor(1, shls_, ao_loc_, aoS1_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
+  //for (j=0;j<n2c_;j++){
+  //  printf("%f + i%f\n", aoS1_[j]);
+  //}
+	double complex aoS2_[2*3*n2c_];
+  //for (j=0;j<n2c_;j++){
+  //  printf("%f + i%f\n", aoS1_[0*n2c_+j]);
+  //}
+	GTOval_ipsp_spinor(1, shls_, ao_loc_, aoS2_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
+	// Up
+  for (i=0; i<nmo_; i++){
+    c0_[i] = 0.0;
+    c1_[i] = 0.0;
+    c2_[i] = 0.0;
+    c3_[i] = 0.0;
+    for (j=0; j<n2c_; j++){
+      c0_[i] += conj(aoS1_[j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += conj(aoS2_[0*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += conj(aoS2_[1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += conj(aoS2_[2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+    }
+  }
+  
+  for (i=0; i<nmo_; i++){
+    *rho += conj(c0_[i])*c0_[i];
+    grad[0] += conj(c1_[i])*c0_[i]*2.0;
+    grad[1] += conj(c2_[i])*c0_[i]*2.0;
+    grad[2] += conj(c3_[i])*c0_[i]*2.0;
+  }
+	// Down
+  for (i=0; i<nmo_; i++){
+    c0_[i] = 0.0;
+    c1_[i] = 0.0;
+    c2_[i] = 0.0;
+    c3_[i] = 0.0;
+    for (j=0; j<n2c_; j++){
+      c0_[i] += conj(aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += conj(aoS2_[3*n2c_+0*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += conj(aoS2_[3*n2c_+1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += conj(aoS2_[3*n2c_+2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+    }
+  }
+  
+  for (i=0; i<nmo_; i++){
+    *rho += conj(c0_[i])*c0_[i];
+    grad[0] += conj(c1_[i])*c0_[i]*2.0;
+    grad[1] += conj(c2_[i])*c0_[i]*2.0;
+    grad[2] += conj(c3_[i])*c0_[i]*2.0;
+  }
+	printf("Rhograd S %f %f %f %f\n", *rho, grad[0], grad[1], grad[2]);
+  
+  // Final quantities
   *gradmod = grad[0]*grad[0];
   *gradmod += grad[1]*grad[1];
   *gradmod += grad[2]*grad[2];
