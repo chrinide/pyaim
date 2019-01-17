@@ -13,11 +13,14 @@ int *__restrict__ atm_;
 int *__restrict__ bas_;
 double *__restrict__ env_;
 double complex *__restrict__ mo_coeff_;
+double complex *__restrict__ mo_coeffL_;
+double complex *__restrict__ mo_coeffS_;
 double *__restrict__ mo_occ_;
 //int8_t *__restrict__ non0tab_;
 char *__restrict__ non0tab_;
 int *__restrict__ shls_;
 int *__restrict__ ao_loc_;
+int n2c_;
 
 // Surface info
 #define EPS 1e-7

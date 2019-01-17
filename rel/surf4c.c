@@ -7,7 +7,7 @@
 
 #include "surf.h"
 
-void surf_driver(const int inuc, 
+void surf_driver4c(const int inuc, 
 								 const double *xyzrho,
 								 const int npang, 
 								 const double *ct, 
@@ -26,30 +26,29 @@ void surf_driver(const int inuc,
 							   const int natm,
 								 const double *coords,
                  const int cart,    
-								 const int nmo,
+								 const int nocc,
 								 const int nprims,
 								 int *atm,
 								 const int nbas,
                  int *bas,
 								 double *env,
                  int *ao_loc,
-                 const double complex *mo_coeff, 
-							   const double *mo_occ, 
-		             const double occdrop,
+                 const double complex *mo_coeffL, 
+                 const double complex *mo_coeffS, 
                  int *nlimsurf, double *rsurf){
 
   int i, j;
 
   // Setup surface info
   natm_ = natm;
-	//printf("The number of atoms is %d\n", natm_);
+	printf("The number of atoms is %d\n", natm_);
 	coords_ = (double *) malloc(sizeof(double)*natm_*3);
   assert(coords_ != NULL);
   for (i=0; i<natm_; i++) {
     coords_[i*3+0] = coords[i*3+0];
     coords_[i*3+1] = coords[i*3+1];
     coords_[i*3+2] = coords[i*3+2];
-		//printf("Coordinate of atom %d %f %f %f\n", i, coords_[i*3+0], coords_[i*3+1], coords_[i*3+2]);
+		printf("Coordinate of atom %d %f %f %f\n", i, coords_[i*3+0], coords_[i*3+1], coords_[i*3+2]);
   }
   xyzrho_ = (double *) malloc(sizeof(double)*natm_*3);
   assert(xyzrho_ != NULL);
@@ -57,14 +56,14 @@ void surf_driver(const int inuc,
     xyzrho_[i*3+0] = xyzrho[i*3+0];
     xyzrho_[i*3+1] = xyzrho[i*3+1];
     xyzrho_[i*3+2] = xyzrho[i*3+2];
-		//printf("Coordinate of rho atom %d %f %f %f\n", i, xyzrho_[i*3+0], xyzrho_[i*3+1], xyzrho_[i*3+2]);
+		printf("Coordinate of rho atom %d %f %f %f\n", i, xyzrho_[i*3+0], xyzrho_[i*3+1], xyzrho_[i*3+2]);
   }
   inuc_ = inuc;
-	//printf("Surface for atom %d\n", inuc_);
+	printf("Surface for atom %d\n", inuc_);
   xnuc_[0] = xyzrho[inuc_*3+0];
   xnuc_[1] = xyzrho[inuc_*3+1]; 
   xnuc_[2] = xyzrho[inuc_*3+2];
-	//printf("Coordinate of rho %f %f %f\n", xnuc_[0], xnuc_[1], xnuc_[2]);
+	printf("Coordinate of rho %f %f %f\n", xnuc_[0], xnuc_[1], xnuc_[2]);
   epsiscp_ = epsiscp;
   ntrial_ = ntrial;      
   npang_ = npang;
@@ -99,8 +98,8 @@ void surf_driver(const int inuc,
   assert(nlimsurf_ != NULL);
 
   // Basis info
-  occdrop_ = occdrop;
   nprims_ = nprims;
+  n2c_ = nprims/2;
   nbas_= nbas;
   cart_ = cart;
   atm_ = atm;
@@ -116,32 +115,26 @@ void surf_driver(const int inuc,
   assert(shls_ != NULL);
   shls_[0] = 0;
   shls_[1] = nbas_;
-  nmo_ = 0;
-  for (i=0; i<nmo; i++){
-    if (fabs(mo_occ[i]) > occdrop_) nmo_ += 1;
-  }
-	//printf("Number of occupied MO %d\n", nmo_);
-	mo_coeff_ = (double complex *) malloc(sizeof(double complex)*nmo_*nprims_);
-  assert(mo_coeff_ != NULL);
-	mo_occ_ = (double *) malloc(sizeof(double)*nmo_);
-  assert(mo_occ_ != NULL);
-  int k = 0;
-	for (i=0; i<nmo; i++){ // Orbital
-    if (fabs(mo_occ[i]) > occdrop_){
-      mo_occ_[k] = mo_occ[i];
-		  for (j=0; j<nprims_; j++){
-        mo_coeff_[k*nprims_+j] = mo_coeff[j*nprims_+i];
-      }
-      k += 1;
+  nmo_ = nocc;
+	printf("Number of occupied MO %d\n", nmo_);
+	mo_coeffL_ = (double complex *) malloc(sizeof(double complex)*nmo_*n2c_);
+  assert(mo_coeffL_ != NULL);
+	mo_coeffS_ = (double complex *) malloc(sizeof(double complex)*nmo_*n2c_);
+  assert(mo_coeffS_ != NULL);
+
+	for (i=0; i<nmo_; i++){ // Orbital
+	  for (j=0; j<n2c_; j++){
+        mo_coeffL_[i*n2c_+j] = mo_coeffL[j*n2c_+i];
+        mo_coeffS_[i*n2c_+j] = mo_coeffS[j*n2c_+i];
     }
 	}
 
-  //double point[3], grad[3], rho, gradmod;
-  //point[0] = 0.0;
-  //point[1] = 0.0;
-  //point[2] = 0.0;
-  //rho_grad(point, &rho, grad, &gradmod);
-	//printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
+  double point[3], grad[3], rho, gradmod;
+  point[0] = 0.0;
+  point[1] = 0.0;
+  point[2] = 0.0;
+  rho_grad(point, &rho, grad, &gradmod);
+	printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
 
   //surface();
 	//for (i=0; i<npang_; i++){
@@ -151,8 +144,8 @@ void surf_driver(const int inuc,
   //  }
   //}
 
-  free(mo_coeff_);
-  free(mo_occ_);
+  free(mo_coeffL_);
+  free(mo_coeffS_);
   free(coords_);
   free(xyzrho_);
   free(rpru_);
@@ -171,7 +164,7 @@ void surf_driver(const int inuc,
 
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
-	double complex ao_[nprims_*4*2];
+	double complex ao_[n2c_*4*2];
   double complex c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
 
 	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
@@ -184,25 +177,26 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
   int i, j;
 
+  // Large 
 	// Up
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
     c1_[i] = 0.0;
     c2_[i] = 0.0;
     c3_[i] = 0.0;
-    for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[0*(4*nprims_)+0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[0*(4*nprims_)+1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[0*(4*nprims_)+2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[0*(4*nprims_)+3*nprims_+j])*mo_coeff_[i*nprims_+j];
+    for (j=0; j<n2c_; j++){
+      c0_[i] += conj(ao_[0*(4*n2c_)+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += conj(ao_[0*(4*n2c_)+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += conj(ao_[0*(4*n2c_)+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += conj(ao_[0*(4*n2c_)+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
   for (i=0; i<nmo_; i++){
-    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
+    *rho += conj(c0_[i])*c0_[i];
+    grad[0] += conj(c1_[i])*c0_[i]*2.0;
+    grad[1] += conj(c2_[i])*c0_[i]*2.0;
+    grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
 
 	// Down
@@ -211,21 +205,23 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c1_[i] = 0.0;
     c2_[i] = 0.0;
     c3_[i] = 0.0;
-    for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[1*(4*nprims_)+0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[1*(4*nprims_)+1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[1*(4*nprims_)+2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[1*(4*nprims_)+3*nprims_+j])*mo_coeff_[i*nprims_+j];
+    for (j=0; j<n2c_; j++){
+      c0_[i] += conj(ao_[1*(4*n2c_)+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += conj(ao_[1*(4*n2c_)+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += conj(ao_[1*(4*n2c_)+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += conj(ao_[1*(4*n2c_)+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
   for (i=0; i<nmo_; i++){
-    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
+    *rho += conj(c0_[i])*c0_[i];
+    grad[0] += conj(c1_[i])*c0_[i]*2.0;
+    grad[1] += conj(c2_[i])*c0_[i]*2.0;
+    grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
   
+  // Small
+
   *gradmod = grad[0]*grad[0];
   *gradmod += grad[1]*grad[1];
   *gradmod += grad[2]*grad[2];

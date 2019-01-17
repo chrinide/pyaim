@@ -85,10 +85,11 @@ def rhograd2(self, x):
         aoSa[k,:,:] = ao[0,k-1,:,:]
         aoSb[k,:,:] = ao[1,k-1,:,:]
 
+    dm = make_rdm1(self.mo_coeff, self.mo_occ)
     rhoL = numpy.zeros((4,1))
     # Large Component
     n2c = self.mol.nao_2c()
-    dmLL = self.dm[:n2c,:n2c].copy('C')
+    dmLL = dm[:n2c,:n2c].copy('C')
     c0a = lib.dot(aoLa[0], dmLL)
     rhoaa = numpy.einsum('pi,pi->p', aoLa[0].real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', aoLa[0].imag, c0a.imag)
@@ -105,7 +106,7 @@ def rhograd2(self, x):
     # Small Component
     rhoS = numpy.zeros((4,1))
     c1 = 0.5/lib.param.LIGHT_SPEED
-    dmSS = self.dm[n2c:,n2c:] * c1**2
+    dmSS = dm[n2c:,n2c:] * c1**2
     c0a = lib.dot(aoSa[0], dmSS)
     rhoaa = numpy.einsum('pi,pi->p', aoSa[0].real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', aoSa[0].imag, c0a.imag)
@@ -177,11 +178,10 @@ def rhograd(self, x):
         aoSa[k,:,:] = ao[0,k-1,:,:]
         aoSb[k,:,:] = ao[1,k-1,:,:]
 
-    n2c = self.mol.nao_2c()
+    n2c = self.n2c
     # Large Component
     rhoL = numpy.zeros((4,1))
-    pos = self.mo_occ > self.occdrop
-    coeff = self.mo_coeff[:n2c,pos]
+    coeff = self.mo_coeffL
     c0a = lib.dot(aoLa[0], coeff)
     rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
@@ -198,8 +198,7 @@ def rhograd(self, x):
         rhoL[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
     # Small Component
     rhoS = numpy.zeros((4,1))
-    c1 = 0.5/lib.param.LIGHT_SPEED
-    coeff = self.mo_coeff[n2c:,n2c:n2c+self.nelectron] * c1
+    coeff = self.mo_coeffS
     c0a = lib.dot(aoSa[0], coeff)
     rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
@@ -290,7 +289,10 @@ class BaderSurf(lib.StreamObject):
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mol = None
+        self.n2c = None
         self.mo_coeff = None
+        self.mo_coeffL = None
+        self.mo_coeffS = None
         self.mo_occ = None
         self.nocc = None
         self.natm = None
@@ -319,7 +321,6 @@ class BaderSurf(lib.StreamObject):
         self.non0tab = None
         self.cart = None
         self.rdm1 = None
-        self.dm = None
         self.rcut = None
         self._keys = set(self.__dict__.keys())
 
@@ -396,7 +397,7 @@ class BaderSurf(lib.StreamObject):
         self.natm = self.mol.natm		
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
-        self.dm = make_rdm1(self.mo_coeff, self.mo_occ)
+        self.n2c = self.mol.nao_2c()
         self.atm = numpy.asarray(self.mol._atm, dtype=numpy.int32, order='C')
         self.bas = numpy.asarray(self.mol._bas, dtype=numpy.int32, order='C')
         self.env = numpy.asarray(self.mol._env, dtype=numpy.double, order='C')
@@ -424,6 +425,11 @@ class BaderSurf(lib.StreamObject):
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
         nocc = len(nocc)
         self.nocc = nocc
+        pos = self.mo_occ > self.occdrop
+        n2c = self.n2c
+        self.mo_coeffL = self.mo_coeff[:n2c,pos]
+        c1 = 0.5/lib.param.LIGHT_SPEED
+        self.mo_coeffS = self.mo_coeff[n2c:,n2c:n2c+self.nocc] * c1
 
         if (self.ntrial%2 == 0): self.ntrial += 1
         geofac = numpy.power(((self.rmaxsurf-0.1)/self.rprimer),(1.0/(self.ntrial-1.0)))
@@ -475,7 +481,7 @@ class BaderSurf(lib.StreamObject):
         sp_ = numpy.asarray(self.grids[:,3], order='C')
         
         t = time.time()
-        feval = 'surf_driver'
+        feval = 'surf_driver4c'
         drv = getattr(libaim, feval)
         with lib.with_omp_threads(self.nthreads):
             drv(ctypes.c_int(self.inuc), 
@@ -497,19 +503,19 @@ class BaderSurf(lib.StreamObject):
                 ctypes.c_int(self.natm), 
                 self.coords.ctypes.data_as(ctypes.c_void_p),
                 ctypes.c_int(self.cart),
-                ctypes.c_int(self.nmo),  
+                ctypes.c_int(self.nocc),  
                 ctypes.c_int(self.nprims), 
                 self.atm.ctypes.data_as(ctypes.c_void_p), 
                 ctypes.c_int(self.nbas), 
                 self.bas.ctypes.data_as(ctypes.c_void_p), 
                 self.env.ctypes.data_as(ctypes.c_void_p), 
                 self.ao_loc.ctypes.data_as(ctypes.c_void_p),
-                self.mo_coeff.ctypes.data_as(ctypes.c_void_p),
-                self.mo_occ.ctypes.data_as(ctypes.c_void_p),
-                ctypes.c_double(self.occdrop), 
+                self.mo_coeffL.ctypes.data_as(ctypes.c_void_p),
+                self.mo_coeffS.ctypes.data_as(ctypes.c_void_p),
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
+        print self.nao, self.n2c, self.nprims
         print rhograd(self,[0,0,0])
         print rhograd2(self,[0,0,0])
              
