@@ -18,6 +18,8 @@ double *__restrict__ mo_occ_;
 char *__restrict__ non0tab_;
 int *__restrict__ shls_;
 int *__restrict__ ao_loc_;
+// 1=real,2=complex,3=x2c,4=4c
+int scf_;
 
 // Surface info
 #define EPS 1e-7
@@ -95,6 +97,7 @@ void steeper_rkck(double *y, double *dydx, double h, double *yout, double *yerr)
 void steeper_rkdp(double *y, double *dydx, double h, double *yout, double *yerr);
 
 void rho_grad(double *point, double *rho, double *grad, double *gradmod);
+void (*rho_grad_func)(double *, double *, double *, double *);
 
 // AO evaluators
 void aim_GTOval_sph_deriv1(int ngrids, int *shls_slice, int *ao_loc,

@@ -111,6 +111,9 @@ void surf_driver(const int inuc,
   assert(shls_ != NULL);
   shls_[0] = 0;
   shls_[1] = nbas_;
+
+	// 
+	scf_ = 1;
   nmo_ = 0;
   for (i=0; i<nmo; i++){
     if (fabs(mo_occ[i]) > occdrop_) nmo_ += 1;
@@ -129,6 +132,9 @@ void surf_driver(const int inuc,
       k += 1;
     }
 	}
+
+	// Select density and gradient function
+  rho_grad_func = &rho_grad;
 
   surface();
 	for (i=0; i<npang_; i++){
@@ -367,7 +373,7 @@ int odeint(double *ystart, double h1, double eps){
 	int ier = 0, i, nuc;
   double dydx[3], y[3], yscal[3];
 
-	rho_grad(ystart, &rho, grad, &gradmod);
+	(*rho_grad_func)(ystart, &rho, grad, &gradmod);
   if (rho <= RHOEPS && gradmod <= GRADEPS){
     ier = 3;
     return ier;
@@ -383,7 +389,7 @@ int odeint(double *ystart, double h1, double eps){
   y[2] = ystart[2];
 
 	for (i=0; i<mstep_; i++){
-	  rho_grad(y, &rho, dydx, &gradmod);
+	  (*rho_grad_func)(y, &rho, dydx, &gradmod);
 		yscal[0] = fmax(fabs(y[0]) + fabs(dydx[0]*h) + TINY, eps);
 		yscal[1] = fmax(fabs(y[1]) + fabs(dydx[1]*h) + TINY, eps);
 		yscal[2] = fmax(fabs(y[2]) + fabs(dydx[2]*h) + TINY, eps);
@@ -511,7 +517,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*b21*grdt[2];
 
   double ak2[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak2[0] = grad[0];
   ak2[1] = grad[1];
   ak2[2] = grad[2];
@@ -520,7 +526,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b31*grdt[2]+b32*ak2[2]);
   
   double ak3[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak3[0] = grad[0]; 
   ak3[1] = grad[1]; 
   ak3[2] = grad[2]; 
@@ -529,7 +535,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b41*grdt[2]+b42*ak2[2]+b43*ak3[2]);
 
   double ak4[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak4[0] = grad[0];
   ak4[1] = grad[1];
   ak4[2] = grad[2];
@@ -538,7 +544,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b51*grdt[2]+b52*ak2[2]+b53*ak3[2]+b54*ak4[2]);
 
   double ak5[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak5[0] = grad[0];
   ak5[1] = grad[1];
   ak5[2] = grad[2];
@@ -547,7 +553,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b61*grdt[2]+b62*ak2[2]+b63*ak3[2]+b64*ak4[2]+b65*ak5[2]);
 
   double ak6[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak6[0] = grad[0];
   ak6[1] = grad[1];
   ak6[2] = grad[2];
@@ -556,7 +562,7 @@ inline void steeper_rkdp(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b71*grdt[2]+b73*ak3[2]+b74*ak4[2]+b75*ak5[2]+b76*ak6[2]);
 
   double ak7[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad_func)(xout, &rho, grad, &gradmod);
   ak7[0] = grad[0];
   ak7[1] = grad[1];
   ak7[2] = grad[2];
@@ -603,7 +609,7 @@ inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*b21*grdt[2];
 
   double ak2[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad)(xout, &rho, grad, &gradmod);
   ak2[0] = grad[0];
   ak2[1] = grad[1];
   ak2[2] = grad[2];
@@ -612,7 +618,7 @@ inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b31*grdt[2]+b32*ak2[2]);
   
   double ak3[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad)(xout, &rho, grad, &gradmod);
   ak3[0] = grad[0]; 
   ak3[1] = grad[1]; 
   ak3[2] = grad[2]; 
@@ -621,7 +627,7 @@ inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b41*grdt[2]+b42*ak2[2]+b43*ak3[2]);
   
   double ak4[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad)(xout, &rho, grad, &gradmod);
   ak4[0] = grad[0];
   ak4[1] = grad[1];
   ak4[2] = grad[2];
@@ -630,7 +636,7 @@ inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b51*grdt[2]+b52*ak2[2]+b53*ak3[2]+b54*ak4[2]);
   
   double ak5[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad)(xout, &rho, grad, &gradmod);
   ak5[0] = grad[0];
   ak5[1] = grad[1];
   ak5[2] = grad[2];
@@ -639,7 +645,7 @@ inline void steeper_rkck(double *xpoint, double *grdt, double h0, double *xout, 
   xout[2] = xpoint[2] + h0*(b61*grdt[2]+b62*ak2[2]+b63*ak3[2]+b64*ak4[2]+b65*ak5[2]);
   
   double ak6[3] = {0.0};
-  rho_grad(xout, &rho, grad, &gradmod);
+  (*rho_grad)(xout, &rho, grad, &gradmod);
   ak6[0] = grad[0];
   ak6[1] = grad[1];
   ak6[2] = grad[2];
@@ -661,7 +667,7 @@ bool checkcp(double *x, int *nuc){
   double rho, grad[3], gradmod;
 
   *nuc = -2;
-  rho_grad(x, &rho, grad, &gradmod);
+  (*rho_grad_func)(x, &rho, grad, &gradmod);
 
   for (i=0; i<natm_; i++){
     if (fabs(x[0]-xyzrho_[i*3+0]) < epsiscp_ &&
