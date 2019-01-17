@@ -53,31 +53,31 @@ def rhograd(self, x):
     rho = numpy.zeros((4,1))
 
     # Up
-    c0a = numpy.dot(aoa[0], cpos)
+    c0a = lib.dot(aoa[0], cpos)
     raa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
     raa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
     rho[0] += raa
-    c1 = numpy.dot(aoa[1], cpos)
+    c1 = lib.dot(aoa[1], cpos)
     rho[1] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
     rho[1] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aoa[2], cpos)
+    c1 = lib.dot(aoa[2], cpos)
     rho[2] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
     rho[2] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aoa[3], cpos)
+    c1 = lib.dot(aoa[3], cpos)
     rho[3] += numpy.einsum('pi,pi->p', c0a.real, c1.real)*2 # *2 for +c.c.
     rho[3] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)*2 # *2 for +c.c.
     # Down
-    c0b = numpy.dot(aob[0], cpos)
+    c0b = lib.dot(aob[0], cpos)
     rbb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
     rbb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
     rho[0] += rbb
-    c1 = numpy.dot(aob[1], cpos)
+    c1 = lib.dot(aob[1], cpos)
     rho[1] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
     rho[1] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aob[2], cpos)
+    c1 = lib.dot(aob[2], cpos)
     rho[2] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
     rho[2] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = numpy.dot(aob[3], cpos)
+    c1 = lib.dot(aob[3], cpos)
     rho[3] += numpy.einsum('pi,pi->p', c0b.real, c1.real)*2 # *2 for +c.c.
     rho[3] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)*2 # *2 for +c.c.
     gradmod = numpy.linalg.norm(rho[-3:,0])
@@ -289,7 +289,7 @@ class BaderSurf(lib.StreamObject):
         #if (self.corr):
         #    self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
         #    natocc, natorb = numpy.linalg.eigh(self.rdm1)
-        #    natorb = numpy.dot(self.mo_coeff, natorb)
+        #    natorb = lib.dot(self.mo_coeff, natorb)
         #    self.mo_coeff = natorb
         #    self.mo_occ = natocc
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]

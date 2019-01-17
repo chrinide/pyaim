@@ -32,9 +32,9 @@ HMINIMAL = numpy.finfo(numpy.float64).eps
 
 def make_rdm1(mo_coeff, mo_occ):
     mocc = mo_coeff[:,mo_occ>0]
-    return numpy.dot(mocc*mo_occ[mo_occ>0], mocc.T.conj())
+    return lib.dot(mocc*mo_occ[mo_occ>0], mocc.T.conj())
 
-def rhograd(self, x):
+def rhograd2(self, x):
     x = numpy.reshape(x, (-1,3))
 
     ao = numpy.ndarray((2,4,1,self.nao), dtype=numpy.complex128)
@@ -122,11 +122,11 @@ def rhograd(self, x):
 
     rho = rhoL + rhoS
     gradmod = numpy.linalg.norm(rho[-3:,0])
-    return rhoL, rhoS, rhoL + rhoS
-    #return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
+    #return rhoL, rhoS, rhoL + rhoS
+    return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
     #return rho[0,0], m[:,0]/(mgradmod+HMINIMAL), mgradmod 
 
-def rhograd2(self, x):
+def rhograd(self, x):
     x = numpy.reshape(x, (-1,3))
 
     ao = numpy.ndarray((2,4,1,self.nao), dtype=numpy.complex128)
@@ -178,27 +178,28 @@ def rhograd2(self, x):
         aoSb[k,:,:] = ao[1,k-1,:,:]
 
     n2c = self.mol.nao_2c()
-    pos = self.mo_occ > self.occdrop
     # Large Component
     rhoL = numpy.zeros((4,1))
+    pos = self.mo_occ > self.occdrop
     coeff = self.mo_coeff[:n2c,pos]
-    c0a = numpy.dot(aoLa[0], coeff)
+    c0a = lib.dot(aoLa[0], coeff)
     rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
-    c0b = numpy.dot(aoLb[0], coeff)
+    c0b = lib.dot(aoLb[0], coeff)
     rhobb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
     rhobb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
     rhoL[0] += (rhoaa + rhobb)
-    #for i in range(1, 4):
-    #    rhoL[i] += numpy.einsum('pi,pi->p', aoLa[i].real, c0a.real)
-    #    rhoL[i] += numpy.einsum('pi,pi->p', aoLa[i].imag, c0a.imag)
-    #    rhoL[i] += numpy.einsum('pi,pi->p', aoLb[i].real, c0b.real)
-    #    rhoL[i] += numpy.einsum('pi,pi->p', aoLb[i].imag, c0b.imag)
-    #    rhoL[i] *= 2 
+    for i in range(1,4):
+        c1a = lib.dot(aoLa[i], coeff)
+        rhoL[i] += numpy.einsum('pi,pi->p', c0a.real, c1a.real)*2 # *2 for +c.c.
+        rhoL[i] += numpy.einsum('pi,pi->p', c0a.imag, c1a.imag)*2 # *2 for +c.c.
+        c1b = lib.dot(aoLb[i], coeff)
+        rhoL[i] += numpy.einsum('pi,pi->p', c0b.real, c1b.real)*2 # *2 for +c.c.
+        rhoL[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
     # Small Component
     rhoS = numpy.zeros((4,1))
     c1 = 0.5/lib.param.LIGHT_SPEED
-    coeff = self.mo_coeff[n2c:,n2c:n2c+10] * c1**2
+    coeff = self.mo_coeff[n2c:,n2c:n2c+self.nelectron] * c1
     c0a = lib.dot(aoSa[0], coeff)
     rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
     rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
@@ -206,18 +207,18 @@ def rhograd2(self, x):
     rhobb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
     rhobb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
     rhoS[0] += (rhoaa + rhobb)
-    #for i in range(1, 4):
-    #    rhoS[i] += numpy.einsum('pi,pi->p', aoSa[i].real, c0a.real)
-    #    rhoS[i] += numpy.einsum('pi,pi->p', aoSa[i].imag, c0a.imag)
-    #    rhoS[i] += numpy.einsum('pi,pi->p', aoSb[i].real, c0b.real)
-    #    rhoS[i] += numpy.einsum('pi,pi->p', aoSb[i].imag, c0b.imag)
-    #    rhoS[i] *= 2 
+    for i in range(1, 4):
+        c1a = lib.dot(aoSa[i], coeff)
+        rhoS[i] += numpy.einsum('pi,pi->p', c0a.real, c1a.real)*2 # *2 for +c.c.
+        rhoS[i] += numpy.einsum('pi,pi->p', c0a.imag, c1a.imag)*2 # *2 for +c.c.
+        c1b = lib.dot(aoSb[i], coeff)
+        rhoS[i] += numpy.einsum('pi,pi->p', c0b.real, c1b.real)*2 # *2 for +c.c.
+        rhoS[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
 
     rho = rhoL + rhoS
     gradmod = numpy.linalg.norm(rho[-3:,0])
-    return rhoL, rhoS
     #return rhoL, rhoS, rhoL + rhoS
-    #return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
+    return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
     #return rho[0,0], m[:,0]/(mgradmod+HMINIMAL), mgradmod 
 
 def gradrho(self, xpoint, h):
@@ -447,17 +448,17 @@ class BaderSurf(lib.StreamObject):
          
         self.xyzrho = numpy.zeros((self.natm,3))
         t = time.time()
-        #for i in range(self.natm):
-        #    self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
-        #    if (gradmod > 1e-4):
-        #        if (self.charges[i] > 2.0):
-        #            logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        else:
-        #            raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
-        #    else:
-        #        logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        logger.info(self,'Setting xyzrho for atom to imput coords')
-        #        self.xyzrho[i] = self.coords[i]
+        for i in range(self.natm):
+            self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
+            if (gradmod > 1e-4):
+                if (self.charges[i] > 2.0):
+                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                else:
+                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
+            else:
+                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                logger.info(self,'Setting xyzrho for atom to imput coords')
+                self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 

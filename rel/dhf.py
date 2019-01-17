@@ -58,8 +58,7 @@ def eval_rho(mol, ao, dm, xctype='LDA'):
         rhobb = numpy.einsum('pi,pi->p', aob[0].real, c0b.real)
         rhobb += numpy.einsum('pi,pi->p', aob[0].imag, c0b.imag)
         rho[0] = (rhoaa + rhobb)
-        print rhoaa, rhobb
-        for i in range(1, 4):
+        for i in range(1,4):
             rho[i] += numpy.einsum('pi,pi->p', aoa[i].real, c0a.real)
             rho[i] += numpy.einsum('pi,pi->p', aoa[i].imag, c0a.imag)
             rho[i] += numpy.einsum('pi,pi->p', aob[i].real, c0b.real)
@@ -74,17 +73,15 @@ def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
     aoa, aob = ao
     xctype = xctype.upper()
     if xctype == 'LDA' or xctype == 'HF':
-        ngrids, nao = aoa.shape[-2:]
+        ngrids, nao = aoa. shape[-2:]
     else:
         ngrids, nao = aoa[0].shape[-2:]
 
-    pos = mo_occ > OCCDROP
     if (small == True):
-        cpos = mo_coeff[n2c:,] * c1**2
-        print cpos.shape
+        cpos = mo_coeff[n2c:,n2c:n2c+mol.nelectron] * c1
     else:
+        pos = mo_occ > OCCDROP
         cpos = mo_coeff[:n2c,pos]
-        print cpos.shape
 
     if (xctype == 'LDA'):
         c0a = lib.dot(aoa, cposa)
@@ -102,8 +99,14 @@ def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
         c0b = lib.dot(aob[0], cpos)
         rhobb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
         rhobb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
-        print rhoaa, rhobb
         rho[0] = (rhoaa + rhobb)
+        for i in range(1,4):
+            c1a = lib.dot(aoa[i], cpos)
+            rho[i] += numpy.einsum('pi,pi->p', c0a.real, c1a.real)*2 # *2 for +c.c.
+            rho[i] += numpy.einsum('pi,pi->p', c0a.imag, c1a.imag)*2 # *2 for +c.c.
+            c1b = lib.dot(aob[i], cpos)
+            rho[i] += numpy.einsum('pi,pi->p', c0b.real, c1b.real)*2 # *2 for +c.c.
+            rho[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
 
     return rho
 
@@ -134,13 +137,9 @@ mf.chkfile = name+'.chk'
 mf.kernel()
 mf.analyze()
 
-#print mf.mo_occ
-#print mf.mo_coeff.shape
-
 grids = dft.gen_grid.Grids(mol)
 grids.kernel()
 dm = mf.make_rdm1()
-print dm.shape
 coords = grids.coords
 weights = grids.weights
 
@@ -148,7 +147,6 @@ nao = mf.mo_occ.shape
 n2c = mol.nao_2c()
 c1 = 0.5/lib.param.LIGHT_SPEED
 dmLL = dm[:n2c,:n2c].copy('C')
-print dmLL.shape
 dmSS = dm[n2c:,n2c:] * c1**2
 
 #rho += rhoS
@@ -176,9 +174,9 @@ rhoS = eval_rho(mol, aoLS[2:], dmSS, xctype='GGA')
 print rho
 print rhoS
 print rho+rhoS
-rho = eval_rho2(mol, aoLS[:2], mf.mo_coeff, mf.mo_occ, small=False, xctype='GGA')
-rhoS = eval_rho2(mol, aoLS[2:], mf.mo_coeff, mf.mo_occ, small=True, xctype='GGA')
-print rho
-print rhoS
-#print rho+rhoS
+rho2 = eval_rho2(mol, aoLS[:2], mf.mo_coeff, mf.mo_occ, small=False, xctype='GGA')
+rho2S = eval_rho2(mol, aoLS[2:], mf.mo_coeff, mf.mo_occ, small=True, xctype='GGA')
+print rho2
+print rho2S
+print rho2+rho2S
 
