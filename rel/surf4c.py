@@ -161,7 +161,6 @@ def rhograd(self, x):
     self.env.ctypes.data_as(ctypes.c_void_p))
     aoSa[0] = ao[0]
     aoSb[0] = ao[1]
-    print aoSa[0]
 
     ao = numpy.ndarray((2,3,1,self.nao), dtype=numpy.complex128)
     feval = 'GTOval_ipsp_spinor'
@@ -216,7 +215,6 @@ def rhograd(self, x):
         rhoS[i] += numpy.einsum('pi,pi->p', c0b.imag, c1b.imag)*2 # *2 for +c.c.
 
     rho = rhoL + rhoS
-    print rhoL, rhoS
     gradmod = numpy.linalg.norm(rho[-3:,0])
     #return rhoL, rhoS, rhoL + rhoS
     return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod 
@@ -286,7 +284,6 @@ class BaderSurf(lib.StreamObject):
         self.epsilon = 1e-5 
         self.step = 0.1
         self.mstep = 120
-        self.corr = False
         self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
@@ -343,7 +340,6 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
-        logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Mol Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -449,17 +445,17 @@ class BaderSurf(lib.StreamObject):
          
         self.xyzrho = numpy.zeros((self.natm,3))
         t = time.time()
-        #for i in range(self.natm):
-        #    self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
-        #    if (gradmod > 1e-4):
-        #        if (self.charges[i] > 2.0):
-        #            logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        else:
-        #            raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
-        #    else:
-        #        logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
-        #        logger.info(self,'Setting xyzrho for atom to imput coords')
-        #        self.xyzrho[i] = self.coords[i]
+        for i in range(self.natm):
+            self.xyzrho[i], gradmod = gradrho(self,self.coords[i]+0.1,self.step)
+            if (gradmod > 1e-4):
+                if (self.charges[i] > 2.0):
+                    logger.info(self,'Good rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                else:
+                    raise RuntimeError('Failed finding nucleus:', *self.xyzrho[i]) 
+            else:
+                logger.info(self,'Check rho position %.6f %.6f %.6f', *self.xyzrho[i])
+                logger.info(self,'Setting xyzrho for atom to imput coords')
+                self.xyzrho[i] = self.coords[i]
         self.xnuc = numpy.asarray(self.xyzrho[self.inuc])
         logger.info(self,'Time finding nucleus %.3f (sec)' % (time.time()-t))
 
@@ -510,31 +506,30 @@ class BaderSurf(lib.StreamObject):
                 self.nlimsurf.ctypes.data_as(ctypes.c_void_p),
                 self.rsurf.ctypes.data_as(ctypes.c_void_p))
         logger.info(self,'Time finding surface %.3f (sec)' % (time.time()-t))
-        #print self.mo_coeffS.shape, self.mo_coeffS[:,0]
-        print rhograd(self,[0,0,0])
-        print rhograd2(self,[0,0,0])
+        #print rhograd(self,[0,0,0])
+        #print rhograd2(self,[0,0,0])
              
-        #self.rmin = 1000.0
-        #self.rmax = 0.0
-        #for i in range(self.npang):
-        #    nsurf = int(self.nlimsurf[i])
-        #    self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
-        #    self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
-        #logger.info(self,'Rmin for surface %.6f', self.rmin)
-        #logger.info(self,'Rmax for surface %.6f', self.rmax)
+        self.rmin = 1000.0
+        self.rmax = 0.0
+        for i in range(self.npang):
+            nsurf = int(self.nlimsurf[i])
+            self.rmin = numpy.minimum(self.rmin,self.rsurf[i,0])
+            self.rmax = numpy.maximum(self.rmax,self.rsurf[i,nsurf-1])
+        logger.info(self,'Rmin for surface %.6f', self.rmin)
+        logger.info(self,'Rmax for surface %.6f', self.rmax)
 
-        #logger.info(self,'Write HDF5 surface file')
-        #atom_dic = {'inuc':self.inuc,
-        #            'xnuc':self.xnuc,
-        #            'xyzrho':self.xyzrho,
-        #            'coords':self.grids,
-        #            'npang':self.npang,
-        #            'ntrial':self.ntrial,
-        #            'rmin':self.rmin,
-        #            'rmax':self.rmax,
-        #            'nlimsurf':self.nlimsurf,
-        #            'rsurf':self.rsurf}
-        #lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
+        logger.info(self,'Write HDF5 surface file')
+        atom_dic = {'inuc':self.inuc,
+                    'xnuc':self.xnuc,
+                    'xyzrho':self.xyzrho,
+                    'coords':self.grids,
+                    'npang':self.npang,
+                    'ntrial':self.ntrial,
+                    'rmin':self.rmin,
+                    'rmax':self.rmax,
+                    'nlimsurf':self.nlimsurf,
+                    'rsurf':self.rsurf}
+        lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
         logger.info(self,'Surface of atom %d saved',self.inuc)
         logger.timer(self,'BaderSurf build', t0)
 

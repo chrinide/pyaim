@@ -135,19 +135,20 @@ void surf_driver4c(const int inuc,
         //printf("%g + i%g\n", mo_coeffS_[0*n2c_+j]);
   }
 
-  double point[3], grad[3], rho, gradmod;
-  point[0] = 0.0;
-  point[1] = 0.0;
-  point[2] = 0.0;
-  rho_grad(point, &rho, grad, &gradmod);
+  //double point[3], grad[3], rho, gradmod;
+  //point[0] = 0.0;
+  //point[1] = 0.0;
+  //point[2] = 0.0;
+  //rho_grad(point, &rho, grad, &gradmod);
+	//printf("Rhograd %f %f %f %f %f\n", rho, grad[0], grad[1], grad[2], gradmod);
 
-  //surface();
-	//for (i=0; i<npang_; i++){
-  //  nlimsurf[i] = nlimsurf_[i];
-	//  for (j=0; j<ntrial_; j++){
-  //    rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
-  //  }
-  //}
+  surface();
+	for (i=0; i<npang_; i++){
+    nlimsurf[i] = nlimsurf_[i];
+	  for (j=0; j<ntrial_; j++){
+      rsurf[i*ntrial_+j] = rsurf_[i*ntrial_+j];
+    }
+  }
 
   free(mo_coeffL_);
   free(mo_coeffS_);
@@ -182,10 +183,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   // Large 
 	double complex ao_[n2c_*4*2];
 	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
-  //for (j=0;j<n2c_;j++){
-  //  printf("%f + i%f\n", ao_[0*(4*n2c_)+0*n2c_+j]);
-  //}
-	// Up
+  // Up
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
     c1_[i] = 0.0;
@@ -226,23 +224,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
   
-	printf("Rhograd L %f %f %f %f\n", *rho, grad[0], grad[1], grad[2]);
-  *rho = 0.0;
-  grad[0] = 0.0;
-  grad[1] = 0.0;
-  grad[2] = 0.0;
-  *gradmod = 0.0;
-
   // Small
 	double complex aoS1_[n2c_*2];
 	GTOval_sp_spinor(1, shls_, ao_loc_, aoS1_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
-  //for (j=0;j<n2c_;j++){
-  //  printf("%f + i%f\n", aoS1_[j]);
-  //}
-	double complex aoS2_[2*3*n2c_];
-  //for (j=0;j<n2c_;j++){
-  //  printf("%f + i%f\n", aoS1_[0*n2c_+j]);
-  //}
+	double complex aoS2_[n2c_*3*2];
 	GTOval_ipsp_spinor(1, shls_, ao_loc_, aoS2_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
 	// Up
   for (i=0; i<nmo_; i++){
@@ -284,7 +269,6 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
-	printf("Rhograd S %f %f %f %f\n", *rho, grad[0], grad[1], grad[2]);
   
   // Final quantities
   *gradmod = grad[0]*grad[0];
