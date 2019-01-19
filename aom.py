@@ -359,6 +359,7 @@ class Aom(lib.StreamObject):
 
 if __name__ == '__main__':
     name = 'h2o.chk'
+    natoms = 3
     ovlp = Aom(name)
     ovlp.verbose = 4
     ovlp.nrad = 321
@@ -370,8 +371,8 @@ if __name__ == '__main__':
     ovlp.biqudr = 'legendre'
     ovlp.bmapr = 'exp'
     ovlp.non0tab = False
-    ovlp.full = True
-    for i in range(3):
+    ovlp.full = False
+    for i in range(natoms):
         ovlp.inuc = i
         ovlp.kernel()
                  

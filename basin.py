@@ -344,7 +344,7 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    for i in range(3):
+    for i in range(natm):
         bas.inuc = i
         bas.kernel()
 

@@ -92,11 +92,11 @@ def print_basin(name, natm):
         log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
 
 if __name__ == '__main__':
-    name = 'prueba.chk.h5'
-    print_txt(name,0)
-    #natm = 3
-    #nmo = 24
+    name = 'h2o.chk.h5'
+    #print_txt(name,0)
+    natm = 3
+    nmo = 5
     #for i in range(natm):
     #    print_txt(name,i)
-    #print_properties(name,natm,nmo)
+    print_properties(name,natm,nmo)
 
