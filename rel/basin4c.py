@@ -23,52 +23,77 @@ PROPS = ['density', 'kinetic', 'laplacian']
 EPS = 1e-7
 
 def eval_ao(self, coords, deriv=0):
+
     non0tab = None
     shls_slice = None
     comp = (deriv+1)*(deriv+2)*(deriv+3)//6
     feval = 'GTOval_spinor_deriv%d' % deriv
     aoLa, aoLb = self.mol.eval_gto(feval, coords, comp, shls_slice, non0tab)
-    return aoLa, aoLb
+
+    ao = self.mol.eval_gto('GTOval_sp_spinor', coords, 1, shls_slice, non0tab)
+    if (deriv == 0):
+        ngrid, nao = aoLa.shape[-2:]
+        aoSa = numpy.ndarray((1,ngrid,nao), dtype=numpy.complex128)
+        aoSb = numpy.ndarray((1,ngrid,nao), dtype=numpy.complex128)
+        aoSa[0] = ao[0]
+        aoSb[0] = ao[1]
+    elif (deriv == 1):
+        ngrid, nao = aoLa[0].shape[-2:]
+        aoSa = numpy.ndarray((4,ngrid,nao), dtype=numpy.complex128)
+        aoSb = numpy.ndarray((4,ngrid,nao), dtype=numpy.complex128)
+        aoSa[0] = ao[0]
+        aoSb[0] = ao[1]
+        ao = self.mol.eval_gto('GTOval_ipsp_spinor', coords, 3, shls_slice, non0tab)
+        for k in range(1,4):
+            aoSa[k,:,:] = ao[0,k-1,:,:]
+            aoSb[k,:,:] = ao[1,k-1,:,:]
+
+    if deriv == 0:
+        aoSa = aoSa[0]
+        aoSb = aoSb[0]
+
+    return aoLa, aoLb, aoSa, aoSb
 
 # TODO: screaning of points
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
     npoints = x.shape[0]
-    aoa, aob = eval_ao(self, x, deriv=1)
-    pos = abs(self.mo_occ) > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
+    aoLa, aoLb, aoSa, aoSb = eval_ao(self, x, deriv=1)
     rho = numpy.zeros((3,npoints))
 
-    # Up
-    c0a = lib.dot(aoa[0], cpos)
-    raa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
-    raa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
-    rho[0] += raa
-    c1 = lib.dot(aoa[1], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
-    c1 = lib.dot(aoa[2], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
-    c1 = lib.dot(aoa[3], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
-    # Down
-    c0b = lib.dot(aob[0], cpos)
-    rbb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
-    rbb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
-    rho[0] += rbb
-    c1 = lib.dot(aob[1], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = lib.dot(aob[2], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
-    c1 = lib.dot(aob[3], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
-    #
-    rho[1] *= 0.5
+    # Large Component
+    coeff = self.mo_coeffL
+    c0a = lib.dot(aoLa[0], coeff)
+    rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
+    rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
+    c0b = lib.dot(aoLb[0], coeff)
+    rhobb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
+    rhobb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
+    rho[0] += (rhoaa + rhobb)
+    #for i in range(1,4):
+    #    c1a = lib.dot(aoLa[i], coeff)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1a.real, c1a.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1a.imag, c1a.imag)
+    #    c1b = lib.dot(aoLb[i], coeff)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1b.real, c1b.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1b.imag, c1b.imag)
+    # Small Component
+    coeff = self.mo_coeffS
+    c0a = lib.dot(aoSa[0], coeff)
+    rhoaa = numpy.einsum('pi,pi->p', c0a.real, c0a.real)
+    rhoaa += numpy.einsum('pi,pi->p', c0a.imag, c0a.imag)
+    c0b = lib.dot(aoSb[0], coeff)
+    rhobb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
+    rhobb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
+    rho[0] += (rhoaa + rhobb)
+    #for i in range(1, 4):
+    #    c1a = lib.dot(aoSa[i], coeff)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1a.real, c1a.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1a.imag, c1a.imag)
+    #    c1b = lib.dot(aoSb[i], coeff)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1b.real, c1b.real)
+    #    rho[i] += numpy.einsum('pi,pi->p', c1b.imag, c1b.imag)
+
     return rho
 
 def inbasin(self,r,j):
@@ -183,12 +208,16 @@ class Basin(lib.StreamObject):
         self.non0tab = False
         self.corr = False
         self.occdrop = 1e-6
+        self.cspeed = lib.param.LIGHT_SPEED
 ##################################################
 # don't modify the following attributes, they are not input options
         self.rdm1 = None
         self.nocc = None
         self.mol = None
         self.mo_coeff = None
+        self.mo_coeffL = None
+        self.mo_coeffS = None
+        self.n2c = None
         self.mo_occ = None
         self.ntrial = None
         self.npang = None
@@ -231,6 +260,7 @@ class Basin(lib.StreamObject):
         logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
+        logger.info(self,'Speed light value %f' % self.cspeed)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -294,15 +324,14 @@ class Basin(lib.StreamObject):
         else:
             self.rad = grid.BRAGG[self.charges[self.inuc]]*0.5
 
-        if (self.corr):
-            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
-            natocc, natorb = numpy.linalg.eigh(self.rdm1)
-            natorb = numpy.dot(self.mo_coeff, natorb)
-            self.mo_coeff = natorb
-            self.mo_occ = natocc
+        self.n2c = nprims/2
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        nocc = len(nocc)
-        self.nocc = nocc
+        self.nocc = len(nocc)
+        pos = abs(self.mo_occ) > self.occdrop
+        n2c = self.n2c
+        self.mo_coeffL = self.mo_coeff[:n2c,pos]
+        c1 = 0.5/self.cspeed
+        self.mo_coeffS = self.mo_coeff[n2c:,n2c:n2c+self.nocc] * c1
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
@@ -362,7 +391,7 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'x2c.chk'
+    name = 'srel.chk'
     bas = Basin(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -373,6 +402,7 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    bas.inuc = 0
+    bas.inuc = 1
+    bas.cspeed = 5
     bas.kernel()
 

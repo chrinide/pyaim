@@ -110,7 +110,6 @@ def eval_rho2(mol, ao, mo_coeff, mo_occ, small=False, xctype='LDA'):
 
     return rho
 
-
 import numpy
 from pyscf import gto, scf, lib, dft
 
@@ -129,18 +128,18 @@ mol.verbose = 4
 mol.nucmod = 0
 mol.build()
 
-mf = dft.DUKS(mol).apply(scf.addons.remove_linear_dep_) 
+mf = dft.DUKS(mol)
+mf.chkfile = name+'.chk'
+mf.grids.prune = None
+mf.grids.level = 4
 mf.with_ssss = True
 mf.with_gaunt = False
 mf.with_breit = False
-mf.chkfile = name+'.chk'
 mf.kernel()
 
-grids = dft.gen_grid.Grids(mol)
-grids.kernel()
 dm = mf.make_rdm1()
-coords = grids.coords
-weights = grids.weights
+coords = mf.grids.coords
+weights = mf.grids.weights
 
 nao = mf.mo_occ.shape
 n2c = mol.nao_2c()

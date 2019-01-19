@@ -1,0 +1,54 @@
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Sat Jan 19 18:12:52 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file srel.chk
+Max_memory 32000 MB (current use 70 MB)
+* Mol Info
+Speed light value 5.000000
+Num atoms 3
+Num electrons 10
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 8 position : 0.000000  0.000000  0.222261
+Nuclei 1 with charge 1 position : 1.438435  0.000000  -0.889042
+Nuclei 2 with charge 1 position : -1.438435  0.000000  -0.889042
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 100
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 10
+Number of molecular primitives 100
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file srel.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.320000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 300
+
+Good rho position -0.003934 -0.003931 0.216677
+Check rho position 1.407388 0.000000 -0.860663
+Setting xyzrho for atom to imput coords
+Check rho position -1.407388 -0.000000 -0.860662
+Setting xyzrho for atom to imput coords
+Time finding nucleus 0.822 (sec)
+Time finding surface 153.692 (sec)
+Rmin for surface 0.517101
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build    618.15 sec

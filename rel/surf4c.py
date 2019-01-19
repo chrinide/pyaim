@@ -105,7 +105,7 @@ def rhograd2(self, x):
         rhoL[i] *= 2 
     # Small Component
     rhoS = numpy.zeros((4,1))
-    c1 = 0.5/lib.param.LIGHT_SPEED
+    c1 = 0.5/self.cspeed
     dmSS = dm[n2c:,n2c:] * c1**2
     c0a = lib.dot(aoSa[0], dmSS)
     rhoaa = numpy.einsum('pi,pi->p', aoSa[0].real, c0a.real)
@@ -285,6 +285,7 @@ class BaderSurf(lib.StreamObject):
         self.step = 0.1
         self.mstep = 120
         self.occdrop = 1e-6
+        self.cspeed = lib.param.LIGHT_SPEED
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mol = None
@@ -342,6 +343,7 @@ class BaderSurf(lib.StreamObject):
                  self.max_memory, lib.current_memory()[0])
 
         logger.info(self,'* Mol Info')
+        logger.info(self,'Speed light value %f' % self.cspeed)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -419,7 +421,7 @@ class BaderSurf(lib.StreamObject):
         pos = abs(self.mo_occ) > self.occdrop
         n2c = self.n2c
         self.mo_coeffL = self.mo_coeff[:n2c,pos]
-        c1 = 0.5/lib.param.LIGHT_SPEED
+        c1 = 0.5/self.cspeed
         self.mo_coeffS = self.mo_coeff[n2c:,n2c:n2c+self.nocc] * c1
 
         if (self.ntrial%2 == 0): self.ntrial += 1
@@ -538,7 +540,7 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'puo2_+2.chk'
+    name = 'srel.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
@@ -547,5 +549,6 @@ if __name__ == '__main__':
     surf.mstep = 300
     surf.npang = 5810
     surf.inuc = 0
+    surf.cspeed = 5
     surf.kernel()
 

@@ -92,7 +92,7 @@ def print_basin(name, natm):
         log.info('Tot prop %s value : %8.5f', PROPS[j], totprops[j])
 
 if __name__ == '__main__':
-    name = 'dhf.chk.h5'
+    name = 'srel.chk.h5'
     natm = 0
     nmo = 24
     print_txt(name,0)
