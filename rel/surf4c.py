@@ -538,7 +538,7 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'dhf.chk'
+    name = 'puo2_+2.chk'
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5

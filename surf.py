@@ -384,16 +384,25 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
-    natm = 3
+    name = 'prueba.chk'
+    #natm = 3
+    #surf = BaderSurf(name)
+    #surf.epsilon = 1e-5
+    #surf.epsroot = 1e-5
+    #surf.verbose = 4
+    #surf.epsiscp = 0.220
+    #surf.mstep = 200
+    #surf.npang = 5810
+    #for i in range(3):
+    #    surf.inuc = i
+    #    surf.kernel()
+    #
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
     surf.verbose = 4
-    surf.epsiscp = 0.220
-    surf.mstep = 200
+    surf.epsiscp = 0.320
+    surf.mstep = 300
     surf.npang = 5810
-    for i in range(3):
-        surf.inuc = i
-        surf.kernel()
-
+    surf.inuc = 0
+    surf.kernel()
