@@ -63,8 +63,8 @@ def mos(self,x):
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
     c0aL = numpy.dot(aoLa, self.mo_coeffL)
     c0bL = numpy.dot(aoLb, self.mo_coeffL)
-    c0aS = numpy.dot(aoLa, self.mo_coeffS)
-    c0bS = numpy.dot(aoLb, self.mo_coeffS)
+    c0aS = numpy.dot(aoSa, self.mo_coeffS)
+    c0bS = numpy.dot(aoSb, self.mo_coeffS)
     c0a = numpy.hstack((c0aL,c0aS))
     c0b = numpy.hstack((c0bL,c0bS))
     idx = 0
@@ -349,7 +349,6 @@ class Aom(lib.StreamObject):
             self.bmapr = 2
         elif (self.bmapr == 'none'):
             self.bmapr = 0
-
 
         nocc = self.nocc*2
         self.aom = numpy.zeros((nocc,nocc), dtype=numpy.complex128)
