@@ -4,6 +4,7 @@ import sys
 import time
 import h5py
 import numpy
+import ctypes
 import signal
 
 from pyscf import lib, dft
@@ -14,32 +15,37 @@ import grid
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
-EPS = 1e-7
-NCOL = 15
-DIGITS = 5
-
 # For code compatiblity in python-2 and python-3
 if sys.version_info >= (3,):
     unicode = str
 
-# Temporal only occupied orbitals
+EPS = 1e-7
+NCOL = 15
+DIGITS = 5
+
+def eval_ao(self, coords, deriv=0):
+    non0tab = None
+    shls_slice = None
+    comp = (deriv+1)*(deriv+2)*(deriv+3)//6
+    feval = 'GTOval_spinor_deriv%d' % deriv
+    aoLa, aoLb = self.mol.eval_gto(feval, coords, comp, shls_slice, non0tab)
+    return aoLa, aoLb
+
 def mos(self,x):
     x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    npoints, nao = ao.shape
-    if (self.full):
-        nocc = self.nmo
-        cpos = self.mo_coeff
-    else:
-        nocc = self.nocc
-        pos = self.mo_occ > self.occdrop
-        cpos = self.mo_coeff[:,pos]
-    c0 = numpy.dot(ao, cpos)
-    aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
+    npoints = x.shape[0]
+    aoa, aob = eval_ao(self, x, deriv=0)
+    pos = abs(self.mo_occ) > self.occdrop
+    cpos = self.mo_coeff[:,pos]
+    nocc = self.nocc
+    aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
+    c0a = numpy.dot(aoa, cpos)
+    c0b = numpy.dot(aob, cpos)
     idx = 0
     for i in range(nocc):
         for j in range(i+1):
-            aom[idx] = numpy.einsum('i,i->i',c0[:,i],c0[:,j])
+            aom[idx] = numpy.einsum('i,i->i',c0a[:,i].conj(),c0a[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0b[:,i].conj(),c0b[:,j])
             idx += 1
     return aom
 
@@ -71,12 +77,9 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    if (self.full):
-        nocc = self.nmo
-    else:
-        nocc = self.nocc
+    nocc = self.nocc
     NPROPS = nocc*(nocc+1)//2
-    rprops = numpy.zeros(NPROPS)
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
         r = rmesh[n]
         coords = []
@@ -116,12 +119,9 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    if (self.full):
-        nocc = self.nmo
-    else:
-        nocc = self.nocc
+    nocc = self.nocc
     NPROPS = nocc*(nocc+1)//2
-    rprops = numpy.zeros(NPROPS)
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
         r = rmesh[n]
         for j in range(npang): # j-loop can be changed to map
@@ -139,7 +139,6 @@ def int_beta(self):
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
-# Atomic overlap matrix in the MO basis
 class Aom(lib.StreamObject):
 
     def __init__(self, datafile):
@@ -160,12 +159,13 @@ class Aom(lib.StreamObject):
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
         self.non0tab = False
-        self.full = False # Use only occupied orbitals
+        self.corr = False
+        self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
-        self.mol = None
-        self.nocc = None
         self.rdm1 = None
+        self.nocc = None
+        self.mol = None
         self.mo_coeff = None
         self.mo_occ = None
         self.ntrial = None
@@ -188,9 +188,6 @@ class Aom(lib.StreamObject):
         self.rad = None
         self.brad = None
         self.aom = None
-        self.nocc = None
-        self.corr = False
-        self.occdrop = 1e-6
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -210,6 +207,7 @@ class Aom(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
+        logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -230,7 +228,7 @@ class Aom(lib.StreamObject):
 
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
-        logger.info(self,'Surface for nuc %d' % self.inuc)
+        logger.info(self,'Properties for nuc %d' % self.inuc)
         logger.info(self,'Nuclear coordinate %.6f  %.6f  %.6f', *self.xnuc)
         logger.info(self,'Rho nuclear coordinate %.6f  %.6f  %.6f', *self.xyzrho[self.inuc])
         logger.info(self,'Npang points %d' % self.npang)
@@ -322,15 +320,8 @@ class Aom(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-        if (self.full):
-            self.nocc = self.nmo
-            nocc = self.nmo
-        else:
-            nocc = self.mo_occ[self.mo_occ>self.occdrop]
-            nocc = len(nocc)
-            self.nocc = nocc
-
-        self.aom = numpy.zeros((nocc,nocc))
+        nocc = self.nocc
+        self.aom = numpy.zeros((nocc,nocc), dtype=numpy.complex128)
 
         with lib.with_omp_threads(self.nthreads):
             aomb = int_beta(self)
@@ -342,7 +333,7 @@ class Aom(lib.StreamObject):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
                 self.aom[j,i] = self.aom[i,j]
                 idx += 1
-        if (not self.full or self.nmo<=30):
+        if (nocc<=30):
             dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
 
         logger.info(self,'Write info to HDF5 file')
@@ -358,21 +349,19 @@ class Aom(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'prueba.chk'
-    natoms = 3
-    ovlp = Aom(name)
-    ovlp.verbose = 4
-    ovlp.nrad = 321
-    ovlp.iqudr = 'legendre'
-    ovlp.mapr = 'exp'
-    ovlp.bnrad = 221
-    ovlp.betafac = 0.5
-    ovlp.bnpang = 3074
-    ovlp.biqudr = 'legendre'
-    ovlp.bmapr = 'exp'
-    ovlp.non0tab = False
-    ovlp.full = False
-    for i in range(natoms):
-        ovlp.inuc = i
-        ovlp.kernel()
-                 
+    name = 'x2c.chk'
+    natm = 3
+    bas = Aom(name)
+    bas.verbose = 4
+    bas.nrad = 221
+    bas.iqudr = 'legendre'
+    bas.mapr = 'exp'
+    bas.bnrad = 121
+    bas.bnpang = 3074
+    bas.biqudr = 'legendre'
+    bas.bmapr = 'exp'
+    bas.betafac = 0.4
+    for i in range(natm):
+        bas.inuc = i
+        bas.kernel()
+

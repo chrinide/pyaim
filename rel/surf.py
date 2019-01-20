@@ -420,6 +420,8 @@ if __name__ == '__main__':
     surf.epsiscp = 0.320
     surf.mstep = 300
     surf.npang = 5810
-    surf.inuc = 0
-    surf.kernel()
+    natm = 3
+    for i in range(natm):
+        surf.inuc = i
+        surf.kernel()
 

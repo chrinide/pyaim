@@ -34,7 +34,7 @@ def eval_ao(self, coords, deriv=0):
 def rho(self,x):
     x = numpy.reshape(x, (-1,3))
     npoints = x.shape[0]
-    aoa, aob = eval_ao(self, x, deriv=1)
+    aoa, aob = eval_ao(self, x, deriv=2)
     pos = abs(self.mo_occ) > self.occdrop
     cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
     rho = numpy.zeros((3,npoints))
@@ -53,6 +53,12 @@ def rho(self,x):
     c1 = lib.dot(aoa[3], cpos)
     rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
     rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
+    #
+    XX, YY, ZZ = 4, 7, 9
+    ao2 = aoa[XX] + aoa[YY] + aoa[ZZ]
+    c1 = numpy.dot(ao2, cpos)
+    rho[2] += numpy.einsum('pi,pi->p', c0a.real, c1.real)
+    rho[2] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)
     # Down
     c0b = lib.dot(aob[0], cpos)
     rbb = numpy.einsum('pi,pi->p', c0b.real, c0b.real)
@@ -68,6 +74,14 @@ def rho(self,x):
     rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
     rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
     #
+    XX, YY, ZZ = 4, 7, 9
+    ao2 = aob[XX] + aob[YY] + aob[ZZ]
+    c1 = numpy.dot(ao2, cpos)
+    rho[2] += numpy.einsum('pi,pi->p', c0b.real, c1.real)
+    rho[2] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)
+    #
+    rho[2] += rho[1]
+    rho[2] *= 2.0
     rho[1] *= 0.5
     return rho
 
@@ -316,7 +330,6 @@ class Basin(lib.StreamObject):
             self.nlimsurf = f[idx+'/nlimsurf'].value
             self.agrids = f[idx+'/coords'].value
 
-        print self.rmin, self.betafac
         self.brad = self.rmin*self.betafac
 
         if self.verbose >= logger.WARN:

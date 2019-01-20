@@ -1,3 +1,4 @@
 * Prune points
+* Update for correlated cases, true correlation not DFT
 * Allow UHF and GHF and ECP
 * Merge all

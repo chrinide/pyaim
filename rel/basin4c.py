@@ -345,7 +345,6 @@ class Basin(lib.StreamObject):
             self.nlimsurf = f[idx+'/nlimsurf'].value
             self.agrids = f[idx+'/coords'].value
 
-        print self.rmin, self.betafac
         self.brad = self.rmin*self.betafac
 
         if self.verbose >= logger.WARN:
@@ -391,7 +390,8 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'srel.chk'
+    name = 'dhf.chk'
+    natm = 3
     bas = Basin(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -402,7 +402,8 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    bas.inuc = 1
-    bas.cspeed = 5
-    bas.kernel()
+    #bas.cspeed = 5
+    for i in range(natm):
+        bas.inuc = i
+        bas.kernel()
 
