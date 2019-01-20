@@ -38,6 +38,7 @@ eo = mf.mo_energy[:nocc]
 ev = mf.mo_energy[nocc:]
 
 pt = mp.X2CMP2(mf)
+pt.frozen = 0
 pt.kernel()
 rdm1 = pt.make_rdm1()
 rdm2 = pt.make_rdm2()

@@ -471,8 +471,9 @@ int odeint(double *ystart, double h1, double eps){
 		}
 		if (fabs(hnext) <= hmin) cerror("Step size too small in odeint");
 		if (i == (mstep_-1)) {
-  	  printf("NNA at %f %f %f\n", y[0], y[1], y[2]);
-	    cerror("Reached max steps in odeint");
+  	  printf("Maybe NNA at %f %f %f\n", y[0], y[1], y[2]);
+  	  printf("Rho, gradmod %f %f \n", rho, gradmod);
+	    cwarning("Reached max steps in odeint");
 		}
 		h = hnext;
   }
@@ -764,5 +765,9 @@ bool checkcp(double *x, int *nuc){
 void cerror(const char *text){
 	fprintf(stderr,"Error %s\n", text);
 	exit(1);
+}
+
+void cwarning(const char *text){
+	fprintf(stderr,"Error %s\n", text);
 }
 

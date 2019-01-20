@@ -2,3 +2,4 @@
 * Update for correlated cases, true correlation not DFT
 * Allow UHF and GHF and ECP
 * Merge all
+* Be carefully with symm, for example when diagonalizing the NADO or DAFH

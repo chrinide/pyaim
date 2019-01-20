@@ -59,7 +59,7 @@ H      0.000000     -0.761187     -0.469725
 '''
 mol.charge = 0
 mol.spin = 0
-mol.symmetry = 1
+mol.symmetry = 0
 mol.verbose = 4
 mol.build()
 
