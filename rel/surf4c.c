@@ -203,6 +203,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
 	// Down
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -249,6 +250,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
 	// Down
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;

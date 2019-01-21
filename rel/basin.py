@@ -56,7 +56,7 @@ def rho(self,x):
     #
     XX, YY, ZZ = 4, 7, 9
     ao2 = aoa[XX] + aoa[YY] + aoa[ZZ]
-    c1 = numpy.dot(ao2, cpos)
+    c1 = lib.dot(ao2, cpos)
     rho[2] += numpy.einsum('pi,pi->p', c0a.real, c1.real)
     rho[2] += numpy.einsum('pi,pi->p', c0a.imag, c1.imag)
     # Down
@@ -76,7 +76,7 @@ def rho(self,x):
     #
     XX, YY, ZZ = 4, 7, 9
     ao2 = aob[XX] + aob[YY] + aob[ZZ]
-    c1 = numpy.dot(ao2, cpos)
+    c1 = lib.dot(ao2, cpos)
     rho[2] += numpy.einsum('pi,pi->p', c0b.real, c1.real)
     rho[2] += numpy.einsum('pi,pi->p', c0b.imag, c1.imag)
     #
@@ -311,7 +311,7 @@ class Basin(lib.StreamObject):
         if (self.corr):
             self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
             natocc, natorb = numpy.linalg.eigh(self.rdm1)
-            natorb = numpy.dot(self.mo_coeff, natorb)
+            natorb = lib.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
             self.mo_occ = natocc
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
@@ -375,7 +375,7 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'x2c.chk'
+    name = 'puo2_+2_x2c.chk'
     bas = Basin(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -387,5 +387,7 @@ if __name__ == '__main__':
     bas.bmapr = 'exp'
     bas.betafac = 0.4
     bas.inuc = 0
+    bas.kernel()
+    bas.inuc = 1
     bas.kernel()
 

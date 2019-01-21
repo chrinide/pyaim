@@ -87,6 +87,7 @@ def rhograd(self, x):
     #mx = rab.real + rba.real
     #my = rba.imag - rab.imag
     #mz = raa - rbb
+    #print mx,my,mz
     #m = numpy.vstack((mx, my, mz))
     #mgradmod = numpy.linalg.norm(m)
     return rho[0,0], rho[-3:,0]/(gradmod+HMINIMAL), gradmod
@@ -417,8 +418,6 @@ if __name__ == '__main__':
     surf.epsiscp = 0.320
     surf.mstep = 300
     surf.npang = 5810
-    natm = 1
-    for i in range(natm):
-        surf.inuc = i
-        surf.kernel()
+    surf.inuc = 0
+    surf.kernel()
 

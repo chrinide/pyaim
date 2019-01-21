@@ -9,9 +9,9 @@ from pyscf.tools.dump_mat import dump_tri
 
 log = lib.logger.Logger(sys.stdout, 4)
     
-name = 'x2c.chk'
+name = 'puo2_+2_x2c.chk'
 atm = [0,1]
-nmo = 10
+nmo = 108
 
 with h5py.File(name+'.h5') as f:
     idx = 'ovlp'+str(atm[0])
@@ -19,7 +19,7 @@ with h5py.File(name+'.h5') as f:
     idx = 'ovlp'+str(atm[1])
     aom2 = f[idx+'/aom'].value
 
-delta = 2*numpy.einsum('ij,ji->', aom1.conj(), aom2)
+delta = 2*numpy.einsum('ij,ji->', aom1, aom2.conj())
 log.info('Delta %f for pair %d %d' %  (delta.real, atm[0], atm[1]))
 
 #TODO:descompose delta in the basis of dafh which is diagonal
@@ -28,8 +28,8 @@ mol = lib.chkfile.load_mol(name)
 mo_coeff = lib.chkfile.load(name, 'scf/mo_coeff')
 mo_coeff = mo_coeff[:,0:nmo]
 
-dab = 2*numpy.einsum('ik,kj->ij', aom1, aom2)
-dba = 2*numpy.einsum('ik,kj->ij', aom2, aom1)
+dab = 2*numpy.einsum('ik,kj->ij', aom1, aom2.conj())
+dba = 2*numpy.einsum('ik,kj->ij', aom2, aom1.conj())
 d2c = (dab+dba)/2.0
 
 natocc, natorb = numpy.linalg.eigh(d2c)
@@ -58,8 +58,7 @@ def eval_rho(mol, ao, dm):
     return rho
 
 def make_rdm1(mo_coeff, mo_occ):
-    mocc = mo_coeff[:,mo_occ>0]
-    return lib.dot(mocc*mo_occ[mo_occ>0], mocc.T.conj())
+    return numpy.dot(mo_coeff*mo_occ, mo_coeff.T.conj())
 
 dm = make_rdm1(natorb, natocc)
 grids = dft.gen_grid.Grids(mol)
@@ -69,5 +68,5 @@ coords = grids.coords
 weights = grids.weights
 ao = eval_ao(mol, coords, deriv=0)
 rho = eval_rho(mol, ao, dm)
-print('Rho = %.12f' % numpy.einsum('i,i->', rho, weights))
+print('Rho = %.12f' % numpy.dot(rho, weights))
 

@@ -39,8 +39,8 @@ def mos(self,x):
     cpos = self.mo_coeff[:,pos]
     nocc = self.nocc
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
-    c0a = numpy.dot(aoa, cpos)
-    c0b = numpy.dot(aob, cpos)
+    c0a = lib.dot(aoa, cpos)
+    c0b = lib.dot(aob, cpos)
     idx = 0
     for i in range(nocc):
         for j in range(i+1):
@@ -276,7 +276,7 @@ class Aom(lib.StreamObject):
         if (self.corr):
             self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
             natocc, natorb = numpy.linalg.eigh(self.rdm1)
-            natorb = numpy.dot(self.mo_coeff, natorb)
+            natorb = lib.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
             self.mo_occ = natocc
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
@@ -349,8 +349,7 @@ class Aom(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'x2c.chk'
-    natm = 3
+    name = 'puo2_+2_x2c.chk'
     bas = Aom(name)
     bas.verbose = 4
     bas.nrad = 221
@@ -361,7 +360,8 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    for i in range(natm):
-        bas.inuc = i
-        bas.kernel()
+    bas.inuc = 0
+    bas.kernel()
+    bas.inuc = 1
+    bas.kernel()
 

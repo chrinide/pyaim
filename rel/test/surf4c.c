@@ -190,10 +190,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += (ao_[j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += (ao_[1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += (ao_[2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += (ao_[3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
@@ -203,6 +203,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
 	// Down
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -210,19 +211,42 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[4*n2c_+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[4*n2c_+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[4*n2c_+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[4*n2c_+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += (ao_[4*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += (ao_[4*n2c_+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += (ao_[4*n2c_+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += (ao_[4*n2c_+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
+  double mzl = *rho;
   for (i=0; i<nmo_; i++){
+    mzl -= conj(c0_[i])*c0_[i];
     *rho += conj(c0_[i])*c0_[i];
     grad[0] += conj(c1_[i])*c0_[i]*2.0;
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
+	// Last components of Magnetization
+	double mxl = 0.0;
+	double myl = 0.0;
+  for (i=0; i<nmo_; i++){
+    c0_[i] = 0.0;
+    c1_[i] = 0.0;
+    for (j=0; j<n2c_; j++){
+      c0_[i] += (ao_[j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += (ao_[4*n2c_+j])*mo_coeffL_[i*n2c_+j];
+		}
+	}
+  double complex rba = 0.0;
+  double complex rab = 0.0;
+  for (i=0; i<nmo_; i++){
+    rba += conj(c1_[i])*c0_[i]; 
+    rab += conj(c0_[i])*c1_[i];  
+	}
+  mxl = creal(rab) + creal(rba);
+  myl = cimag(rba) - cimag(rab);
+  //printf("L mx,my,mz %g %g %g\n", mxl, myl , mzl);
   
   // Small
 	double complex aoS1_[n2c_*2];
@@ -236,19 +260,22 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(aoS1_[j])*mo_coeffS_[i*n2c_+j];
-      c1_[i] += conj(aoS2_[0*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c2_[i] += conj(aoS2_[1*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c3_[i] += conj(aoS2_[2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c0_[i] += (aoS1_[j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += (aoS2_[j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += (aoS2_[1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += (aoS2_[2*n2c_+j])*mo_coeffS_[i*n2c_+j];
     }
   }
   
+  double mzs = 0;
   for (i=0; i<nmo_; i++){
+    mzs += conj(c0_[i])*c0_[i];
     *rho += conj(c0_[i])*c0_[i];
     grad[0] += conj(c1_[i])*c0_[i]*2.0;
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
 	// Down
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -256,19 +283,50 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c1_[i] += conj(aoS2_[3*n2c_+0*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c2_[i] += conj(aoS2_[3*n2c_+1*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c3_[i] += conj(aoS2_[3*n2c_+2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c0_[i] += (aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += (aoS2_[3*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += (aoS2_[3*n2c_+1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += (aoS2_[3*n2c_+2*n2c_+j])*mo_coeffS_[i*n2c_+j];
     }
   }
   
   for (i=0; i<nmo_; i++){
+    mzs -= conj(c0_[i])*c0_[i];
     *rho += conj(c0_[i])*c0_[i];
     grad[0] += conj(c1_[i])*c0_[i]*2.0;
     grad[1] += conj(c2_[i])*c0_[i]*2.0;
     grad[2] += conj(c3_[i])*c0_[i]*2.0;
   }
+
+	// Last components of Magnetization
+	double mxs = 0.0;
+	double mys = 0.0;
+  for (i=0; i<nmo_; i++){
+    c0_[i] = 0.0;
+    c1_[i] = 0.0;
+    for (j=0; j<n2c_; j++){
+      c0_[i] += (aoS1_[j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += (aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
+		}
+	}
+  rba = 0.0;
+  rab = 0.0;
+  for (i=0; i<nmo_; i++){
+    rba += conj(c1_[i])*c0_[i]; 
+    rab += conj(c0_[i])*c1_[i];  
+	}
+  mxs = creal(rab) + creal(rba);
+  mys = cimag(rba) - cimag(rab);
+  //printf("S mx,my,mz %g %g %g\n", mxs, mys , mzs);
+
+  double mx = mxl-mxs;
+  double my = myl-mys;
+  double mz = mzl-mzs;
+  double mgradmod = 0.0;
+  mgradmod = mx*mx;
+  mgradmod += my*my;
+  mgradmod += mz*mz;
+  mgradmod = sqrt(mgradmod);
   
   // Final quantities
   *gradmod = grad[0]*grad[0];
@@ -278,6 +336,9 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   grad[0] = grad[0]/(*gradmod + HMINIMAL);
   grad[1] = grad[1]/(*gradmod + HMINIMAL);
   grad[2] = grad[2]/(*gradmod + HMINIMAL);
+  //grad[0] = mx/(mgradmod + HMINIMAL);
+  //grad[1] = my/(mgradmod + HMINIMAL);
+  //grad[2] = mz/(mgradmod + HMINIMAL);
 
 }
 
@@ -499,6 +560,9 @@ void rkqs(double *y, double *dydx, double *x,
 	double yerr[3], ytemp[3], errmax, xnew, htemp;
 
 	double h = htry;
+  yerr[0] = 0.0;
+  yerr[1] = 0.0;
+  yerr[2] = 0.0;
   *hnext = 0.0;
   errmax = 0.0;
 

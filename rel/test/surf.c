@@ -191,10 +191,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c0_[i] += (ao_[0*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c1_[i] += (ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2_[i] += (ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3_[i] += (ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
     }
   }
 
@@ -212,10 +212,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[4*nprims_+0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c0_[i] += (ao_[4*nprims_+0*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c1_[i] += (ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2_[i] += (ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3_[i] += (ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
     }
   }
 
@@ -235,12 +235,12 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c0_[i] = 0.0;
     c1_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[4*nprims_+0*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c0_[i] += (ao_[0*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c1_[i] += (ao_[4*nprims_+0*nprims_+j])*mo_coeff_[i*nprims_+j];
 		}
 	}
-  double rba = 0.0;
-  double rab = 0.0;
+  double complex rba = 0.0;
+  double complex rab = 0.0;
   for (i=0; i<nmo_; i++){
     rba += conj(c1_[i])*c0_[i]; 
     rab += conj(c0_[i])*c1_[i];  
@@ -258,12 +258,12 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   *gradmod += grad[1]*grad[1];
   *gradmod += grad[2]*grad[2];
   *gradmod = sqrt(*gradmod);
-  //grad[0] = grad[0]/(*gradmod + HMINIMAL);
-  //grad[1] = grad[1]/(*gradmod + HMINIMAL);
-  //grad[2] = grad[2]/(*gradmod + HMINIMAL);
-  grad[0] = mx/(mgradmod + HMINIMAL);
-  grad[1] = my/(mgradmod + HMINIMAL);
-  grad[2] = mz/(mgradmod + HMINIMAL);
+  grad[0] = grad[0]/(*gradmod + HMINIMAL);
+  grad[1] = grad[1]/(*gradmod + HMINIMAL);
+  grad[2] = grad[2]/(*gradmod + HMINIMAL);
+  //grad[0] = mx/(mgradmod + HMINIMAL);
+  //grad[1] = my/(mgradmod + HMINIMAL);
+  //grad[2] = mz/(mgradmod + HMINIMAL);
 
 }
 

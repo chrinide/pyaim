@@ -286,12 +286,12 @@ class BaderSurf(lib.StreamObject):
         if (not self.leb):
             self.npang = self.npphi*self.nptheta
 
-        #if (self.corr):
-        #    self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
-        #    natocc, natorb = numpy.linalg.eigh(self.rdm1)
-        #    natorb = lib.dot(self.mo_coeff, natorb)
-        #    self.mo_coeff = natorb
-        #    self.mo_occ = natocc
+        if (self.corr):
+            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
+            natorb = lib.dot(self.mo_coeff, natorb)
+            self.mo_coeff = natorb
+            self.mo_occ = natocc
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
         nocc = len(nocc)
         self.nocc = nocc

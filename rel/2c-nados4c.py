@@ -19,13 +19,13 @@ with h5py.File(name+'.h5') as f:
     idx = 'ovlp'+str(atm[1])
     aom2 = f[idx+'/aom'].value
 
-delta = 2*numpy.einsum('ij,ji->', aom1.conj(), aom2)
+delta = 2*numpy.einsum('ij,ji->', aom1, aom2.conj())
 log.info('Delta %f for pair %d %d' %  (delta.real, atm[0], atm[1]))
 
 mol = lib.chkfile.load_mol(name)
 
-dab = 2*numpy.einsum('ik,kj->ij', aom1, aom2)
-dba = 2*numpy.einsum('ik,kj->ij', aom2, aom1)
+dab = 2*numpy.einsum('ik,kj->ij', aom1, aom2.conj())
+dba = 2*numpy.einsum('ik,kj->ij', aom2, aom1.conj())
 d2c = (dab+dba)/2.0
 
 natocc, natorb = numpy.linalg.eigh(d2c)

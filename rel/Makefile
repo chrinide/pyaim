@@ -5,8 +5,8 @@ FC = gfortran
 LD = gcc
 FDEBUG = -Wpedantic -g -pg -Wunused -fbacktrace -fcheck=bounds,mem,pointer,do,array-temps -Wall
 CDEBUG = -Wpedantic -g -pg -Wunused -Wall
-CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm $(CDEBUG) 
-FFLAGS = -O3 -mtune=native -fopenmp -fpic     $(FDEBUG) 
+CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm #$(CDEBUG) 
+FFLAGS = -O3 -mtune=native -fopenmp -fpic     #$(FDEBUG) 
 LFLAGS = -shared -L/home/jluis/src/pyscf/dev/pyscf/lib -lcgto -lgfortran
 
 all: libaim.so lib4caim.so

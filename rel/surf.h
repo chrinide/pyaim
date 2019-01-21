@@ -90,6 +90,7 @@ void rho_grad(double *point, double *rho, double *grad, double *gradmod);
 void surface(void);
 bool checkcp(double *x, int *nuc);
 void cerror(const char *text);
+void cwarning(const char *text);
 
 int odeint(double *ystart, double h1, double eps);
 void rkqs(double *y, double *dydx, double *x, 

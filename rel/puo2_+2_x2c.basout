@@ -1,0 +1,130 @@
+
+******** <class '__main__.Basin'> flags ********
+* General Info
+Date Mon Jan 21 16:32:48 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2_x2c.chk
+Max_memory 32000 MB (current use 84 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 878
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 878
+* Surface Info
+Surface file puo2_+2_x2c.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.744635
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.653510
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.697854
+
+* Go with inside betasphere
+*--> density density inside bsphere 67.66297 
+*--> kinetic density inside bsphere 85911.31019 
+*--> laplacian density inside bsphere 113674.07111 
+Time in Bsphere 124.829 (sec)
+* Go outside betasphere
+*--> density density outside bsphere 22.92030 
+*--> kinetic density outside bsphere 177.86867 
+*--> laplacian density outside bsphere 394.68403 
+Time out Bsphere 315.720 (sec)
+Write info to HDF5 file
+*-> Total density density 90.58327 
+*-> Total kinetic density 86089.17886 
+*-> Total laplacian density 114068.75514 
+
+Basim properties of atom 0 done
+    CPU time for Basin build   1112.23 sec, wall time    440.60 sec
+
+******** <class '__main__.Basin'> flags ********
+* General Info
+Date Mon Jan 21 16:40:09 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2_x2c.chk
+Max_memory 32000 MB (current use 143 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 878
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 878
+* Surface Info
+Surface file puo2_+2_x2c.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.108593
+Rho nuclear coordinate 0.000000  0.000000  3.108593
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.363957
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.545583
+
+* Go with inside betasphere
+*--> density density inside bsphere  2.61552 
+*--> kinetic density inside bsphere 100.27066 
+*--> laplacian density inside bsphere 127.00852 
+Time in Bsphere 118.614 (sec)
+* Go outside betasphere
+*--> density density outside bsphere  6.09428 
+*--> kinetic density outside bsphere 13.46287 
+*--> laplacian density outside bsphere 24.63625 
+Time out Bsphere 376.636 (sec)
+Write info to HDF5 file
+*-> Total density density  8.70980 
+*-> Total kinetic density 113.73353 
+*-> Total laplacian density 151.64477 
+
+Basim properties of atom 1 done
+    CPU time for Basin build   1268.92 sec, wall time    495.30 sec

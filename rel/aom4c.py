@@ -61,10 +61,10 @@ def mos(self,x):
     aoLa, aoLb, aoSa, aoSb = eval_ao(self, x, deriv=0)
     nocc = self.nocc*2
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
-    c0aL = numpy.dot(aoLa, self.mo_coeffL)
-    c0bL = numpy.dot(aoLb, self.mo_coeffL)
-    c0aS = numpy.dot(aoSa, self.mo_coeffS)
-    c0bS = numpy.dot(aoSb, self.mo_coeffS)
+    c0aL = lib.dot(aoLa, self.mo_coeffL)
+    c0bL = lib.dot(aoLb, self.mo_coeffL)
+    c0aS = lib.dot(aoSa, self.mo_coeffS)
+    c0bS = lib.dot(aoSb, self.mo_coeffS)
     c0a = numpy.hstack((c0aL,c0aS))
     c0b = numpy.hstack((c0bL,c0bS))
     idx = 0

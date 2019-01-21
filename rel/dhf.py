@@ -161,9 +161,9 @@ dmSS = dm[n2c:,n2c:] * c1**2
 aoLS = eval_ao(mol, coords, deriv=1)
 rho = eval_rho(mol, aoLS[:2], dmLL, xctype='GGA')
 rhoS = eval_rho(mol, aoLS[2:], dmSS, xctype='GGA')
-print('RhoL = %.12f' % numpy.einsum('i,i->', rho[0], weights))
-print('RhoS = %.12f' % numpy.einsum('i,i->', rhoS[0], weights))
-print('Rho = %.12f' % numpy.einsum('i,i->', rho[0]+rhoS[0], weights))
+print('RhoL = %.12f' % numpy.dot(rho[0], weights))
+print('RhoS = %.12f' % numpy.dot(rhoS[0], weights))
+print('Rho = %.12f' % numpy.dot(rho[0]+rhoS[0], weights))
 
 coords = numpy.zeros(3)
 coords = coords.reshape(-1,3)
