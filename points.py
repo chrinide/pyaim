@@ -262,7 +262,7 @@ class Points(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         self.mol = lib.chkfile.load_mol(self.chkfile)
@@ -332,7 +332,7 @@ class Points(lib.StreamObject):
                     'p':self.p}
         lib.chkfile.save(self.surfile, 'grid'+str(self.inuc), atom_dic)
         logger.info(self,'Points of atom %d done',self.inuc)
-        logger.timer(self,'Points build', t0)
+        logger.timer(self,'Points build', *t0)
 
         return self
 

@@ -217,7 +217,7 @@ class Spg(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         cell = libpbc.chkfile.load_cell(self.chkfile)
@@ -244,7 +244,7 @@ class Spg(lib.StreamObject):
 
         spginfo(self)
 
-        logger.timer(self,'Spg build', t0)
+        logger.timer(self,'Spg build', *t0)
 
         return self
 

@@ -332,7 +332,7 @@ class Basin(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'prueba.chk'
     natm = 3
     bas = Basin(name)
     bas.verbose = 4

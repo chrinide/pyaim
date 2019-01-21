@@ -231,7 +231,7 @@ class BaderSurf(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         mol = lib.chkfile.load_mol(self.chkfile)
@@ -377,7 +377,7 @@ class BaderSurf(lib.StreamObject):
                     'rsurf':self.rsurf}
         lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
         logger.info(self,'Surface of atom %d saved',self.inuc)
-        logger.timer(self,'BaderSurf build', t0)
+        logger.timer(self,'BaderSurf build', *t0)
 
         return self
 

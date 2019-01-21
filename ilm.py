@@ -307,7 +307,7 @@ class Ilm(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         self.mol = lib.chkfile.load_mol(self.chkfile)
@@ -398,7 +398,7 @@ class Ilm(lib.StreamObject):
         logger.info(self,'')
 
         logger.info(self,'Ilm of atom %d done',self.inuc)
-        logger.timer(self,'Ilm build', t0)
+        logger.timer(self,'Ilm build', *t0)
 
         return self
 

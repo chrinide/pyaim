@@ -3,7 +3,7 @@
 
 ******** <class '__main__.BaderSurf'> flags ********
 * General Info
-Date Sun Jan 20 18:02:04 2019
+Date Sun Jan 20 23:49:39 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -33,16 +33,16 @@ Lebedev quadrature
 Npang points 5810
 Surface file puo2_+2.chk.h5
 Surface for nuc 0
-Rmaxsurface 12.000000
+Rmaxsurface 10.000000
 Ntrial 11
 Rprimer 0.400000
 Epsiscp 0.320000
 Epsroot 1.000000e-05
-ODE solver rkdp
+ODE solver rkck
 ODE tool 1.000000e-05
-Max steps in ODE solver 300
+Max steps in ODE solver 200
 
 Good rho position 0.000000 0.000000 0.000000
 Good rho position 0.000000 0.000000 3.108594
 Good rho position 0.000000 0.000000 -3.108594
-Time finding nucleus 1.274 (sec)
+Time finding nucleus 0.882 (sec)

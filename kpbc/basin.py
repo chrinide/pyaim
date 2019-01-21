@@ -249,7 +249,7 @@ class Basin(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         self.cell = libpbc.chkfile.load_cell(self.chkfile)
@@ -325,7 +325,7 @@ class Basin(lib.StreamObject):
         for i in range(NPROPS):
             logger.info(self,'*-> Total %s %8.5f ', PROPS[i], (rprops[i]+brprops[i]))    
         logger.info(self,'Basim properties of atom %d done',self.inuc)
-        logger.timer(self,'Basin build', t0)
+        logger.timer(self,'Basin build', *t0)
 
         return self
 

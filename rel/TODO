@@ -1,2 +1,6 @@
-* NADOS
 * Cube class to print spinors, color by imaginary phase
+* PBE for 4c and hybrid functionals
+* Electrostatic potential and SOlvent for 2c/4c spinors
+* For 2c spinor MP2 is finish try to add at least CCSD and rdm's
+* And how about det in the J-basis ?
+* In case of RHF group by Cramer`s pairs

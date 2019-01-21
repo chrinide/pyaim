@@ -255,7 +255,7 @@ class Aom(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         self.mol = lib.chkfile.load_mol(self.chkfile)
@@ -351,7 +351,7 @@ class Aom(lib.StreamObject):
         logger.info(self,'')
 
         logger.info(self,'AOM of atom %d done',self.inuc)
-        logger.timer(self,'AOM build', t0)
+        logger.timer(self,'AOM build', *t0)
 
         return self
 

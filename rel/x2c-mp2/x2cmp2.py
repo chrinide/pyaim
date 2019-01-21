@@ -31,13 +31,17 @@ WITH_T2 = getattr(__config__, 'mp_gmp2_with_t2', True)
 
 def kernel(mp, mo_energy=None, mo_coeff=None, eris=None, with_t2=WITH_T2,
            verbose=logger.NOTE):
-    if mo_energy is None or mo_coeff is None:
-        mo_coeff = None
+    if mo_energy is None:
         mo_energy = mp.mo_energy[mp.get_frozen_mask()]
     else:
-        # For backward compatibility.  In pyscf-1.4 or earlier, mp.frozen is
-        # not supported when mo_energy or mo_coeff is given.
-        assert(mp.frozen is 0 or mp.frozen is None)
+        mo_energy = mo_energy[mp.get_frozen_mask()]
+
+    mo_e = mo_energy
+    gap = abs(mo_e[:mp.nocc,None] - mo_e[None,mp.nocc:]).min()
+    if gap < 1e-5:
+        logger.warn(mp, 'HOMO-LUMO gap %s too small for GMP2', gap)
+    else:
+        logger.info(mp, 'HOMO-LUMO gap %s', gap)
 
     if eris is None: eris = mp.ao2mo(mo_coeff)
 
@@ -80,6 +84,13 @@ def make_rdm1(mp, t2=None, ao_repr=False):
     dov = numpy.zeros((nocc,nvir))
     d1 = doo, dov, dov.T, dvv
     return gccsd_rdm._make_rdm1(mp, d1, with_frozen=True, ao_repr=ao_repr)
+
+def make_rdm1_vv(mp, t2=None):
+    if t2 is None: t2 = mp.t2
+    dvv = lib.einsum('mnea,mneb->ab', t2, t2.conj()) * .5
+    dm1 = dvv + dvv.conj().T
+    dm1 *= .5
+    return dm1
 
 def _gamma1_intermediates(mp, t2):
     doo = lib.einsum('imef,jmef->ij', t2.conj(), t2) *-.5
@@ -167,12 +178,14 @@ class GMP2(mp2.MP2):
 
     make_rdm1 = make_rdm1
     make_rdm2 = make_rdm2
+    make_rdm1_vv = make_rdm1_vv
 
 
 class _PhysicistsERIs:
     def __init__(self, mp, mo_coeff=None):
         if mo_coeff is None:
             mo_coeff = mp.mo_coeff
+        self.mp = mp
         mo_idx = mp.get_frozen_mask()
         self.mo_coeff = mo_coeff[:,mo_idx]
         self.oovv = None
@@ -220,7 +233,6 @@ def _make_eris_outcore(mp, mo_coeff=None, verbose=None):
     eri_ao = mp.mol.intor('int2e_spinor')
     ao2mo.kernel(eri_ao, (orbo,orbv,orbo,orbv), fswap,
                  max_memory=max_memory, verbose=log)
-    #sym_forbid = orbspin[:nocc,None] != orbspin[nocc:]
 
     for p0, p1 in lib.prange(0, nocc, blksize):
         tmp = numpy.asarray(fswap['eri_mo'][p0*nvir:p1*nvir])

@@ -5,6 +5,7 @@ import numpy
 import sys
 
 from pyscf import lib, dft
+from pyscf.tools.dump_mat import dump_tri
 
 log = lib.logger.Logger(sys.stdout, 4)
     
@@ -27,9 +28,13 @@ mol = lib.chkfile.load_mol(name)
 mo_coeff = lib.chkfile.load(name, 'scf/mo_coeff')
 mo_coeff = mo_coeff[:,0:nmo]
 
-natocc, natorb = numpy.linalg.eigh(aom1)
-log.info('Occ for DAFH %s', natocc)
-log.info('Sum Occ for DAFH %f', natocc.sum())
+dab = 2*numpy.einsum('ik,kj->ij', aom1, aom2)
+dba = 2*numpy.einsum('ik,kj->ij', aom2, aom1)
+d2c = (dab+dba)/2.0
+
+natocc, natorb = numpy.linalg.eigh(d2c)
+log.info('Occ for NADO %s', natocc)
+log.info('Sum Occ for NADO %f', natocc.sum())
 natorb = numpy.dot(mo_coeff, natorb)
 
 def eval_ao(mol, coords, deriv=0):

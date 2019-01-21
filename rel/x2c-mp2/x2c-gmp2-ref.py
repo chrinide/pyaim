@@ -37,19 +37,6 @@ v = slice(nocc, None)
 eo = mf.mo_energy[:nocc]
 ev = mf.mo_energy[nocc:]
 
-pt = mp.X2CMP2(mf)
-pt.frozen = 0
-pt.kernel()
-rdm1 = pt.make_rdm1()
-rdm2 = pt.make_rdm2()
-eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
-hcore = mf.get_hcore()
-h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
-e = numpy.einsum('ij,ji', h1, rdm1)
-e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
-e += mol.energy_nuc()
-lib.logger.info(mf,"!*** E(MP2) with RDM: %s" % e)
-
 lib.logger.info(mf,'**** Relativistic GMP2 Ref values')
 eri_mo = eri_mo - eri_mo.transpose(0,3,2,1)
 e_denom = 1.0/(-ev.reshape(-1,1,1,1)+eo.reshape(-1,1,1)-ev.reshape(-1,1)+eo)

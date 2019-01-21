@@ -257,7 +257,7 @@ class BaderSurf(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         mol = lib.chkfile.load_mol(self.chkfile)
@@ -405,14 +405,15 @@ class BaderSurf(lib.StreamObject):
                     'rsurf':self.rsurf}
         lib.chkfile.save(self.surfile, 'atom'+str(self.inuc), atom_dic)
         logger.info(self,'Surface of atom %d saved',self.inuc)
-        logger.timer(self,'BaderSurf build', t0)
+        logger.timer(self,'BaderSurf build', *t0)
 
         return self
 
     kernel = build
 
 if __name__ == '__main__':
-    name = 'x2c.chk'
+    name = 'puo2_+2_x2c.chk'
+    natm = 3
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
     surf.epsroot = 1e-5
@@ -420,7 +421,6 @@ if __name__ == '__main__':
     surf.epsiscp = 0.320
     surf.mstep = 300
     surf.npang = 5810
-    natm = 3
     for i in range(natm):
         surf.inuc = i
         surf.kernel()

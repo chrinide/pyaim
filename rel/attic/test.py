@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 
-import os
 import sys
 import time
 import h5py
 import numpy
 import ctypes
 import signal
+
 from pyscf import lib, dft
 from pyscf.lib import logger
+from pyscf.tools.dump_mat import dump_tri
 
 import grid
 
@@ -18,22 +19,63 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 if sys.version_info >= (3,):
     unicode = str
 
-_loaderpath = os.path.dirname(__file__)
-libaim = numpy.ctypeslib.load_library('libaim.so', _loaderpath)
-
 EPS = 1e-7
+NCOL = 15
+DIGITS = 5
 
-# TODO: screaning of points
-def rho(self,x):
+def eval_ao(self, coords, deriv=0):
+
+    non0tab = None
+    shls_slice = None
+    comp = (deriv+1)*(deriv+2)*(deriv+3)//6
+    feval = 'GTOval_spinor_deriv%d' % deriv
+    aoLa, aoLb = self.mol.eval_gto(feval, coords, comp, shls_slice, non0tab)
+
+    ao = self.mol.eval_gto('GTOval_sp_spinor', coords, 1, shls_slice, non0tab)
+    if (deriv == 0):
+        ngrid, nao = aoLa.shape[-2:]
+        aoSa = numpy.ndarray((1,ngrid,nao), dtype=numpy.complex128)
+        aoSb = numpy.ndarray((1,ngrid,nao), dtype=numpy.complex128)
+        aoSa[0] = ao[0]
+        aoSb[0] = ao[1]
+    elif (deriv == 1):
+        ngrid, nao = aoLa[0].shape[-2:]
+        aoSa = numpy.ndarray((4,ngrid,nao), dtype=numpy.complex128)
+        aoSb = numpy.ndarray((4,ngrid,nao), dtype=numpy.complex128)
+        aoSa[0] = ao[0]
+        aoSb[0] = ao[1]
+        ao = self.mol.eval_gto('GTOval_ipsp_spinor', coords, 3, shls_slice, non0tab)
+        for k in range(1,4):
+            aoSa[k,:,:] = ao[0,k-1,:,:]
+            aoSb[k,:,:] = ao[1,k-1,:,:]
+
+    if deriv == 0:
+        aoSa = aoSa[0]
+        aoSb = aoSb[0]
+
+    return aoLa, aoLb, aoSa, aoSb
+
+def mos(self,x):
     x = numpy.reshape(x, (-1,3))
-    ao = dft.numint.eval_ao(self.mol, x, deriv=0)
-    ngrids, nao = ao.shape
-    pos = self.mo_occ > self.occdrop
-    cpos = numpy.einsum('ij,j->ij', self.mo_coeff[:,pos], numpy.sqrt(self.mo_occ[pos]))
-    rho = numpy.zeros(ngrids)
-    c0 = numpy.dot(ao, cpos)
-    rho = numpy.einsum('pi,pi->p', c0, c0)
-    return rho
+    npoints = x.shape[0]
+    aoLa, aoLb, aoSa, aoSb = eval_ao(self, x, deriv=0)
+    nocc = self.nocc*1
+    aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
+    c0aL = numpy.dot(aoLa, self.mo_coeffL)
+    c0bL = numpy.dot(aoLb, self.mo_coeffL)
+    c0aS = numpy.dot(aoSa, self.mo_coeffS)
+    c0bS = numpy.dot(aoSb, self.mo_coeffS)
+    #c0a = numpy.hstack((c0aL,c0aS))
+    #c0b = numpy.hstack((c0bL,c0bS))
+    idx = 0
+    for i in range(nocc):
+        for j in range(i+1):
+            aom[idx] = numpy.einsum('i,i->i',c0aL[:,i].conj(),c0aL[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0bL[:,i].conj(),c0bL[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0aS[:,i].conj(),c0aS[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0bS[:,i].conj(),c0bS[:,j])
+            idx += 1
+    return aom
 
 def inbasin(self,r,j):
     isin = False
@@ -63,31 +105,14 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    lmax = self.lmax
-    NPROPS = lmax*(lmax+2) + 1
-    t1 = time.time()
-    ct_ = numpy.asarray(coordsang[:,0], order='C')
-    st_ = numpy.asarray(coordsang[:,1], order='C')
-    cp_ = numpy.asarray(coordsang[:,2], order='C')
-    sp_ = numpy.asarray(coordsang[:,3], order='C')
-    slm = numpy.zeros((npang,NPROPS))
-    feval = 'eval_rsh'
-    drv = getattr(libaim, feval)
-    drv(ctypes.c_int(lmax), 
-        ctypes.c_int(npang), 
-        ct_.ctypes.data_as(ctypes.c_void_p),
-        st_.ctypes.data_as(ctypes.c_void_p),
-        cp_.ctypes.data_as(ctypes.c_void_p),
-        sp_.ctypes.data_as(ctypes.c_void_p),
-        slm.ctypes.data_as(ctypes.c_void_p)) 
-    logger.debug(self,'Time finding outside RSH %.3f (sec)' % (time.time()-t1))
-    rprops = numpy.zeros(NPROPS)
+    nocc = self.nocc*1
+    NPROPS = nocc*(nocc+1)//2
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
         r = rmesh[n]
         coords = []
         weigths = []
-        rslm = []
-        for j in range(self.npang):
+        for j in range(npang):
             inside = True
             inside = inbasin(self,r,j)
             if (inside == True):
@@ -99,28 +124,12 @@ def out_beta(self):
                 xcoor[2] = r*cost    
                 p = self.xnuc + xcoor
                 coords.append(p)
-                rslm.append(slm[j,:])
                 weigths.append(coordsang[j,4])
         coords = numpy.array(coords)
         weigths = numpy.array(weigths)
-        rslm = numpy.array(rslm)
-        val = numpy.einsum('i,ip->ip',rho(self,coords),rslm)
-        props = numpy.einsum('ip,i->p', val, weigths)
-        for l in range(lmax+1):
-            ll = l*(l+1)
-            for m in range(-l,l+1,1):
-                lm = ll + m
-                props[lm] *= r**l
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, weigths)
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0)  (s)      outside bsphere %f', rprops[0])    
-    logger.info(self,'*--> Qlm(1,-1) (py)     outside bsphere %f', rprops[1])    
-    logger.info(self,'*--> Qlm(1,0)  (pz)     outside bsphere %f', rprops[2])    
-    logger.info(self,'*--> Qlm(1,1)  (px)     outside bsphere %f', rprops[3])    
-    logger.info(self,'*--> Qlm(2,-2) (dxy)    outside bsphere %f', rprops[4])    
-    logger.info(self,'*--> Qlm(2,-1) (dyz)    outside bsphere %f', rprops[5])    
-    logger.info(self,'*--> Qlm(2,0)  (dz2)    outside bsphere %f', rprops[6])    
-    logger.info(self,'*--> Qlm(2,1)  (dxz)    outside bsphere %f', rprops[7])    
-    logger.info(self,'*--> Qlm(2,2)  (dx2-y2) outside bsphere %f', rprops[8])    
     logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
     
@@ -138,25 +147,9 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    lmax = self.blmax
-    NPROPS = lmax*(lmax+2) + 1
-    t1 = time.time()
-    ct_ = numpy.asarray(coordsang[:,0], order='C')
-    st_ = numpy.asarray(coordsang[:,1], order='C')
-    cp_ = numpy.asarray(coordsang[:,2], order='C')
-    sp_ = numpy.asarray(coordsang[:,3], order='C')
-    slm = numpy.zeros((npang,NPROPS))
-    feval = 'eval_rsh'
-    drv = getattr(libaim, feval)
-    drv(ctypes.c_int(lmax), 
-        ctypes.c_int(npang), 
-        ct_.ctypes.data_as(ctypes.c_void_p),
-        st_.ctypes.data_as(ctypes.c_void_p),
-        cp_.ctypes.data_as(ctypes.c_void_p),
-        sp_.ctypes.data_as(ctypes.c_void_p),
-        slm.ctypes.data_as(ctypes.c_void_p)) 
-    logger.debug(self,'Time finding inside RSH %.3f (sec)' % (time.time()-t1))
-    rprops = numpy.zeros(NPROPS)
+    nocc = self.nocc*1
+    NPROPS = nocc*(nocc+1)//2
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
         r = rmesh[n]
         for j in range(npang): # j-loop can be changed to map
@@ -168,27 +161,13 @@ def int_beta(self):
             xcoor[2] = r*cost    
             p = self.xnuc + xcoor
             coords[j] = p
-        val = numpy.einsum('i,ip->ip',rho(self,coords),slm)
-        props = numpy.einsum('ip,i->p', val, coordsang[:,4])
-        for l in range(lmax+1):
-            ll = l*(l+1)
-            for m in range(-l,l+1,1):
-                lm = ll + m
-                props[lm] *= r**l
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, coordsang[:,4])
         rprops += props*dvol[n]*rwei[n]
-    logger.info(self,'*--> Qlm(0,0)  (s)      inside bsphere %f', rprops[0])    
-    logger.info(self,'*--> Qlm(1,-1) (py)     inside bsphere %f', rprops[1])    
-    logger.info(self,'*--> Qlm(1,0)  (pz)     inside bsphere %f', rprops[2])    
-    logger.info(self,'*--> Qlm(1,1)  (px)     inside bsphere %f', rprops[3])    
-    logger.info(self,'*--> Qlm(2,-2) (dxy)    inside bsphere %f', rprops[4])    
-    logger.info(self,'*--> Qlm(2,-1) (dyz)    inside bsphere %f', rprops[5])    
-    logger.info(self,'*--> Qlm(2,0)  (dz2)    inside bsphere %f', rprops[6])    
-    logger.info(self,'*--> Qlm(2,1)  (dxz)    inside bsphere %f', rprops[7])    
-    logger.info(self,'*--> Qlm(2,2)  (dx2-y2) inside bsphere %f', rprops[8])    
     logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
     return rprops
 
-class Qlm(lib.StreamObject):
+class Aom(lib.StreamObject):
 
     def __init__(self, datafile):
         self.verbose = logger.NOTE
@@ -210,14 +189,16 @@ class Qlm(lib.StreamObject):
         self.non0tab = False
         self.corr = False
         self.occdrop = 1e-6
-        self.lmax = 0
-        self.blmax = 0
+        self.cspeed = lib.param.LIGHT_SPEED
 ##################################################
 # don't modify the following attributes, they are not input options
         self.rdm1 = None
         self.nocc = None
         self.mol = None
         self.mo_coeff = None
+        self.mo_coeffL = None
+        self.mo_coeffS = None
+        self.n2c = None
         self.mo_occ = None
         self.ntrial = None
         self.npang = None
@@ -238,6 +219,7 @@ class Qlm(lib.StreamObject):
         self.nmo = None
         self.rad = None
         self.brad = None
+        self.aom = None
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):
@@ -260,6 +242,7 @@ class Qlm(lib.StreamObject):
         logger.info(self,'Correlated ? %s' % self.corr)
 
         logger.info(self,'* Molecular Info')
+        logger.info(self,'Speed light value %f' % self.cspeed)
         logger.info(self,'Num atoms %d' % self.natm)
         logger.info(self,'Num electrons %d' % self.nelectron)
         logger.info(self,'Total charge %d' % self.charge)
@@ -297,10 +280,6 @@ class Qlm(lib.StreamObject):
         logger.info(self,'Slater-Bragg radii %f', self.rad) 
         logger.info(self,'Beta-Sphere factor %f', self.betafac)
         logger.info(self,'Beta-Sphere radi %f', self.brad)
-
-        logger.info(self,'* Real Spherical Harmonics expansion')
-        logger.info(self,'Lmax inside %d' % self.blmax)
-        logger.info(self,'Lmax outside %d', self.lmax)
         logger.info(self,'')
 
         return self
@@ -327,15 +306,14 @@ class Qlm(lib.StreamObject):
         else:
             self.rad = grid.BRAGG[self.charges[self.inuc]]*0.5
 
-        if (self.corr):
-            self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
-            natocc, natorb = numpy.linalg.eigh(self.rdm1)
-            natorb = numpy.dot(self.mo_coeff, natorb)
-            self.mo_coeff = natorb
-            self.mo_occ = natocc
+        self.n2c = nprims/2
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        nocc = len(nocc)
-        self.nocc = nocc
+        self.nocc = len(nocc)
+        pos = abs(self.mo_occ) > self.occdrop
+        n2c = self.n2c
+        self.mo_coeffL = self.mo_coeff[:n2c,pos]
+        c1 = 0.5/self.cspeed
+        self.mo_coeffS = self.mo_coeff[n2c:,n2c:n2c+self.nocc] * c1
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
@@ -374,52 +352,48 @@ class Qlm(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
+        nocc = self.nocc*1
+        self.aom = numpy.zeros((nocc,nocc), dtype=numpy.complex128)
+
         with lib.with_omp_threads(self.nthreads):
-            brprops = int_beta(self)
-            rprops = out_beta(self)
+            aomb = int_beta(self)
+            aoma = out_beta(self)
+
+        idx = 0
+        for i in range(nocc):
+            for j in range(i+1):
+                self.aom[i,j] = aoma[idx]+aomb[idx] 
+                self.aom[j,i] = self.aom[i,j]
+                idx += 1
+        if (nocc<=30):
+            dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
 
         logger.info(self,'Write info to HDF5 file')
-        atom_dic = {'inprops':brprops,
-                    'outprops':rprops,
-                    'blmax':self.blmax,
-                    'lmax':self.lmax,
-                    'totprops':(brprops+rprops)}
-        lib.chkfile.save(self.surfile, 'qlm'+str(self.inuc), atom_dic)
-
-        logger.info(self,'*-> Total Qlm(0,0)  (s)      %f' % (rprops[0]+brprops[0]))   
-        logger.info(self,'*-> Total Qlm(1,-1) (py)     %f' % (rprops[1]+brprops[1]))   
-        logger.info(self,'*-> Total Qlm(1,0)  (pz)     %f' % (rprops[2]+brprops[2]))   
-        logger.info(self,'*-> Total Qlm(1,1)  (px)     %f' % (rprops[3]+brprops[3]))   
-        logger.info(self,'*-> Total Qlm(2,-2) (dxy)    %f' % (rprops[4]+brprops[4]))   
-        logger.info(self,'*-> Total Qlm(2,-1) (dyz)    %f' % (rprops[5]+brprops[5]))   
-        logger.info(self,'*-> Total Qlm(2,0)  (dz2)    %f' % (rprops[6]+brprops[6]))   
-        logger.info(self,'*-> Total Qlm(2,1)  (xz)     %f' % (rprops[7]+brprops[7]))   
-        logger.info(self,'*-> Total Qlm(2,2)  (dx2-y2) %f' % (rprops[8]+brprops[8]))   
+        atom_dic = {'aom':self.aom}
+        lib.chkfile.save(self.surfile, 'ovlp'+str(self.inuc), atom_dic)
         logger.info(self,'')
 
-        logger.info(self,'Qlm of atom %d done',self.inuc)
-        logger.timer(self,'Qlm build', *t0)
+        logger.info(self,'AOM of atom %d done',self.inuc)
+        logger.timer(self,'AOM build', *t0)
 
         return self
 
     kernel = build
 
 if __name__ == '__main__':
-    name = 'h2o.chk'
+    name = 'dhf.chk'
     natm = 3
-    bas = Qlm(name)
+    bas = Aom(name)
     bas.verbose = 4
     bas.nrad = 221
     bas.iqudr = 'legendre'
-    bas.mapr = 'becke'
+    bas.mapr = 'exp'
     bas.bnrad = 121
     bas.bnpang = 3074
     bas.biqudr = 'legendre'
-    bas.bmapr = 'becke'
+    bas.bmapr = 'exp'
     bas.betafac = 0.4
-    bas.non0tab = False
-    bas.lmax = 10
-    bas.blmax = 10
+    #bas.cspeed = 5
     for i in range(natm):
         bas.inuc = i
         bas.kernel()

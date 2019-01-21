@@ -229,7 +229,7 @@ class Hirshfeld(lib.StreamObject):
 
     def build(self):
 
-        t0 = time.clock()
+        t0 = (time.clock(), time.time())
         lib.logger.TIMER_LEVEL = 3
 
         self.nelectron = self.mol.nelectron 
@@ -269,7 +269,7 @@ class Hirshfeld(lib.StreamObject):
             integrate(self)
 
         logger.info(self,'Hirshfeld properties done')
-        logger.timer(self,'Hirshfeld build', t0)
+        logger.timer(self,'Hirshfeld build', *t0)
 
         return self
 
