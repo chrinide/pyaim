@@ -39,7 +39,7 @@ def kernel(mp, mo_energy=None, mo_coeff=None, eris=None, with_t2=WITH_T2,
     mo_e = mo_energy
     gap = abs(mo_e[:mp.nocc,None] - mo_e[None,mp.nocc:]).min()
     if gap < 1e-5:
-        logger.warn(mp, 'HOMO-LUMO gap %s too small for GMP2', gap)
+        logger.warn(mp, 'HOMO-LUMO gap %s too small', gap)
     else:
         logger.info(mp, 'HOMO-LUMO gap %s', gap)
 
@@ -127,8 +127,6 @@ def make_rdm2(mp, t2=None):
                 dm2[:nocc0,nocc0:,:nocc0,nocc0:].transpose(1,0,3,2).conj()
     else:
         dm2 = numpy.zeros((nmo0,nmo0,nmo0,nmo0), dtype=t2.dtype) # Chemist's notation
-        #dm2[:nocc,nocc:,:nocc,nocc:] = t2.transpose(0,2,1,3) * .5 - t2.transpose(0,3,1,2) * .5
-        # using t2.transpose(0,2,1,3) == -t2.transpose(0,3,1,2)
         dm2[:nocc,nocc:,:nocc,nocc:] = t2.transpose(0,2,1,3)
         dm2[nocc:,:nocc,nocc:,:nocc] = dm2[:nocc,nocc:,:nocc,nocc:].transpose(1,0,3,2).conj()
 
@@ -157,6 +155,8 @@ def make_rdm2(mp, t2=None):
 class GMP2(mp2.MP2):
     def __init__(self, mf, frozen=0, mo_coeff=None, mo_occ=None):
         mp2.MP2.__init__(self, mf, frozen, mo_coeff, mo_occ)
+        self.incore = False
+        self._keys = self._keys.union(['incore'])
 
     @lib.with_doc(mp2.MP2.kernel.__doc__)
     def kernel(self, mo_energy=None, mo_coeff=None, eris=None, with_t2=WITH_T2):
@@ -167,13 +167,16 @@ class GMP2(mp2.MP2):
         nmo = self.nmo
         nocc = self.nocc
         nvir = nmo - nocc
-        mem_incore = nocc**2*nvir**2*3 * 8/1e6
+        #mem_incore = nocc**2*nvir**2*3 * 8/1e6
         mem_now = lib.current_memory()[0]
-        if ((mem_incore+mem_now < self.max_memory) or self.mol.incore_anyway):
+        #if (mem_incore+mem_now < self.max_memory) or self.mol.incore_anyway):
+        if (self.incore):
+            logger.info(self,'Incore mem for 2e integrals')
             return _make_eris_incore(self, mo_coeff, verbose=self.verbose)
         elif getattr(self._scf, 'with_df', None):
             raise NotImplementedError
         else:
+            logger.info(self,'Outcore mem for 2e integrals')
             return _make_eris_outcore(self, mo_coeff, self.verbose)
 
     make_rdm1 = make_rdm1
@@ -205,8 +208,7 @@ def _make_eris_incore(mp, mo_coeff=None, ao2mofn=None, verbose=None):
     else:
         orbo = eris.mo_coeff[:,:nocc]
         orbv = eris.mo_coeff[:,nocc:]
-        eri_ao = mp.mol.intor('int2e_spinor')
-        eri = ao2mo.kernel(eri_ao, (orbo,orbv,orbo,orbv)).reshape(nocc,nvir,nocc,nvir)
+        eri = ao2mo.kernel(mp.mol.intor('int2e_spinor'), (orbo,orbv,orbo,orbv)).reshape(nocc,nvir,nocc,nvir)
 
     eris.oovv = eri.transpose(0,2,1,3) - eri.transpose(0,2,3,1)
     return eris
@@ -222,22 +224,20 @@ def _make_eris_outcore(mp, mo_coeff=None, verbose=None):
     orbo = eris.mo_coeff[:,:nocc]
     orbv = eris.mo_coeff[:,nocc:]
 
-    feri = eris.feri = lib.H5TmpFile()
-    eris.oovv = feri.create_dataset('oovv', (nocc,nocc,nvir,nvir), 'f8')
+    fswap = eris.feri = lib.H5TmpFile()
+    eris.oovv = fswap.create_dataset('oovv', (nocc,nocc,nvir,nvir), 'c8')
 
     max_memory = mp.max_memory-lib.current_memory()[0]
     blksize = min(nocc, max(2, int(max_memory*1e6/8/(nocc*nvir**2*2))))
     max_memory = max(2000, max_memory)
 
-    fswap = lib.H5TmpFile()
-    eri_ao = mp.mol.intor('int2e_spinor')
-    ao2mo.kernel(eri_ao, (orbo,orbv,orbo,orbv), fswap,
-                 max_memory=max_memory, verbose=log)
+    ao2mo.kernel(mp.mol, (orbo,orbv,orbo,orbv), fswap,
+                 max_memory=max_memory, verbose=log, intor='int2e_spinor')
 
     for p0, p1 in lib.prange(0, nocc, blksize):
         tmp = numpy.asarray(fswap['eri_mo'][p0*nvir:p1*nvir])
         tmp = tmp.reshape(p1-p0,nvir,nocc,nvir)
-        eris.oovv[p0:p1] = tmp.transpose(0,2,1,3) - tmp.transpose(0,2,3,1)
+        eris.oovv[p0:p1] = tmp.transpose(0,2,1,3) - tmp.transpose(0,2,3,1) 
 
     cput0 = log.timer_debug1('transforming oovv', *cput0)
     return eris

@@ -6,7 +6,7 @@ from pyscf import gto, scf, x2c
 from pyscf import ao2mo, lib, mp
 
 mol = gto.Mole()
-mol.basis = 'unc-dzp-dk'
+mol.basis = 'unc-qzp-dk'
 mol.atom = '''
 O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725

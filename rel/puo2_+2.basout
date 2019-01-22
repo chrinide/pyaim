@@ -1,7 +1,7 @@
 
 ******** <class '__main__.Basin'> flags ********
 * General Info
-Date Mon Jan 21 18:41:27 2019
+Date Mon Jan 21 23:04:25 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -9,7 +9,7 @@ Number of threads 4
 Verbose level 4
 Scratch dir /scratch-ssd/jluis
 Input data file puo2_+2.chk
-Max_memory 32000 MB (current use 127 MB)
+Max_memory 32000 MB (current use 128 MB)
 Correlated ? False
 * Molecular Info
 Speed light value 137.036000
@@ -51,16 +51,82 @@ Beta-Sphere radi 0.694200
 *--> density density inside bsphere 67.55766 
 *--> kinetic density inside bsphere  0.00000 
 *--> laplacian density inside bsphere  0.00000 
-Time in Bsphere 73.497 (sec)
+Time in Bsphere 135.311 (sec)
 * Go outside betasphere
 *--> density density outside bsphere 23.50922 
 *--> kinetic density outside bsphere  0.00000 
 *--> laplacian density outside bsphere  0.00000 
-Time out Bsphere 178.783 (sec)
+Time out Bsphere 319.577 (sec)
 Write info to HDF5 file
 *-> Total density density 91.06688 
 *-> Total kinetic density  0.00000 
 *-> Total laplacian density  0.00000 
 
 Basim properties of atom 0 done
-    CPU time for Basin build    951.91 sec, wall time    252.32 sec
+    CPU time for Basin build    991.87 sec, wall time    454.98 sec
+
+******** <class '__main__.Basin'> flags ********
+* General Info
+Date Mon Jan 21 23:12:00 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 32000 MB (current use 134 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Surface file puo2_+2.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.108594
+Rho nuclear coordinate 0.000000  0.000000  3.108594
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.549237
+
+* Go with inside betasphere
+*--> density density inside bsphere  2.65527 
+*--> kinetic density inside bsphere  0.00000 
+*--> laplacian density inside bsphere  0.00000 
+Time in Bsphere 115.048 (sec)
+* Go outside betasphere
+*--> density density outside bsphere  5.81064 
+*--> kinetic density outside bsphere  0.00000 
+*--> laplacian density outside bsphere  0.00000 
+Time out Bsphere 371.668 (sec)
+Write info to HDF5 file
+*-> Total density density  8.46590 
+*-> Total kinetic density  0.00000 
+*-> Total laplacian density  0.00000 
+
+Basim properties of atom 1 done
+    CPU time for Basin build   1069.41 sec, wall time    486.81 sec

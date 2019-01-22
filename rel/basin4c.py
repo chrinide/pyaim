@@ -404,4 +404,6 @@ if __name__ == '__main__':
     #bas.cspeed = 5
     bas.inuc = 0
     bas.kernel()
+    bas.inuc = 1
+    bas.kernel()
 
