@@ -1,9 +1,9 @@
 /home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
   "Use dataset[()] instead.", H5pyDeprecationWarning)
 
-******** <class '__main__.Basin'> flags ********
+******** <class '__main__.Aom'> flags ********
 * General Info
-Date Tue Jan 22 04:14:20 2019
+Date Tue Jan 22 04:15:23 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
