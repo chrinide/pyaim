@@ -12,11 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''
-GMP2 in spin-orbital form
-E(MP2) = 1/4 <ij||ab><ab||ij>/(ei+ej-ea-eb)
-'''
-
 import time
 import numpy
 from pyscf import lib

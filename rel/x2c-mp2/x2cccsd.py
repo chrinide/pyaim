@@ -148,11 +148,11 @@ class GCCSD(ccsd.CCSD):
         return self.l1, self.l2
 
     def ccsd_t(self, t1=None, t2=None, eris=None):
-        from pyscf.cc import gccsd_t
+        from pyscf.cc import x2cccsd_t
         if t1 is None: t1 = self.t1
         if t2 is None: t2 = self.t2
         if eris is None: eris = self.ao2mo(self.mo_coeff)
-        return gccsd_t.kernel(self, eris, t1, t2, self.verbose)
+        return x2cccsd_t.kernel(self, eris, t1, t2, self.verbose)
 
     def make_rdm1(self, t1=None, t2=None, l1=None, l2=None, ao_repr=False):
         '''Un-relaxed 1-particle density matrix in MO space'''
@@ -310,6 +310,8 @@ def _make_eris_outcore(mycc, mo_coeff=None):
     #    tmp = tmp.reshape(p1-p0,nmo,nmo,nmo)
     #    eris.vvvv[p0:p1] = (tmp[:,nocc:,nocc:,nocc:].transpose(0,2,1,3) -
     #                 tmp[:,nocc:,nocc:,nocc:].transpose(0,2,3,1))
+    tmp = np.asarray(fswap['eri_mo'])
+    tmp = tmp.reshape(nmo,nmo,nmo,nmo)
     eris.vvvv = (tmp[nocc:,nocc:,nocc:,nocc:].transpose(0,2,1,3) -
                  tmp[nocc:,nocc:,nocc:,nocc:].transpose(0,2,3,1))
     cput0 = log.timer_debug1('transforming integrals', *cput0)
@@ -322,21 +324,25 @@ if __name__ == '__main__':
     from pyscf import gto
 
     mol = gto.Mole()
-    mol.atom = [
-        [8 , (0. , 0.     , 0.)],
-        [1 , (0. , -0.757 , 0.587)],
-        [1 , (0. , 0.757  , 0.587)]]
-    mol.basis = 'sto-3g'
-    mol.verbose = 4
+    mol.basis = 'unc-dzp-dk'
+    mol.atom = '''
+    O      0.000000      0.000000      0.118351
+    H      0.000000      0.761187     -0.469725
+    H      0.000000     -0.761187     -0.469725
+    '''
+    mol.charge = 0
     mol.spin = 0
+    mol.symmetry = 0
+    mol.verbose = 4
     mol.build()
-
+    
     mf = x2c.UHF(mol)
+    dm = mf.get_init_guess() + 0.1j
     mf.kernel()
 
+    ncore = 2
     mycc = GCCSD(mf)
-    mycc.frozen = 2
-    mycc.incore = True
+    mycc.frozen = ncore
     ecc, t1, t2 = mycc.kernel()
 
     #import numpy
