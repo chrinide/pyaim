@@ -238,8 +238,9 @@ def _make_eris_outcore(mp, mo_coeff=None, verbose=None):
         tmp = numpy.asarray(fswap['eri_mo'][p0*nvir:p1*nvir])
         tmp = tmp.reshape(p1-p0,nvir,nocc,nvir)
         eris.oovv[p0:p1] = tmp.transpose(0,2,1,3) - tmp.transpose(0,2,3,1) 
-
+        tmp = None
     cput0 = log.timer_debug1('transforming oovv', *cput0)
+
     return eris
 
 del(WITH_T2)
