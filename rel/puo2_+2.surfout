@@ -150,3 +150,9 @@ Good rho position 0.000000 0.000000 0.000000
 Good rho position 0.000000 0.000000 3.108594
 Good rho position 0.000000 0.000000 -3.108594
 Time finding nucleus 1.898 (sec)
+Time finding surface 24518.674 (sec)
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 2 saved
+    CPU time for BaderSurf build  91114.36 sec, wall time  24520.72 sec

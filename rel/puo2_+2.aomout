@@ -50,3 +50,67 @@ Beta-Sphere factor 0.400000
 Beta-Sphere radi 0.694200
 
 * Go with inside betasphere
+Time in Bsphere 1002.003 (sec)
+* Go outside betasphere
+Time out Bsphere 2259.639 (sec)
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build   3070.17 sec, wall time   3261.96 sec
+
+******** <class '__main__.Aom'> flags ********
+* General Info
+Date Tue Jan 22 05:09:45 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 32000 MB (current use 140 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Surface file puo2_+2.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.108594
+Rho nuclear coordinate 0.000000  0.000000  3.108594
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.549237
+
+* Go with inside betasphere
+Time in Bsphere 740.793 (sec)
+* Go outside betasphere
+Time out Bsphere 2494.994 (sec)
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build   3404.52 sec, wall time   3235.97 sec

@@ -320,6 +320,7 @@ if __name__ == '__main__':
 
     ncore = 2
     myci = GCISD(mf)
+    myci.nroots = 2
     myci.frozen = ncore
     ecisd, civec = myci.kernel()
 

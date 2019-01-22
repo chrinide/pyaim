@@ -9,3 +9,5 @@
 * Async IO in MP2/CCSD/CISD
 * Localized orbitals
 * MOM DFT
+* In j-hf add spin-orbit ?
+* Charge picture error

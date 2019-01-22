@@ -4,3 +4,4 @@
 * Merge all
 * Be carefully with symm, for example when diagonalizing the NADO or DAFH
 * In complex C routines for rho, check when conj is needed and when not
+* Add XDM and post VV10 dispersion
