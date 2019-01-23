@@ -8,7 +8,7 @@ def eval_ao(mol, coords, deriv=0):
     feval = 'GTOval_spinor_deriv%d' % deriv
     aoLa, aoLb = mol.eval_gto(feval, coords, comp, shls_slice, non0tab)
 
-    ao = mol.eval_gto('GTOval_sp_spinor', coords, 1, shls_slice, non0tab)
+    ao = mol.eval_gto('aim_GTOval_sp_spinor', coords, 1, shls_slice, non0tab)
     if (deriv == 0):
         ngrid, nao = aoLa.shape[-2:]
         aoSa = numpy.ndarray((1,ngrid,nao), dtype=numpy.complex128)
@@ -21,7 +21,7 @@ def eval_ao(mol, coords, deriv=0):
         aoSb = numpy.ndarray((4,ngrid,nao), dtype=numpy.complex128)
         aoSa[0] = ao[0]
         aoSb[0] = ao[1]
-        ao = mol.eval_gto('GTOval_ipsp_spinor', coords, 3, shls_slice, non0tab)
+        ao = mol.eval_gto('aim_GTOval_ipsp_spinor', coords, 3, shls_slice, non0tab)
         for k in range(1,4):
             aoSa[k,:,:] = ao[0,k-1,:,:]
             aoSb[k,:,:] = ao[1,k-1,:,:]
@@ -158,12 +158,12 @@ dmSS = dm[n2c:,n2c:] * c1**2
 #rhod = (r - s) * .5
 #rho = (rhou, rhod)
 
-aoLS = eval_ao(mol, coords, deriv=1)
-rho = eval_rho(mol, aoLS[:2], dmLL, xctype='GGA')
-rhoS = eval_rho(mol, aoLS[2:], dmSS, xctype='GGA')
-print('RhoL = %.12f' % numpy.dot(rho[0], weights))
-print('RhoS = %.12f' % numpy.dot(rhoS[0], weights))
-print('Rho = %.12f' % numpy.dot(rho[0]+rhoS[0], weights))
+#aoLS = eval_ao(mol, coords, deriv=1)
+#rho = eval_rho(mol, aoLS[:2], dmLL, xctype='GGA')
+#rhoS = eval_rho(mol, aoLS[2:], dmSS, xctype='GGA')
+#print('RhoL = %.12f' % numpy.dot(rho[0], weights))
+#print('RhoS = %.12f' % numpy.dot(rhoS[0], weights))
+#print('Rho = %.12f' % numpy.dot(rho[0]+rhoS[0], weights))
 
 coords = numpy.zeros(3)
 coords = coords.reshape(-1,3)

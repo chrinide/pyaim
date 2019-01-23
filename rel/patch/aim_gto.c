@@ -127,3 +127,36 @@ void aim_GTOval_spinor_deriv1(int ngrids, int *shls_slice, int *ao_loc,
                            ao, coord, non0table, atm, natm, bas, nbas, env);
 }
 
+
+// ************* Snmall Component functions //
+/*  SIGMA DOT P |GTO> */
+//void shell_eval_GTOval_sp(double *cgto, double *ri, double *exps,
+//double *coord, double *alpha, double *coeff, double *env,
+//int l, int np, int nc, size_t nao, size_t ngrids, size_t bgrids);
+// 
+//void aim_GTOval_sp_spinor(int ngrids, int *shls_slice, int *ao_loc,
+//                      double complex *ao, double *coord, char *non0table,
+//                      int *atm, int natm, int *bas, int nbas, double *env)
+//{
+//        int param[] = {4, 1};
+//        aim_GTOeval_spinor_drv(shell_eval_GTOval_sp, GTOprim_exp, 
+//                           CINTc2s_ket_spinor_si1, 1,
+//                           ngrids, param, shls_slice, ao_loc, 
+//                           ao, coord, non0table, atm, natm, bas, nbas, env);
+//}
+//
+/*  NABLA SIGMA DOT P |GTO> */
+//void shell_eval_GTOval_ipsp(double *cgto, double *ri, double *exps,
+//double *coord, double *alpha, double *coeff, double *env,
+//int l, int np, int nc, size_t nao, size_t ngrids, size_t bgrids);
+//
+//void aim_GTOval_ipsp_spinor(int ngrids, int *shls_slice, int *ao_loc,
+//                        double complex *ao, double *coord, char *non0table,
+//                        int *atm, int natm, int *bas, int nbas, double *env)
+//{
+//        int param[] = {4, 3};
+//        aim_GTOeval_spinor_drv(shell_eval_GTOval_ipsp, GTOprim_exp, 
+//                           CINTc2s_ket_spinor_si1, 1,
+//                           ngrids, param, shls_slice, ao_loc, 
+//                           ao, coord, non0table, atm, natm, bas, nbas, env);
+//}

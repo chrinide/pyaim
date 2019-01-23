@@ -65,14 +65,14 @@ def rho(self,x):
     rbb += numpy.einsum('pi,pi->p', c0b.imag, c0b.imag)
     rho[0] += rbb
     c1 = lib.dot(aob[1], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
+    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
+    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
     c1 = lib.dot(aob[2], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
+    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
+    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
     c1 = lib.dot(aob[3], cpos)
-    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)*2 # *2 for +c.c.
-    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)*2 # *2 for +c.c.
+    rho[1] += numpy.einsum('pi,pi->p', c1.real, c1.real)
+    rho[1] += numpy.einsum('pi,pi->p', c1.imag, c1.imag)
     #
     XX, YY, ZZ = 4, 7, 9
     ao2 = aob[XX] + aob[YY] + aob[ZZ]

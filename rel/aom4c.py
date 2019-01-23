@@ -59,19 +59,21 @@ def mos(self,x):
     x = numpy.reshape(x, (-1,3))
     npoints = x.shape[0]
     aoLa, aoLb, aoSa, aoSb = eval_ao(self, x, deriv=0)
-    nocc = self.nocc*2
+    nocc = self.nocc*1
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
-    c0aL = lib.dot(aoLa, self.mo_coeffL)
-    c0bL = lib.dot(aoLb, self.mo_coeffL)
-    c0aS = lib.dot(aoSa, self.mo_coeffS)
-    c0bS = lib.dot(aoSb, self.mo_coeffS)
-    c0a = numpy.hstack((c0aL,c0aS))
-    c0b = numpy.hstack((c0bL,c0bS))
+    c0aL = numpy.dot(aoLa, self.mo_coeffL)
+    c0bL = numpy.dot(aoLb, self.mo_coeffL)
+    c0aS = numpy.dot(aoSa, self.mo_coeffS)
+    c0bS = numpy.dot(aoSb, self.mo_coeffS)
+    #c0a = numpy.hstack((c0aL,c0aS))
+    #c0b = numpy.hstack((c0bL,c0bS))
     idx = 0
     for i in range(nocc):
         for j in range(i+1):
-            aom[idx] = numpy.einsum('i,i->i',c0a[:,i].conj(),c0a[:,j])
-            aom[idx] += numpy.einsum('i,i->i',c0b[:,i].conj(),c0b[:,j])
+            aom[idx] = numpy.einsum('i,i->i',c0aL[:,i].conj(),c0aL[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0bL[:,i].conj(),c0bL[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0aS[:,i].conj(),c0aS[:,j])
+            aom[idx] += numpy.einsum('i,i->i',c0bS[:,i].conj(),c0bS[:,j])
             idx += 1
     return aom
 
@@ -103,7 +105,7 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    nocc = self.nocc*2
+    nocc = self.nocc*1
     NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
@@ -145,7 +147,7 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    nocc = self.nocc*2
+    nocc = self.nocc*1
     NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
     for n in range(nrad):
@@ -350,7 +352,7 @@ class Aom(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-        nocc = self.nocc*2
+        nocc = self.nocc*1
         self.aom = numpy.zeros((nocc,nocc), dtype=numpy.complex128)
 
         with lib.with_omp_threads(self.nthreads):
@@ -390,7 +392,6 @@ if __name__ == '__main__':
     bas.biqudr = 'legendre'
     bas.bmapr = 'exp'
     bas.betafac = 0.4
-    #bas.cspeed = 5
     bas.inuc = 0
     bas.kernel()
     bas.inuc = 1

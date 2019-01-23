@@ -103,3 +103,7 @@ void steeper_rkdp(double *y, double *dydx, double h, double *yout, double *yerr)
 void aim_GTOval_spinor_deriv1(int ngrids, int *shls_slice, int *ao_loc,
                           double complex *ao, double *coord, char *non0table,
                           int *atm, int natm, int *bas, int nbas, double *env);
+void GTOval_sp_spinor(int ngrids, int *shls_slice, int *ao_loc,
+double complex *ao, double *coord, char *non0table,
+int *atm, int natm, int *bas, int nbas, double *env);
+ 

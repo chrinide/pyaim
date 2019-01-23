@@ -23,3 +23,8 @@ void GTOeval_spinor_iter(FPtr_eval feval, FPtr_exp fexp, void (*c2s)(), double f
                          int param[], int *shls_slice, int *ao_loc, double *buf,
                          double complex *ao, double *coord, char *non0table,
                          int *atm, int natm, int *bas, int nbas, double *env);
+
+void aim_GTOeval_spinor_drv(FPtr_eval feval, FPtr_exp fexp, void (*c2s)(), double fac,
+                        int ngrids, int param[], int *shls_slice, int *ao_loc,
+                        double complex *ao, double *coord, char *non0table,
+                        int *atm, int natm, int *bas, int nbas, double *env);
