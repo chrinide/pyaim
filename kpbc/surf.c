@@ -274,10 +274,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod)
       c3_[i] = 0.0;
       for (j=0; j<nprims_; j++) {
         int idx1 = k*(nprims_*maxnmo_)+j*(maxnmo_)+i;
-        c0_[i] += conj(ao_[k*(4*nprims_)+0*nprims_+j])*mo_coeff_[idx1];
-        c1_[i] += conj(ao_[k*(4*nprims_)+1*nprims_+j])*mo_coeff_[idx1];
-        c2_[i] += conj(ao_[k*(4*nprims_)+2*nprims_+j])*mo_coeff_[idx1];
-        c3_[i] += conj(ao_[k*(4*nprims_)+3*nprims_+j])*mo_coeff_[idx1];
+        c0_[i] += (ao_[k*(4*nprims_)+0*nprims_+j])*mo_coeff_[idx1];
+        c1_[i] += (ao_[k*(4*nprims_)+1*nprims_+j])*mo_coeff_[idx1];
+        c2_[i] += (ao_[k*(4*nprims_)+2*nprims_+j])*mo_coeff_[idx1];
+        c3_[i] += (ao_[k*(4*nprims_)+3*nprims_+j])*mo_coeff_[idx1];
       }
     }
 

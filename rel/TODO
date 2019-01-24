@@ -1,13 +1,6 @@
-* VDW
-* Density fitting
-* Cube class to print spinors, color by imaginary phase
 * PBE for 2c/4c and hybrid functionals
 * Electrostatic potential and SOlvent for 2c/4c spinors
 * Interaction with charges
 * And how about det in the J-basis ?
-* In case of RHF group by Cramer`s pairs
-* Async IO in MP2/CCSD/CISD
-* Localized orbitals
 * MOM DFT
-* In j-hf add spin-orbit ?
 * Charge picture error

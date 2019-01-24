@@ -190,10 +190,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += (ao_[j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += (ao_[1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += (ao_[2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += (ao_[3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
@@ -211,10 +211,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(ao_[4*n2c_+0*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c1_[i] += conj(ao_[4*n2c_+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c2_[i] += conj(ao_[4*n2c_+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
-      c3_[i] += conj(ao_[4*n2c_+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c0_[i] += (ao_[4*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c1_[i] += (ao_[4*n2c_+1*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c2_[i] += (ao_[4*n2c_+2*n2c_+j])*mo_coeffL_[i*n2c_+j];
+      c3_[i] += (ao_[4*n2c_+3*n2c_+j])*mo_coeffL_[i*n2c_+j];
     }
   }
 
@@ -227,9 +227,9 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
   
   // Small
 	double complex aoS1_[n2c_*2];
-	GTOval_sp_spinor(1, shls_, ao_loc_, aoS1_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
+	aim_GTOval_sp_spinor(1, shls_, ao_loc_, aoS1_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
 	double complex aoS2_[n2c_*3*2];
-	GTOval_ipsp_spinor(1, shls_, ao_loc_, aoS2_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
+	aim_GTOval_ipsp_spinor(1, shls_, ao_loc_, aoS2_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
 	// Up
   for (i=0; i<nmo_; i++){
     c0_[i] = 0.0;
@@ -237,10 +237,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(aoS1_[j])*mo_coeffS_[i*n2c_+j];
-      c1_[i] += conj(aoS2_[0*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c2_[i] += conj(aoS2_[1*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c3_[i] += conj(aoS2_[2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c0_[i] += (aoS1_[j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += (aoS2_[j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += (aoS2_[1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += (aoS2_[2*n2c_+j])*mo_coeffS_[i*n2c_+j];
     }
   }
   
@@ -258,10 +258,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<n2c_; j++){
-      c0_[i] += conj(aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c1_[i] += conj(aoS2_[3*n2c_+0*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c2_[i] += conj(aoS2_[3*n2c_+1*n2c_+j])*mo_coeffS_[i*n2c_+j];
-      c3_[i] += conj(aoS2_[3*n2c_+2*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c0_[i] += (aoS1_[n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c1_[i] += (aoS2_[3*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c2_[i] += (aoS2_[3*n2c_+1*n2c_+j])*mo_coeffS_[i*n2c_+j];
+      c3_[i] += (aoS2_[3*n2c_+2*n2c_+j])*mo_coeffS_[i*n2c_+j];
     }
   }
   

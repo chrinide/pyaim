@@ -191,10 +191,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c0_[i] += (ao_[j])*mo_coeff_[i*nprims_+j];
+      c1_[i] += (ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2_[i] += (ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3_[i] += (ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
     }
   }
 
@@ -212,10 +212,10 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += conj(ao_[4*nprims_+0*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += conj(ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += conj(ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += conj(ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c0_[i] += (ao_[4*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c1_[i] += (ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2_[i] += (ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3_[i] += (ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
     }
   }
 
