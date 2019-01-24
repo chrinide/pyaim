@@ -1,0 +1,158 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Mon Jan 21 04:14:53 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 32000 MB (current use 126 MB)
+* Mol Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file puo2_+2.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.320000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.108594
+Good rho position 0.000000 0.000000 -3.108594
+Time finding nucleus 7.457 (sec)
+Time finding surface 48044.791 (sec)
+Rmin for surface 1.735500
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build 155379.50 sec, wall time  48052.51 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Mon Jan 21 17:35:46 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 32000 MB (current use 131 MB)
+* Mol Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file puo2_+2.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.320000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.108594
+Good rho position 0.000000 0.000000 -3.108594
+Time finding nucleus 1.469 (sec)
+Time finding surface 19583.377 (sec)
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build  78246.77 sec, wall time  19585.00 sec
+
+******** <class '__main__.BaderSurf'> flags ********
+* General Info
+Date Mon Jan 21 23:02:11 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 32000 MB (current use 134 MB)
+* Mol Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file puo2_+2.chk.h5
+Surface for nuc 2
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.320000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.108594
+Good rho position 0.000000 0.000000 -3.108594
+Time finding nucleus 1.898 (sec)
+Time finding surface 24518.674 (sec)
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 2 saved
+    CPU time for BaderSurf build  91114.36 sec, wall time  24520.72 sec

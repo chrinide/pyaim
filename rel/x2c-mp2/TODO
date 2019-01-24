@@ -1,2 +1,0 @@
-Add async for outcore integrals
-In all cases when getting init_mp2 use the mp2 module way

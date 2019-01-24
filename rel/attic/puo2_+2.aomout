@@ -1,0 +1,116 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class '__main__.Aom'> flags ********
+* General Info
+Date Wed Jan 23 16:16:16 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 24000 MB (current use 127 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Surface file puo2_+2.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.735500
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.653510
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.694200
+
+* Go with inside betasphere
+Time in Bsphere 193.799 (sec)
+* Go outside betasphere
+Time out Bsphere 437.473 (sec)
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build    867.85 sec, wall time    631.85 sec
+
+******** <class '__main__.Aom'> flags ********
+* General Info
+Date Wed Jan 23 16:26:47 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file puo2_+2.chk
+Max_memory 24000 MB (current use 135 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 108
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 94 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.108599
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.108599
+* Basis Info
+Number of molecular orbitals 1788
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 108
+Number of molecular primitives 1788
+* Surface Info
+Surface file puo2_+2.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.108594
+Rho nuclear coordinate 0.000000  0.000000  3.108594
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.373094
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.549237
+
+* Go with inside betasphere
+Time in Bsphere 165.939 (sec)
+* Go outside betasphere
+Time out Bsphere 521.417 (sec)
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build    932.30 sec, wall time    687.44 sec
