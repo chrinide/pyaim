@@ -24,6 +24,7 @@ ex2c = mf.kernel()
 
 ncore = 2
 pt = mp.X2CMP2(mf)
+#pt.incore = True
 pt.frozen = ncore
 pt.kernel()
 #rdm1 = pt.make_rdm1()

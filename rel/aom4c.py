@@ -363,7 +363,7 @@ class Aom(lib.StreamObject):
         for i in range(nocc):
             for j in range(i+1):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
-                self.aom[j,i] = self.aom[i,j]
+                self.aom[j,i] = self.aom[i,j].conj()
                 idx += 1
         if (nocc<=30):
             dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)

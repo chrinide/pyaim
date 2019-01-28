@@ -14,15 +14,15 @@ PROPS = ['density', 'kinetic', 'laplacian']
 NCOL = 15
 DIGITS = 5
 
-def print_ply():
+def print_surface_ply():
     msg = ('Ply format not yet available')
     raise NotImplementedError(msg)
 
-def print_gnu():
+def print_surface_gnu():
     msg = ('Gnuplot format not yet available')
     raise NotImplementedError(msg)
 
-def print_txt(filename, inuc):
+def print_surface_txt(filename, inuc):
 
     log.info('Surface file is : %s' % (filename))
     idx = 'atom'+str(inuc)

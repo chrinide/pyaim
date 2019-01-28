@@ -67,10 +67,6 @@ COVALENT = 1.0/param.BOHR * numpy.array((0,  # Ghost atom
         2.60, 2.21,                                                 # 7s
         2.15, 2.06, 2.00, 1.96, 1.90, 1.87, 1.80, 1.69))
 
-def prange(start, end, step):
-    for i in range(start, end, step):
-        yield i, min(i+step, end)
-
 def legendre(n):
     x = numpy.zeros(n)
     w = numpy.zeros(n)

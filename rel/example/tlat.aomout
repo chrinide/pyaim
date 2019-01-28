@@ -1,0 +1,110 @@
+
+******** <class 'aom4c.Aom'> flags ********
+* General Info
+Date Sun Jan 27 18:13:54 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file tlat.chk
+Max_memory 500000 MB (current use 148 MB)
+* Molecular Info
+Speed light value 137.036000
+Num atoms 2
+Num electrons 166
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 81 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 85 position : 0.000000  0.000000  5.626282
+* Basis Info
+Number of molecular orbitals 2328
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 166
+Number of molecular primitives 2328
+* Surface Info
+Surface file tlat.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 2.622734
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.795240
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 1.049093
+
+* Go with inside betasphere
+Time in Bsphere 743.419 (sec)
+* Go outside betasphere
+Time out Bsphere 1923.807 (sec)
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build   8318.86 sec, wall time   2667.31 sec
+
+******** <class 'aom4c.Aom'> flags ********
+* General Info
+Date Sun Jan 27 18:58:22 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file tlat.chk
+Max_memory 500000 MB (current use 175 MB)
+* Molecular Info
+Speed light value 137.036000
+Num atoms 2
+Num electrons 166
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 81 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 85 position : 0.000000  0.000000  5.626282
+* Basis Info
+Number of molecular orbitals 2328
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 166
+Number of molecular primitives 2328
+* Surface Info
+Surface file tlat.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  5.626282
+Rho nuclear coordinate 0.000000  0.000000  5.626282
+Npang points 5810
+Ntrial 11
+Rmin for surface 3.003545
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 1.370051
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 1.201418
+
+* Go with inside betasphere
+Time in Bsphere 746.862 (sec)
+* Go outside betasphere
+Time out Bsphere 2128.068 (sec)
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build   8668.86 sec, wall time   2875.01 sec

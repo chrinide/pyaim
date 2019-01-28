@@ -27,8 +27,7 @@ def getfno(mf,ncore,thresh_vir=1e-4):
             ev.reshape(-1, 1, 1) + eo.reshape(-1, 1) - ev)
 
   lib.logger.info(mf,"* Building amplitudes")
-  eri_ao = mol.intor('int2e_spinor')
-  eri_mo = ao2mo.general(eri_ao, (co,cv,co,cv), compact=False)
+  eri_mo = ao2mo.general(mol, (co,cv,co,cv), compact=False, intor='int2e_spinor')
   eri_mo = eri_mo.reshape(nocc,nvir,nocc,nvir)
   t2 = (eri_mo-eri_mo.transpose(0,3,2,1)) * e_denom
 

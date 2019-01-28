@@ -171,59 +171,47 @@ void surf_driver(const int inuc,
 
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
-	double complex ao_[nprims_*4*2];
-  double complex c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
-
-	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
-
   *rho = 0.0;
   grad[0] = 0.0;
   grad[1] = 0.0;
   grad[2] = 0.0;
   *gradmod = 0.0;
+	
+  double complex ao_[nprims_*4*2];
+	aim_GTOval_spinor_deriv1(1, shls_, ao_loc_, ao_, point, non0tab_, atm_, natm_, bas_, nbas_, env_);
 
   int i, j;
+  double complex c0a_[nmo_],c1a_[nmo_],c2a_[nmo_],c3a_[nmo_];
+  double complex c0b_[nmo_],c1b_[nmo_],c2b_[nmo_],c3b_[nmo_];
 
-	// Up
   for (i=0; i<nmo_; i++){
-    c0_[i] = 0.0;
-    c1_[i] = 0.0;
-    c2_[i] = 0.0;
-    c3_[i] = 0.0;
+    c0a_[i] = 0.0; c0b_[i] = 0.0; 
+    c1a_[i] = 0.0; c1b_[i] = 0.0; 
+    c2a_[i] = 0.0; c2b_[i] = 0.0; 
+    c3a_[i] = 0.0; c3b_[i] = 0.0; 
     for (j=0; j<nprims_; j++){
-      c0_[i] += (ao_[j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += (ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += (ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += (ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
+	    // Up
+      c0a_[i] += (ao_[j])*mo_coeff_[i*nprims_+j];
+      c1a_[i] += (ao_[1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2a_[i] += (ao_[2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3a_[i] += (ao_[3*nprims_+j])*mo_coeff_[i*nprims_+j];
+      // Down
+      c0b_[i] += (ao_[4*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c1b_[i] += (ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c2b_[i] += (ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
+      c3b_[i] += (ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
     }
   }
 
   for (i=0; i<nmo_; i++){
-    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
-  }
-
-	// Down
-  for (i=0; i<nmo_; i++){
-    c0_[i] = 0.0;
-    c1_[i] = 0.0;
-    c2_[i] = 0.0;
-    c3_[i] = 0.0;
-    for (j=0; j<nprims_; j++){
-      c0_[i] += (ao_[4*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c1_[i] += (ao_[4*nprims_+1*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c2_[i] += (ao_[4*nprims_+2*nprims_+j])*mo_coeff_[i*nprims_+j];
-      c3_[i] += (ao_[4*nprims_+3*nprims_+j])*mo_coeff_[i*nprims_+j];
-    }
-  }
-
-  for (i=0; i<nmo_; i++){
-    *rho += conj(c0_[i])*c0_[i]*mo_occ_[i];
-    grad[0] += conj(c1_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[1] += conj(c2_[i])*c0_[i]*mo_occ_[i]*2.0;
-    grad[2] += conj(c3_[i])*c0_[i]*mo_occ_[i]*2.0;
+    *rho += conj(c0a_[i])*c0a_[i]*mo_occ_[i];
+    grad[0] += conj(c1a_[i])*c0a_[i]*mo_occ_[i]*2.0;
+    grad[1] += conj(c2a_[i])*c0a_[i]*mo_occ_[i]*2.0;
+    grad[2] += conj(c3a_[i])*c0a_[i]*mo_occ_[i]*2.0;
+    *rho += conj(c0b_[i])*c0b_[i]*mo_occ_[i];
+    grad[0] += conj(c1b_[i])*c0b_[i]*mo_occ_[i]*2.0;
+    grad[1] += conj(c2b_[i])*c0b_[i]*mo_occ_[i]*2.0;
+    grad[2] += conj(c3b_[i])*c0b_[i]*mo_occ_[i]*2.0;
   }
   
   *gradmod = grad[0]*grad[0];

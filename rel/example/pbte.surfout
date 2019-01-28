@@ -1,0 +1,100 @@
+
+******** <class 'surf4c.BaderSurf'> flags ********
+* General Info
+Date Sun Jan 27 23:22:32 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file pbte.chk
+Max_memory 500000 MB (current use 121 MB)
+* Mol Info
+Speed light value 137.036000
+Num atoms 2
+Num electrons 134
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 52 position : 0.000000  0.000000  4.903650
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1988
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 134
+Number of molecular primitives 1988
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file pbte.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 4.903650
+Time finding nucleus 0.979 (sec)
+Time finding surface 4993.412 (sec)
+Rmin for surface 2.456671
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build 139605.41 sec, wall time   4994.50 sec
+
+******** <class 'surf4c.BaderSurf'> flags ********
+* General Info
+Date Mon Jan 28 00:45:46 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file pbte.chk
+Max_memory 500000 MB (current use 159 MB)
+* Mol Info
+Speed light value 137.036000
+Num atoms 2
+Num electrons 134
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 52 position : 0.000000  0.000000  4.903650
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 1988
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 134
+Number of molecular primitives 1988
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file pbte.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 4.903650
+Time finding nucleus 1.237 (sec)
+Time finding surface 2964.071 (sec)
+Rmin for surface 2.446981
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build  82482.45 sec, wall time   2965.43 sec

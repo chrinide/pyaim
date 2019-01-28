@@ -6,7 +6,7 @@ from pyscf import gto, scf, lib, dft
 name = 'puo2_+2'
 
 mol = gto.Mole()
-mol.basis = {'Pu':'dyallqz','O':'unc-tzp-dk'}
+mol.basis = {'Pu':'unc-ano','O':'unc-tzp-dk'}
 mol.atom = '''
 Pu 0.0 0.0  0.0 
 O  0.0 0.0  1.645

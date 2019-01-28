@@ -203,7 +203,7 @@ def _make_eris_incore(mp, mo_coeff=None, ao2mofn=None, verbose=None):
     else:
         orbo = eris.mo_coeff[:,:nocc]
         orbv = eris.mo_coeff[:,nocc:]
-        eri = ao2mo.kernel(mp.mol.intor('int2e_spinor'), (orbo,orbv,orbo,orbv)).reshape(nocc,nvir,nocc,nvir)
+        eri = ao2mo.kernel(mp.mol, (orbo,orbv,orbo,orbv), intor='int2e_spinor').reshape(nocc,nvir,nocc,nvir)
 
     eris.oovv = eri.transpose(0,2,1,3) - eri.transpose(0,2,3,1)
     return eris

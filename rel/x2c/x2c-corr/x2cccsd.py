@@ -324,7 +324,7 @@ if __name__ == '__main__':
     from pyscf import gto
 
     mol = gto.Mole()
-    mol.basis = 'unc-dzp-dk'
+    mol.basis = 'dzp-dk'
     mol.atom = '''
     O      0.000000      0.000000      0.118351
     H      0.000000      0.761187     -0.469725
@@ -342,19 +342,20 @@ if __name__ == '__main__':
 
     ncore = 2
     mycc = GCCSD(mf)
+    mycc.incore = True
     mycc.frozen = ncore
     ecc, t1, t2 = mycc.kernel()
 
-    #import numpy
-    #rdm1 = mycc.make_rdm1()
-    #rdm2 = mycc.make_rdm2()
-    #c = mf.mo_coeff
-    #nmo = mf.mo_coeff.shape[1]
-    #eri_ao = mol.intor('int2e_spinor')
-    #eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
-    #hcore = mf.get_hcore()
-    #h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
-    #e = numpy.einsum('ij,ji', h1, rdm1)
-    #e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
-    #e += mol.energy_nuc()
-    #lib.logger.info(mf,"!*** E(MP2) with RDM: %s" % e)
+    import numpy
+    rdm1 = mycc.make_rdm1()
+    rdm2 = mycc.make_rdm2()
+    c = mf.mo_coeff
+    nmo = mf.mo_coeff.shape[1]
+    eri_mo = ao2mo.kernel(mol, c, intor='int2e_spinor').reshape(nmo,nmo,nmo,nmo)
+    hcore = mf.get_hcore()
+    h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
+    e = numpy.einsum('ij,ji', h1, rdm1)
+    e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
+    e += mol.energy_nuc()
+    lib.logger.info(mf,"!*** E(MP2) with RDM: %s" % e)
+

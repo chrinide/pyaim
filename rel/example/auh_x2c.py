@@ -6,7 +6,7 @@ from pyscf import gto, scf, lib, x2c
 name = 'auh_x2c'
 
 mol = gto.Mole()
-mol.basis = {'Au':'dyallqz','H':'unc-tzp-dk'}
+mol.basis = {'Au':'unc-ano','H':'unc-tzp-dk'}
 mol.atom = '''
 Au 0.0 0.0  0.000
 H  0.0 0.0  1.524
@@ -20,7 +20,7 @@ mol.build()
 
 mf = x2c.UHF(mol)
 mf.chkfile = name+'.chk'
-#mf.__dict__.update(scf.chkfile.load(name+'.chk', 'scf'))
-#dm = mf.make_rdm1()
-mf.kernel()
+mf.__dict__.update(scf.chkfile.load(name+'.chk', 'scf'))
+dm = mf.make_rdm1()
+mf.kernel(dm)
 

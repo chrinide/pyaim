@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import numpy
-from pyscf import gto, scf, lib, dft
+from pyscf import gto, scf, lib
 
 name = 'auh'
 
 mol = gto.Mole()
-mol.basis = {'Au':'dyallqz','H':'unc-tzp-dk'}
+mol.basis = {'Au':'unc-ano','H':'unc-tzp-dk'}
 mol.atom = '''
 Au 0.0 0.0  0.000
 H  0.0 0.0  1.524

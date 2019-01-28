@@ -6,6 +6,7 @@ import time
 import numpy
 import ctypes
 import signal
+
 from pyscf import lib
 from pyscf.lib import logger
 
@@ -384,7 +385,7 @@ class BaderSurf(lib.StreamObject):
     kernel = build
 
 if __name__ == '__main__':
-    name = 'prueba.chk'
+    name = 'h2o.chk'
     natm = 3
     surf = BaderSurf(name)
     surf.epsilon = 1e-5
@@ -396,3 +397,4 @@ if __name__ == '__main__':
     for i in range(natm):
         surf.inuc = i
         surf.kernel()
+
