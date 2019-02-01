@@ -1,0 +1,173 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class 'aom4c.Aom'> flags ********
+* General Info
+Date Wed Jan 30 00:58:28 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file uo2_+2.chk
+Max_memory 24000 MB (current use 124 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Number of molecular orbitals 1756
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 106
+Number of molecular primitives 1756
+* Surface Info
+Surface file uo2_+2.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.773057
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.653510
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.709223
+
+* Go with inside betasphere
+Time in Bsphere 370.165 (sec)
+* Go outside betasphere
+Time out Bsphere 674.361 (sec)
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build   1435.71 sec, wall time   1044.60 sec
+
+******** <class 'aom4c.Aom'> flags ********
+* General Info
+Date Wed Jan 30 01:15:53 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file uo2_+2.chk
+Max_memory 24000 MB (current use 129 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Number of molecular orbitals 1756
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 106
+Number of molecular primitives 1756
+* Surface Info
+Surface file uo2_+2.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.227646
+Rho nuclear coordinate 0.000000  0.000000  3.227646
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.454591
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.581837
+
+* Go with inside betasphere
+Time in Bsphere 434.080 (sec)
+* Go outside betasphere
+Time out Bsphere 759.813 (sec)
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build   1598.98 sec, wall time   1193.96 sec
+
+******** <class 'aom4c.Aom'> flags ********
+* General Info
+Date Wed Jan 30 01:35:47 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file uo2_+2.chk
+Max_memory 24000 MB (current use 169 MB)
+Correlated ? False
+* Molecular Info
+Speed light value 137.036000
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Number of molecular orbitals 1756
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 106
+Number of molecular primitives 1756
+* Surface Info
+Surface file uo2_+2.chk.h5
+Properties for nuc 2
+Nuclear coordinate 0.000000  0.000000  -3.227645
+Rho nuclear coordinate 0.000000  0.000000  -3.227645
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.454591
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.581837
+
+* Go with inside betasphere
+Time in Bsphere 293.369 (sec)
+* Go outside betasphere
+Time out Bsphere 795.770 (sec)
+Write info to HDF5 file
+
+AOM of atom 2 done
+    CPU time for AOM build   1493.36 sec, wall time   1089.20 sec

@@ -1,0 +1,156 @@
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Tue Jan 29 02:53:51 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file uo2_+2.chk
+Max_memory 500000 MB (current use 52 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 439
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 53
+Number of molecular primitives 439
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file uo2_+2.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.227647
+Good rho position 0.000000 -0.000000 -3.227647
+Time finding nucleus 0.848 (sec)
+Time finding surface 85.938 (sec)
+Rmin for surface 1.775657
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build   2591.87 sec, wall time     86.89 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Tue Jan 29 02:55:18 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file uo2_+2.chk
+Max_memory 500000 MB (current use 68 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 439
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 53
+Number of molecular primitives 439
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file uo2_+2.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.227647
+Good rho position 0.000000 -0.000000 -3.227647
+Time finding nucleus 0.921 (sec)
+Time finding surface 53.966 (sec)
+Rmin for surface 1.451991
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build   1644.69 sec, wall time     54.98 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Tue Jan 29 02:56:13 2019
+Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
+[GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
+Numpy 1.15.2
+Number of threads 32
+Verbose level 4
+Scratch dir /scratch/jluis
+Input data file uo2_+2.chk
+Max_memory 500000 MB (current use 69 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 3
+Num electrons 106
+Total charge 2
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 92 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.227652
+Nuclei 2 with charge 8 position : 0.000000  0.000000  -3.227652
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 439
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 53
+Number of molecular primitives 439
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file uo2_+2.chk.h5
+Surface for nuc 2
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Good rho position 0.000000 0.000000 3.227647
+Good rho position 0.000000 -0.000000 -3.227647
+Time finding nucleus 0.992 (sec)
+Time finding surface 53.745 (sec)
+Rmin for surface 1.451991
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 2 saved
+    CPU time for BaderSurf build   1646.02 sec, wall time     54.85 sec

@@ -18,7 +18,7 @@ mol.verbose = 4
 mol.nucmod = 0
 mol.build()
 
-mf = scf.RDHF(mol)
+mf = scf.DHF(mol)
 mf.chkfile = name+'.chk'
 mf.with_ssss = True
 mf.with_gaunt = False

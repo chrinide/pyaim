@@ -70,7 +70,7 @@ def mos(self,x):
     idx = 0
     for i in range(nocc):
         for j in range(i+1):
-            aom[idx] = numpy.einsum('i,i->i',c0aL[:,i].conj(),c0aL[:,j])
+            aom[idx]  = numpy.einsum('i,i->i',c0aL[:,i].conj(),c0aL[:,j])
             aom[idx] += numpy.einsum('i,i->i',c0bL[:,i].conj(),c0bL[:,j])
             aom[idx] += numpy.einsum('i,i->i',c0aS[:,i].conj(),c0aS[:,j])
             aom[idx] += numpy.einsum('i,i->i',c0bS[:,i].conj(),c0bS[:,j])

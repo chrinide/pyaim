@@ -6,7 +6,7 @@ from pyscf import gto, scf, lib, dft
 name = 'uc'
 
 mol = gto.Mole()
-mol.basis = {'U':'dyallqz','H':'unc-tzp-dk'}
+mol.basis = {'U':'unc-ano','H':'unc-tzp-dk'}
 mol.atom = '''
 U  0.0 0.0  0.000
 C  0.0 0.0  1.870
@@ -18,7 +18,7 @@ mol.verbose = 4
 mol.nucmod = 0
 mol.build()
 
-mf = scf.RDHF(mol)
+mf = scf.DHF(mol)
 mf.chkfile = name+'.chk'
 mf.with_ssss = True
 mf.with_gaunt = False

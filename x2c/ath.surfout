@@ -1,0 +1,104 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Thu Jan 31 03:37:32 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file ath.chk
+Max_memory 24000 MB (current use 70 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 2
+Num electrons 86
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 85 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 0.000000  0.000000  3.307021
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 307
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 43
+Number of molecular primitives 307
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file ath.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Check rho position 0.000000 0.000000 3.289652
+Setting xyzrho for atom to imput coords
+Time finding nucleus 0.853 (sec)
+Time finding surface 212.533 (sec)
+Rmin for surface 2.170590
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build    431.86 sec, wall time    213.69 sec
+
+******** <class 'surf.BaderSurf'> flags ********
+* General Info
+Date Thu Jan 31 03:41:06 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file ath.chk
+Max_memory 24000 MB (current use 74 MB)
+Correlated ? False
+* Molecular Info
+Num atoms 2
+Num electrons 86
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 85 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 0.000000  0.000000  3.307021
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 307
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 43
+Number of molecular primitives 307
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file ath.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 200
+
+Good rho position 0.000000 0.000000 0.000000
+Check rho position 0.000000 0.000000 3.289652
+Setting xyzrho for atom to imput coords
+Time finding nucleus 2.454 (sec)
+Time finding surface 553.335 (sec)
+Rmin for surface 1.136433
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build   1107.70 sec, wall time    556.02 sec

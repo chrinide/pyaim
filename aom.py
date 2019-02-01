@@ -342,7 +342,7 @@ class Aom(lib.StreamObject):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
                 self.aom[j,i] = self.aom[i,j]
                 idx += 1
-        if (not self.full or self.nmo<=30):
+        if (self.nmo<=30):
             dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
 
         logger.info(self,'Write info to HDF5 file')
