@@ -5,7 +5,7 @@ from pyscf import gto
 import x2cmp2
 
 mol = gto.Mole()
-mol.basis = 'unc-dzp-dk'
+mol.basis = 'dzp-dk'
 mol.atom = '''
 Pb 0.0 0.0 0.00
 O  0.0 0.0 1.922
@@ -20,7 +20,7 @@ mf = x2c.RHF(mol)
 dm = mf.get_init_guess() + 0.1j
 mf.kernel()
 
-ncore = 110
+ncore = 56
 
 pt = x2cmp2.GMP2(mf)
 pt.frozen = ncore

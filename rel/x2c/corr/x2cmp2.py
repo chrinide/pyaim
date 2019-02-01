@@ -308,7 +308,7 @@ if __name__ == '__main__':
     mol.charge = 0
     mol.spin = 0
     mol.symmetry = 0
-    mol.verbose = 4
+    mol.verbose = 5
     mol.build()
     
     mf = x2c.RHF(mol)
@@ -336,6 +336,7 @@ if __name__ == '__main__':
     #pt = GMP2(mf)
     #pt.frozen = ncore
     mo_coeff, mo_energy, mo_occ = pt.fno()
+    print mo_energy
 
     pt = GMP2(mf, mo_coeff=mo_coeff, mo_occ=mo_occ)
     pt.frozen = ncore
