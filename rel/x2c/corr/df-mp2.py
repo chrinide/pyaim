@@ -3,16 +3,13 @@
 import time, numpy, x2cmp2
 from pyscf import lib, gto, scf, x2c, ao2mo
 from pyscf.df import r_incore
-einsum = lib.einsum
 
-#O      0.000000      0.000000      0.118351
-#H      0.000000      0.761187     -0.469725
-#H      0.000000     -0.761187     -0.469725
 mol = gto.Mole()
 mol.basis = 'unc-dzp-dk'
 mol.atom = '''
-At 0.0 0.0  0.000
-At 0.0 0.0  3.100
+O      0.000000      0.000000      0.118351
+H      0.000000      0.761187     -0.469725
+H      0.000000     -0.761187     -0.469725
 '''
 mol.charge = 0
 mol.spin = 0
@@ -35,12 +32,13 @@ def fjk2c(mol, dm, *args, **kwargs):
     return vj, vk
 
 mf = x2c.RHF(mol)
+dm = mf.get_init_guess() + 0.1j
 mf.get_jk = fjk2c
 mf.direct_scf = False
-ehf = mf.scf()
+ehf = mf.scf(dm)
 print('Time %.3f (sec)' % (time.time()-t))
      
-ncore = 108
+ncore = 2
 nao, nmo = mf.mo_coeff.shape
 nocc = mol.nelectron - ncore
 nvir = nmo - nocc - ncore
@@ -58,7 +56,7 @@ lib.logger.info(mf,"* Virtual orbitals: %d" % (len(ev)))
 n2c = mol.nao_2c()
 dferi = cderi.reshape(-1,n2c,n2c)
 
-#eri_ao = einsum('Qia,Qjb->iajb', dferi, dferi) 
+#eri_ao = lib.einsum('Qia,Qjb->iajb', dferi, dferi) 
 #eri_mo = ao2mo.general(eri_ao,(co,cv,co,cv)).reshape(nocc,nvir,nocc,nvir) 
 #eri_mo = eri_mo - eri_mo.transpose(0,3,2,1)
 #e_denom = 1.0/(eo.reshape(-1,1,1,1)-ev.reshape(-1,1,1)+eo.reshape(-1,1)-ev)
@@ -67,9 +65,9 @@ dferi = cderi.reshape(-1,n2c,n2c)
 #lib.logger.info(mf,"!*** E(MP2): %s" % e_mp2)
 #lib.logger.info(mf,"!**** E(HF+MP2): %s" % (e_mp2+ehf))
 
-#eri_mo = einsum('rj,Qrs->Qjs', co.conj(), dferi)
-#eri_mo = einsum('sb,Qjs->Qjb', cv, eri_mo)
-#eri_mo = einsum('Qia,Qjb->iajb', eri_mo, eri_mo) 
+#eri_mo = lib.einsum('rj,Qrs->Qjs', co.conj(), dferi)
+#eri_mo = lib.einsum('sb,Qjs->Qjb', cv, eri_mo)
+#eri_mo = lib.einsum('Qia,Qjb->iajb', eri_mo, eri_mo) 
 #eri_mo = eri_mo - eri_mo.transpose(0,3,2,1)
 #t2 = eri_mo.conj()*e_denom
 #e_mp2 = numpy.einsum('iajb,iajb', t2, eri_mo)*0.25
@@ -99,7 +97,7 @@ lib.logger.info(mf,"!*** E(MP2): %s" % e_mp2)
 lib.logger.info(mf,"!**** E(HF+MP2): %s" % (e_mp2+ehf))
 print('Time %.3f (sec)' % (time.time()-t))
 
-#eri_mo = einsum('Qia,Qjb->iajb', eri_mo, eri_mo) 
+#eri_mo = lib.einsum('Qia,Qjb->iajb', eri_mo, eri_mo) 
 #eri_mo = eri_mo - eri_mo.transpose(0,3,2,1)
 #e_mp2 = numpy.einsum('iajb,iajb', t2, eri_mo)*0.25
 #lib.logger.info(mf,"!*** E(MP2): %s" % e_mp2)

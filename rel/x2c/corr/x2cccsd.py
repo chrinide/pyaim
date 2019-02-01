@@ -324,7 +324,7 @@ if __name__ == '__main__':
     from pyscf import gto
 
     mol = gto.Mole()
-    mol.basis = 'dzp-dk'
+    mol.basis = 'unc-dzp-dk'
     mol.atom = '''
     O      0.000000      0.000000      0.118351
     H      0.000000      0.761187     -0.469725
@@ -338,7 +338,7 @@ if __name__ == '__main__':
     
     mf = x2c.UHF(mol)
     dm = mf.get_init_guess() + 0.1j
-    mf.kernel()
+    mf.kernel(dm)
 
     ncore = 2
     mycc = GCCSD(mf)

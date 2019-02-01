@@ -313,7 +313,7 @@ if __name__ == '__main__':
     
     mf = x2c.UHF(mol)
     dm = mf.get_init_guess() + 0.1j
-    mf.kernel()
+    mf.kernel(dm)
 
     ncore = 2
     myci = GCISD(mf)

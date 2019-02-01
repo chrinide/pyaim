@@ -307,6 +307,26 @@ class X2C_UHF(hf.SCF):
         return dhf.analyze(self, verbose)
 UHF = X2C_UHF
 
+class X2C_RHF(UHF):
+    '''Dirac-RHF'''
+    def __init__(self, mol):
+        if mol.nelectron.__mod__(2) != 0:
+            raise ValueError('Invalid electron number %i.' % mol.nelectron)
+        UHF.__init__(self, mol)
+
+    # full density matrix for RHF
+    def make_rdm1(self, mo_coeff=None, mo_occ=None, **kwargs):
+        r'''D/2 = \psi_i^\dag\psi_i = \psi_{Ti}^\dag\psi_{Ti}
+        D(UHF) = \psi_i^\dag\psi_i + \psi_{Ti}^\dag\psi_{Ti}
+        RHF average the density of spin up and spin down:
+        D(RHF) = (D(UHF) + T[D(UHF)])/2
+        '''
+        if mo_coeff is None: mo_coeff = self.mo_coeff
+        if mo_occ is None: mo_occ = self.mo_occ
+        dm = make_rdm1(mo_coeff, mo_occ, **kwargs)
+        return (dm + dhf.time_reversal_matrix(self.mol, dm)) * .5
+RHF = X2C_RHF
+
 try:
     from pyscf.dft import rks, dks
     class X2C_UKS(X2C_UHF):
@@ -337,6 +357,43 @@ try:
         define_xc_ = rks.define_xc_
 
     UKS = X2C_UKS
+
+    class X2C_RKS(X2C_RHF):
+        def __init__(self, mol):
+            if mol.nelectron.__mod__(2) != 0:
+                raise ValueError('Invalid electron number %i.' % mol.nelectron)
+            X2C_RHF.__init__(self, mol)
+            self.xc = 'LDA,VWN'
+            self.grids = gen_grid.Grids(self.mol)
+            self.grids.level = getattr(__config__, 'dft_rks_RKS_grids_level',
+                                       self.grids.level)
+            # Use rho to filter grids
+            self.small_rho_cutoff = getattr(__config__, 'dft_rks_RKS_small_rho_cutoff',
+                                            1e-7)
+    ##################################################
+    # don't modify the following attributes, they are not input options
+            self._numint = r_numint.RNumInt()
+            self._keys = self._keys.union(['xc', 'grids', 'small_rho_cutoff'])
+        def dump_flags(self):
+            hf.SCF.dump_flags(self)
+            logger.info(self, 'XC functionals = %s', self.xc)
+            logger.info(self, 'small_rho_cutoff = %g', self.small_rho_cutoff)
+            self.grids.dump_flags()
+            if self.with_x2c:
+                self.with_x2c.dump_flags()
+            return self
+
+        def make_rdm1(self, mo_coeff=None, mo_occ=None, **kwargs):
+            if mo_coeff is None: mo_coeff = self.mo_coeff
+            if mo_occ is None: mo_occ = self.mo_occ
+            dm = make_rdm1(mo_coeff, mo_occ, **kwargs)
+            return (dm + dhf.time_reversal_matrix(self.mol, dm)) * .5
+
+        get_veff = dks.get_veff
+        energy_elec = rks.energy_elec
+        define_xc_ = rks.define_xc_
+
+    RKS = X2C_RKS
 except ImportError:
     pass
 
@@ -570,9 +627,14 @@ if __name__ == '__main__':
 
     method = UHF(mol)
     ex2c = method.kernel()
+    print method.make_rdm1()
     print('E(X2C1E) = %.12g' % ex2c)
-    method.with_x2c.basis = {'O': 'unc-ccpvqz', 'H':'unc-ccpvdz'}
-    print('E(X2C1E) = %.12g' % method.kernel())
-    method.with_x2c.approx = 'atom1e'
-    print('E(X2C1E) = %.12g' % method.kernel())
+    #method.with_x2c.basis = {'O': 'unc-ccpvqz', 'H':'unc-ccpvdz'}
+    #print('E(X2C1E) = %.12g' % method.kernel())
+    #method.with_x2c.approx = 'atom1e'
+    #print('E(X2C1E) = %.12g' % method.kernel())
 
+    method = RHF(mol)
+    ex2c = method.kernel()
+    print method.make_rdm1()
+    print('E(X2C1E) = %.12g' % ex2c)
