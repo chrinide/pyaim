@@ -5,15 +5,14 @@ from pyscf import lib, gto, scf, x2c, ao2mo
 from pyscf.df import r_incore
 einsum = lib.einsum
 
+#O      0.000000      0.000000      0.118351
+#H      0.000000      0.761187     -0.469725
+#H      0.000000     -0.761187     -0.469725
 mol = gto.Mole()
-mol.basis = 'unc-qzp-dk'
+mol.basis = 'unc-dzp-dk'
 mol.atom = '''
-O      0.000000      0.000000      0.118351
-H      0.000000      0.761187     -0.469725
-H      0.000000     -0.761187     -0.469725
-O      1.000000      0.000000      0.118351
-H      1.000000      0.761187     -0.469725
-H      1.000000     -0.761187     -0.469725
+At 0.0 0.0  0.000
+At 0.0 0.0  3.100
 '''
 mol.charge = 0
 mol.spin = 0
@@ -41,7 +40,7 @@ mf.direct_scf = False
 ehf = mf.scf()
 print('Time %.3f (sec)' % (time.time()-t))
      
-ncore = 2
+ncore = 108
 nao, nmo = mf.mo_coeff.shape
 nocc = mol.nelectron - ncore
 nvir = nmo - nocc - ncore

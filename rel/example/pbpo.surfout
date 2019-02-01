@@ -1,34 +1,35 @@
+<class 'surf4c.BaderSurf'> does not have attributes  corr
 
 ******** <class 'surf4c.BaderSurf'> flags ********
 * General Info
-Date Thu Jan 31 23:34:21 2019
+Date Fri Feb  1 14:33:48 2019
 Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
 [GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
 Numpy 1.15.2
 Number of threads 32
 Verbose level 4
 Scratch dir /scratch/jluis
-Input data file atbr.chk
-Max_memory 500000 MB (current use 109 MB)
+Input data file pbpo.chk
+Max_memory 500000 MB (current use 147 MB)
 * Mol Info
 Speed light value 137.036000
 Num atoms 2
-Num electrons 120
+Num electrons 166
 Total charge 0
 Spin 0 
 Atom Coordinates (Bohr)
-Nuclei 0 with charge 85 position : 0.000000  0.000000  0.000000
-Nuclei 1 with charge 35 position : 0.000000  0.000000  5.189188
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 84 position : 0.000000  0.000000  6.226648
 * Basis Info
 Is cartesian False
-Number of molecular orbitals 1852
+Number of molecular orbitals 2328
 Orbital EPS occ criterion 1.000000e-06
-Number of occupied molecular orbitals 120
-Number of molecular primitives 1852
+Number of occupied molecular orbitals 166
+Number of molecular primitives 2328
 * Surface Info
 Lebedev quadrature
 Npang points 5810
-Surface file atbr.chk.h5
+Surface file pbpo.chk.h5
 Surface for nuc 0
 Rmaxsurface 10.000000
 Ntrial 11
@@ -40,45 +41,45 @@ ODE tool 1.000000e-05
 Max steps in ODE solver 200
 
 Good rho position 0.000000 0.000000 0.000000
-Good rho position 0.000000 0.000000 5.189188
-Time finding nucleus 0.875 (sec)
-Time finding surface 1782.032 (sec)
-Rmin for surface 2.528737
+Good rho position 0.000000 0.000000 6.226648
+Time finding nucleus 0.981 (sec)
+Time finding surface 3048.382 (sec)
+Rmin for surface 3.125251
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 0 saved
-    CPU time for BaderSurf build  56613.09 sec, wall time   1782.99 sec
+    CPU time for BaderSurf build  96839.13 sec, wall time   3049.46 sec
 
 ******** <class 'surf4c.BaderSurf'> flags ********
 * General Info
-Date Fri Feb  1 00:04:04 2019
+Date Fri Feb  1 15:24:38 2019
 Python 2.7.15 (default, Jul 10 2018, 19:40:17) 
 [GCC 7.3.1 20180303 (Red Hat 7.3.1-5)]
 Numpy 1.15.2
 Number of threads 32
 Verbose level 4
 Scratch dir /scratch/jluis
-Input data file atbr.chk
-Max_memory 500000 MB (current use 144 MB)
+Input data file pbpo.chk
+Max_memory 500000 MB (current use 207 MB)
 * Mol Info
 Speed light value 137.036000
 Num atoms 2
-Num electrons 120
+Num electrons 166
 Total charge 0
 Spin 0 
 Atom Coordinates (Bohr)
-Nuclei 0 with charge 85 position : 0.000000  0.000000  0.000000
-Nuclei 1 with charge 35 position : 0.000000  0.000000  5.189188
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 84 position : 0.000000  0.000000  6.226648
 * Basis Info
 Is cartesian False
-Number of molecular orbitals 1852
+Number of molecular orbitals 2328
 Orbital EPS occ criterion 1.000000e-06
-Number of occupied molecular orbitals 120
-Number of molecular primitives 1852
+Number of occupied molecular orbitals 166
+Number of molecular primitives 2328
 * Surface Info
 Lebedev quadrature
 Npang points 5810
-Surface file atbr.chk.h5
+Surface file pbpo.chk.h5
 Surface for nuc 1
 Rmaxsurface 10.000000
 Ntrial 11
@@ -90,11 +91,11 @@ ODE tool 1.000000e-05
 Max steps in ODE solver 200
 
 Good rho position 0.000000 0.000000 0.000000
-Good rho position 0.000000 0.000000 5.189188
-Time finding nucleus 0.830 (sec)
-Time finding surface 1913.167 (sec)
-Rmin for surface 2.660450
+Good rho position 0.000000 0.000000 6.226648
+Time finding nucleus 0.959 (sec)
+Time finding surface 2674.201 (sec)
+Rmin for surface 3.101396
 Rmax for surface 10.000000
 Write HDF5 surface file
 Surface of atom 1 saved
-    CPU time for BaderSurf build  60810.39 sec, wall time   1914.09 sec
+    CPU time for BaderSurf build  84878.23 sec, wall time   2675.26 sec

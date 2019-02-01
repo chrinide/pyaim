@@ -9,7 +9,7 @@ from pyscf.tools.dump_mat import dump_tri
 
 log = lib.logger.Logger(sys.stdout, 4)
     
-name = 'pbte.chk'
+name = 'atbr.chk'
 atm = [0,1]
 
 with h5py.File(name+'.h5') as f:
