@@ -6,11 +6,14 @@ from pyscf.df import r_incore
 einsum = lib.einsum
 
 mol = gto.Mole()
-mol.basis = 'unc-dzp-dk'
+mol.basis = 'unc-qzp-dk'
 mol.atom = '''
 O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
 H      0.000000     -0.761187     -0.469725
+O      1.000000      0.000000      0.118351
+H      1.000000      0.761187     -0.469725
+H      1.000000     -0.761187     -0.469725
 '''
 mol.charge = 0
 mol.spin = 0
@@ -103,6 +106,7 @@ print('Time %.3f (sec)' % (time.time()-t))
 #lib.logger.info(mf,"!*** E(MP2): %s" % e_mp2)
 #lib.logger.info(mf,"!**** E(HF+MP2): %s" % (e_mp2+ehf))
 
+t = time.time()
 dab = numpy.zeros((len(ev),len(ev)), dtype=numpy.complex128)
 for i in range(nocc):
     eps_i = eo[i]
@@ -124,19 +128,19 @@ for i, k in enumerate(numpy.argmax(abs(natorbvir), axis=0)):
     if natorbvir[k,i] < 0:
         natorbvir[:,i] *= -1
 natoccvir = -natoccvir
-lib.logger.info(mf,"* Occupancies")
-lib.logger.info(mf,"* %s" % natoccvir)
-lib.logger.info(mf,"* The sum is %8.6f" % numpy.sum(natoccvir)) 
+lib.logger.debug(mf,"* Occupancies")
+lib.logger.debug(mf,"* %s" % natoccvir)
+lib.logger.debug(mf,"* The sum is %8.6f" % numpy.sum(natoccvir)) 
 thresh_vir = 1e-4
 active = (thresh_vir <= natoccvir)
-lib.logger.info(mf,"* Natural Orbital selection")
+lib.logger.debug(mf,"* Natural Orbital selection")
 for i in range(nvir):
-    lib.logger.info(mf,"orb: %d %s %8.6f" % (i,active[i],natoccvir[i]))
+    lib.logger.debug(mf,"orb: %d %s %8.6f" % (i,active[i],natoccvir[i]))
     actIndices = numpy.where(active)[0]
 lib.logger.info(mf,"* Original active orbitals %d" % nvir)
 lib.logger.info(mf,"* Virtual core orbitals: %d" % (nvir-len(actIndices)))
 lib.logger.info(mf,"* New active orbitals %d" % len(actIndices))
-lib.logger.info(mf,"* Active orbital indices %s" % actIndices)
+lib.logger.debug(mf,"* Active orbital indices %s" % actIndices)
 natorbvir = natorbvir[:,actIndices]                                    
 fvv = numpy.diag(ev)
 fvv = reduce(numpy.dot, (natorbvir.conj().T, fvv, natorbvir))
@@ -147,13 +151,36 @@ energy = numpy.hstack([ec,eo,ev])
 occ = numpy.zeros(coeff.shape[1])
 for i in range(mol.nelectron):
     occ[i] = 1.0
-pt = x2cmp2.GMP2(mf, mo_coeff=coeff, mo_occ=occ)
-pt.frozen = ncore
-pt.kernel(mo_energy=energy)
+print('Time FNO %.3f (sec)' % (time.time()-t))
 
 t = time.time()
-pt = x2cmp2.GMP2(mf)
-pt.frozen = ncore
-pt.kernel()
+eri_mo = lib.einsum('rj,Qrs->Qjs', co.conj(), dferi)
+eri_mo = lib.einsum('sb,Qjs->Qjb', cv, eri_mo)
+e_mp2 = 0.0
+vv_denom = -ev.reshape(-1,1)-ev
+for i in range(nocc):
+    eps_i = eo[i]
+    i_Qv = eri_mo[:, i, :].copy()
+    for j in range(nocc):
+        eps_j = eo[j]
+        j_Qv = eri_mo[:, j, :].copy()
+        viajb = lib.einsum('Qa,Qb->ab', i_Qv, j_Qv)
+        vibja = lib.einsum('Qb,Qa->ab', i_Qv, j_Qv)
+        v = viajb - vibja
+        div = 1.0/(eps_i + eps_j + vv_denom)
+        e_mp2 += 0.25*numpy.einsum('ab,ab->', v, v.conj()*div) 
+
+lib.logger.info(mf,"!*** E(MP2): %s" % e_mp2)
+lib.logger.info(mf,"!**** E(HF+MP2): %s" % (e_mp2+ehf))
 print('Time %.3f (sec)' % (time.time()-t))
+
+#pt = x2cmp2.GMP2(mf, mo_coeff=coeff, mo_occ=occ)
+#pt.frozen = ncore
+#pt.kernel(mo_energy=energy)
+
+#t = time.time()
+#pt = x2cmp2.GMP2(mf)
+#pt.frozen = ncore
+#pt.kernel()
+#print('Time %.3f (sec)' % (time.time()-t))
 

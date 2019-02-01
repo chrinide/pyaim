@@ -5,7 +5,7 @@ from pyscf import gto
 import x2cmp2
 
 mol = gto.Mole()
-mol.basis = 'dzp-dk'
+mol.basis = 'unc-dzp-dk'
 mol.atom = '''
 Pb 0.0 0.0 0.00
 O  0.0 0.0 1.922
