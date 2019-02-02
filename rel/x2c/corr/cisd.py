@@ -222,7 +222,7 @@ def trans_rdm1(myci, cibra, ciket, nmo=None, nocc=None):
     return dm1
 
 
-class GCISD(cisd.CISD):
+class CISD(cisd.CISD):
     def __init__(self, mf, frozen=0, mo_coeff=None, mo_occ=None):
         cisd.CISD.__init__(self, mf, frozen, mo_coeff, mo_occ)
 
@@ -266,17 +266,17 @@ class GCISD(cisd.CISD):
         return self.emp2, ci_guess
 
     def ao2mo(self, mo_coeff=None):
-        import x2cccsd
+        from pyscf import x2c
         nmo = self.nmo
         mem_incore = nmo**4*4 * 8/1e6
         mem_now = lib.current_memory()[0]
         if (self._scf._eri is not None and
             (mem_incore+mem_now < self.max_memory) or self.mol.incore_anyway):
-            return x2cccsd._make_eris_incore(self, mo_coeff)
+            return x2c.ccsd._make_eris_incore(self, mo_coeff)
         elif getattr(self._scf, 'with_df', None):
             raise NotImplementedError
         else:
-            return x2cccsd._make_eris_outcore(self, mo_coeff)
+            return x2c.ccsd._make_eris_outcore(self, mo_coeff)
 
     contract = contract
     make_diagonal = make_diagonal
@@ -311,17 +311,13 @@ if __name__ == '__main__':
     mol.verbose = 4
     mol.build()
     
-    mf = x2c.UHF(mol)
+    mf = x2c.RHF(mol)
     dm = mf.get_init_guess() + 0.1j
     mf.kernel(dm)
 
     ncore = 2
-    myci = GCISD(mf)
-    myci.nroots = 2
+    myci = CISD(mf)
+    myci.nroots = 1
     myci.frozen = ncore
     ecisd, civec = myci.kernel()
-
-    #nmo = eris.mo_coeff.shape[1]
-    #rdm1 = myci.make_rdm1(civec, nmo, mol.nelectron)
-    #rdm2 = myci.make_rdm2(civec, nmo, mol.nelectron)
 

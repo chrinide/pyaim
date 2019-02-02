@@ -27,7 +27,7 @@ from pyscf.cc import gintermediates as imd
 from pyscf import __config__
 einsum = lib.einsum
 
-MEMORYMIN = getattr(__config__, 'cc_ccsd_memorymin', 2000)
+MEMORYMIN = getattr(__config__, 'x2c_ccsd_memorymin', 2000)
 
 def update_amps(cc, t1, t2, eris):
 
@@ -97,13 +97,13 @@ def energy(cc, t1, t2, eris):
     e += 0.25*np.einsum('ijab,ijab', t2, eris_oovv)
     e += 0.5*np.einsum('ia,jb,ijab', t1, t1, eris_oovv)
     if abs(e.imag) > 1e-4:
-        logger.warn(cc, 'Non-zero imaginary part found in GCCSD energy %s', e)
+        logger.warn(cc, 'Non-zero imaginary part found in CCSD energy %s', e)
     return e.real
 
-class GCCSD(ccsd.CCSD):
+class CCSD(ccsd.CCSD):
 
-    conv_tol = getattr(__config__, 'cc_gccsd_GCCSD_conv_tol', 1e-7)
-    conv_tol_normt = getattr(__config__, 'cc_gccsd_GCCSD_conv_tol_normt', 1e-6)
+    conv_tol = getattr(__config__, 'x2c_ccsd_conv_tol', 1e-7)
+    conv_tol_normt = getattr(__config__, 'x2c_ccsd_conv_tol_normt', 1e-6)
 
     def __init__(self, mf, frozen=0, mo_coeff=None, mo_occ=None):
         ccsd.CCSD.__init__(self, mf, frozen, mo_coeff, mo_occ)
@@ -146,11 +146,11 @@ class GCCSD(ccsd.CCSD):
         return self.l1, self.l2
 
     def ccsd_t(self, t1=None, t2=None, eris=None):
-        import x2cccsd_t
+        from pyscf import x2c
         if t1 is None: t1 = self.t1
         if t2 is None: t2 = self.t2
         if eris is None: eris = self.ao2mo(self.mo_coeff)
-        return x2cccsd_t.kernel(self, eris, t1, t2, self.verbose)
+        return x2c.ccsd_t.kernel(self, eris, t1, t2, self.verbose)
 
     def make_rdm1(self, t1=None, t2=None, l1=None, l2=None, ao_repr=False):
         '''Un-relaxed 1-particle density matrix in MO space'''
@@ -183,12 +183,10 @@ class GCCSD(ccsd.CCSD):
         mem_now = lib.current_memory()[0]
         if (self._scf._eri is not None and
             (mem_incore+mem_now < self.max_memory) or self.mol.incore_anyway):
-            logger.info(self,'Incore mem for 2e integrals')
             return _make_eris_incore(self, mo_coeff)
         elif getattr(self._scf, 'with_df', None):
             raise NotImplementedError
         else:
-            logger.info(self,'Outcore mem for 2e integrals')
             return _make_eris_outcore(self, mo_coeff)
 
     def density_fit(self):
@@ -230,8 +228,6 @@ class _PhysicistsERIs:
         gap = abs(mo_e[:self.nocc,None] - mo_e[None,self.nocc:]).min()
         if gap < 1e-5:
             logger.warn(mycc, 'HOMO-LUMO gap %s too small', gap)
-        else:
-            logger.info(mycc, 'HOMO-LUMO gap %s', gap)
         return self
 
 def _make_eris_incore(mycc, mo_coeff=None, ao2mofn=None):
@@ -310,10 +306,6 @@ def _make_eris_outcore(mycc, mo_coeff=None):
         tmp = tmp.reshape(p1-p0,nvir,nvir,nvir)
         eris.vvvv[p0:p1] = tmp.transpose(0,2,1,3) - tmp.transpose(0,2,3,1)
 
-    #tmp = np.asarray(fswap['eri_mo'])
-    #tmp = tmp.reshape(nmo,nmo,nmo,nmo)
-    #eris.vvvv = (tmp[nocc:,nocc:,nocc:,nocc:].transpose(0,2,1,3) -
-    #             tmp[nocc:,nocc:,nocc:,nocc:].transpose(0,2,3,1))
     cput0 = log.timer_debug1('transforming integrals', *cput0)
 
     return eris
@@ -341,20 +333,20 @@ if __name__ == '__main__':
     mf.kernel(dm)
 
     ncore = 2
-    mycc = GCCSD(mf)
+    mycc = CCSD(mf)
     mycc.frozen = ncore
     ecc, t1, t2 = mycc.kernel()
 
-    #import numpy
-    #rdm1 = mycc.make_rdm1()
-    #rdm2 = mycc.make_rdm2()
-    #c = mf.mo_coeff
-    #nmo = mf.mo_coeff.shape[1]
-    #eri_mo = ao2mo.kernel(mol, c, intor='int2e_spinor').reshape(nmo,nmo,nmo,nmo)
-    #hcore = mf.get_hcore()
-    #h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
-    #e = numpy.einsum('ij,ji', h1, rdm1)
-    #e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
-    #e += mol.energy_nuc()
-    #lib.logger.info(mf,"!*** E(MP2) with RDM: %s" % e)
+    import numpy
+    rdm1 = mycc.make_rdm1()
+    rdm2 = mycc.make_rdm2()
+    c = mf.mo_coeff
+    nmo = mf.mo_coeff.shape[1]
+    eri_mo = ao2mo.kernel(mol, c, intor='int2e_spinor').reshape(nmo,nmo,nmo,nmo)
+    hcore = mf.get_hcore()
+    h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
+    e = numpy.einsum('ij,ji', h1, rdm1)
+    e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
+    e += mol.energy_nuc()
+    lib.logger.info(mf,"!*** E(MP2) with RDM: %s" % e)
 

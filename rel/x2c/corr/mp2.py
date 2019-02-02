@@ -21,8 +21,8 @@ from pyscf.mp import mp2
 from pyscf import scf
 from pyscf import __config__
 
-WITH_T2 = getattr(__config__, 'mp_x2cmp2_with_t2', True)
-THRESH_VIR = getattr(__config__, 'mp_x2cmp2_fno_thresh_vir', 1e-4)
+WITH_T2 = getattr(__config__, 'x2c_mp2_with_t2', True)
+THRESH_VIR = getattr(__config__, 'x2c_mp2_fno_thresh_vir', 1e-4)
 
 def kernel(mp, mo_energy=None, mo_coeff=None, eris=None, with_t2=WITH_T2,
            verbose=logger.NOTE):
@@ -52,7 +52,8 @@ def kernel(mp, mo_energy=None, mo_coeff=None, eris=None, with_t2=WITH_T2,
 
     return emp2.real, t2
 
-def get_fno(mp, mo_energy=None, mo_coeff=None, eris=None, thresh_vir=THRESH_VIR, verbose=logger.NOTE):
+def get_fno(mp, mo_energy=None, mo_coeff=None, eris=None, thresh_vir=THRESH_VIR, 
+            verbose=logger.NOTE):
 
     lib.logger.info(mp,"\n* Fno procedure")
     lib.logger.info(mp,"* Threshold for virtual occupation %g", thresh_vir)
@@ -199,7 +200,7 @@ def make_rdm2(mp, t2=None):
     return dm2
 
 
-class GMP2(mp2.MP2):
+class MP2(mp2.MP2):
     def __init__(self, mf, frozen=0, mo_coeff=None, mo_occ=None):
         mp2.MP2.__init__(self, mf, frozen, mo_coeff, mo_occ)
 
@@ -218,12 +219,10 @@ class GMP2(mp2.MP2):
         mem_incore = nocc**2*nvir**2*4 * 8/1e6
         mem_now = lib.current_memory()[0]
         if ((mem_incore+mem_now < self.max_memory) or self.mol.incore_anyway):
-            logger.info(self,'Incore mem for 2e integrals')
             return _make_eris_incore(self, mo_coeff, verbose=self.verbose)
         elif getattr(self._scf, 'with_df', None):
             raise NotImplementedError
         else:
-            logger.info(self,'Outcore mem for 2e integrals')
             return _make_eris_outcore(self, mo_coeff, self.verbose)
 
     make_rdm1 = make_rdm1
@@ -316,39 +315,36 @@ if __name__ == '__main__':
     mf.kernel(dm)
 
     ncore = 2
-    #eri_ao = mol.intor('int2e_spinor')
+    eri_ao = mol.intor('int2e_spinor')
 
-    pt = GMP2(mf)
+    pt = MP2(mf)
     pt.frozen = ncore
     pt.kernel()
-    #rdm1 = pt.make_rdm1()
-    #rdm2 = pt.make_rdm2()
-    #c = mf.mo_coeff
-    #nmo = mf.mo_coeff.shape[1]
-    #eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
-    #hcore = mf.get_hcore()
-    #h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
-    #e = numpy.einsum('ij,ji', h1, rdm1)
-    #e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
-    #e += mol.energy_nuc()
-    #print("!*** E(X2CMP2) with RDM: %s" % e)
+    rdm1 = pt.make_rdm1()
+    rdm2 = pt.make_rdm2()
+    c = mf.mo_coeff
+    nmo = mf.mo_coeff.shape[1]
+    eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
+    hcore = mf.get_hcore()
+    h1 = reduce(numpy.dot, (mf.mo_coeff.T.conj(), hcore, mf.mo_coeff))
+    e = numpy.einsum('ij,ji', h1, rdm1)
+    e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
+    e += mol.energy_nuc()
+    print("!*** E(X2CMP2) with RDM: %s" % e)
 
-    #pt = GMP2(mf)
-    #pt.frozen = ncore
     mo_coeff, mo_energy, mo_occ = pt.fno()
-    #print mo_energy
 
-    pt = GMP2(mf, mo_coeff=mo_coeff, mo_occ=mo_occ)
+    pt = MP2(mf, mo_coeff=mo_coeff, mo_occ=mo_occ)
     pt.frozen = ncore
     pt.kernel(mo_energy=mo_energy)
-    #rdm1 = pt.make_rdm1()
-    #rdm2 = pt.make_rdm2()
-    #c = mo_coeff
-    #nmo = mo_coeff.shape[1]
-    #eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
-    #hcore = mf.get_hcore()
-    #h1 = reduce(numpy.dot, (mo_coeff.T.conj(), hcore, mo_coeff))
-    #e = numpy.einsum('ij,ji', h1, rdm1)
-    #e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
-    #e += mol.energy_nuc()
-    #print("!*** E(X2CMP2) with RDM: %s" % e)
+    rdm1 = pt.make_rdm1()
+    rdm2 = pt.make_rdm2()
+    c = mo_coeff
+    nmo = mo_coeff.shape[1]
+    eri_mo = ao2mo.general(eri_ao,(c,c,c,c)).reshape(nmo,nmo,nmo,nmo)
+    hcore = mf.get_hcore()
+    h1 = reduce(numpy.dot, (mo_coeff.T.conj(), hcore, mo_coeff))
+    e = numpy.einsum('ij,ji', h1, rdm1)
+    e += numpy.einsum('ijkl,ijkl', eri_mo, rdm2)*0.5
+    e += mol.energy_nuc()
+    print("!*** E(X2CMP2) with RDM: %s" % e)

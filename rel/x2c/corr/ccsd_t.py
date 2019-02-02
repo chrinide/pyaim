@@ -59,7 +59,7 @@ def kernel(cc, eris, t1=None, t2=None, verbose=logger.INFO):
                 v = vabc + vcab - vbac
                 w /= eijk - eabc[a,b,c]
                 et += numpy.einsum('ijk,ijk', w, v.conj())
-    et /= 2
+    et /= 2.0
     return et
 
 
@@ -80,13 +80,12 @@ if __name__ == '__main__':
     mol.verbose = 4
     mol.build()
     
-    mf = x2c.UHF(mol)
+    mf = x2c.RHF(mol)
     dm = mf.get_init_guess() + 0.1j
     mf.kernel(dm)
 
     ncore = 2
-    import x2cccsd
-    mycc = x2cccsd.GCCSD(mf)
+    mycc = x2c.CCSD(mf)
     mycc.frozen = ncore
     mycc.kernel()
     eris = mycc.ao2mo()

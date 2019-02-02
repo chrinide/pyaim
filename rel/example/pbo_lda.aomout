@@ -1,0 +1,15 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+Traceback (most recent call last):
+  File "pbo_lda_aom.py", line 22, in <module>
+    ovlp.kernel()
+  File "../aom4c.py", line 320, in build
+    self.xnuc = f[idx+'/xnuc'].value
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
+  File "/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/group.py", line 262, in __getitem__
+    oid = h5o.open(self.id, self._e(name), lapl=self._lapl)
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
+  File "h5py/h5o.pyx", line 190, in h5py.h5o.open
+KeyError: 'Unable to open object (component not found)'

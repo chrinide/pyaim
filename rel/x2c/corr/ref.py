@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import time, numpy, x2cmp2
+import time, numpy, mp2
 from pyscf import lib, gto, scf, x2c, ao2mo
 from pyscf.df import r_incore
 
@@ -22,22 +22,23 @@ mol.verbose = 4
 mol.build()
 
 t = time.time()
-cderi = r_incore.cholesky_eri(mol, int3c='int3c2e_spinor', verbose=4)
-def fjk2c(mol, dm, *args, **kwargs):
-    n2c = dm.shape[0]
-    cderi_ll = cderi.reshape(-1,n2c,n2c)
-    vj = numpy.zeros((n2c,n2c), dtype=dm.dtype)
-    vk = numpy.zeros((n2c,n2c), dtype=dm.dtype)
-    rho = (numpy.dot(cderi, dm.T.reshape(-1)))
-    vj = numpy.dot(rho, cderi).reshape(n2c,n2c)
-    v1 = lib.einsum('pij,jk->pik', cderi_ll, dm)
-    vk = lib.einsum('pik,pkj->ij', v1, cderi_ll)
-    return vj, vk
+#cderi = r_incore.cholesky_eri(mol, int3c='int3c2e_spinor', verbose=4)
+#def fjk2c(mol, dm, *args, **kwargs):
+#    n2c = dm.shape[0]
+#    cderi_ll = cderi.reshape(-1,n2c,n2c)
+#    vj = numpy.zeros((n2c,n2c), dtype=dm.dtype)
+#    vk = numpy.zeros((n2c,n2c), dtype=dm.dtype)
+#    rho = (numpy.dot(cderi, dm.T.reshape(-1)))
+#    vj = numpy.dot(rho, cderi).reshape(n2c,n2c)
+#    v1 = lib.einsum('pij,jk->pik', cderi_ll, dm)
+#    vk = lib.einsum('pik,pkj->ij', v1, cderi_ll)
+#    return vj, vk
 
-mf = x2c.RHF(mol)
+mf = x2c.RHF(mol).density_fit()
 dm = mf.get_init_guess() + 0.0j
-mf.get_jk = fjk2c
-mf.direct_scf = False
+mf.with_df.auxbasis = 'def2-svp-jkfit'
+#mf.get_jk = fjk2c
+#mf.direct_scf = False
 ehf = mf.scf(dm)
 print('Time %.3f (sec)' % (time.time()-t))
      
@@ -57,7 +58,8 @@ lib.logger.info(mf,"* Core orbitals: %d" % ncore)
 lib.logger.info(mf,"* Virtual orbitals: %d" % (len(ev)))
 
 n2c = mol.nao_2c()
-dferi = cderi.reshape(-1,n2c,n2c)
+#dferi = cderi.reshape(-1,n2c,n2c)
+dferi = mf.with_df._cderi.reshape(-1,n2c,n2c)
 
 #eri_ao = lib.einsum('Qia,Qjb->iajb', dferi, dferi) 
 #eri_mo = ao2mo.general(eri_ao,(co,cv,co,cv)).reshape(nocc,nvir,nocc,nvir) 
@@ -120,7 +122,7 @@ for i in range(nocc):
         div = 1.0/(eps_i + eps_j + vv_denom)
         t2ij = v.conj()*div
         dab += lib.einsum('ea,eb->ab', t2ij,t2ij.conj())*0.5
-    
+   
 dab = dab + dab.conj().T
 dab *= 0.5
 natoccvir, natorbvir = numpy.linalg.eigh(-dab)
@@ -184,11 +186,11 @@ print('Time %.3f (sec)' % (time.time()-t))
 #pt.kernel()
 #print('Time %.3f (sec)' % (time.time()-t))
 
-import x2cccsd
-mycc = x2cccsd.GCCSD(mf, mo_coeff=coeff, mo_occ=occ)
-mycc.frozen = ncore
-ecc, t1, t2 = mycc.kernel()
-et = mycc.ccsd_t()
-print('(T) correlation energy', et)
-print('CCSD(T) correlation energy', mycc.e_corr + et)
+#import x2cccsd
+#mycc = x2cccsd.GCCSD(mf, mo_coeff=coeff, mo_occ=occ)
+#mycc.frozen = ncore
+#ecc, t1, t2 = mycc.kernel()
+#et = mycc.ccsd_t()
+#print('(T) correlation energy', et)
+#print('CCSD(T) correlation energy', mycc.e_corr + et)
 

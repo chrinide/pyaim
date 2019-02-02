@@ -48,12 +48,8 @@ print('Time %.3f (sec)' % (time.time()-t))
 
 t = time.time()
 mf = scf.RDHF(mol).density_fit()
+mf.with_df.auxbasis = 'def2-svp-jkfit'
 mf.verbose = 3
 mf.scf()
 print('Time %.3f (sec)' % (time.time()-t))
 
-t = time.time()
-mf = scf.RDHF(mol)
-mf.verbose = 3
-mf.scf()
-print('Time %.3f (sec)' % (time.time()-t))
