@@ -5,7 +5,7 @@ from pyscf import lib, gto, scf, x2c
 from pyscf.df.r_incore import cholesky_eri
 
 mol = gto.Mole()
-mol.basis = 'unc-tzp-dk'
+mol.basis = 'unc-dzp-dk'
 mol.atom = '''
 O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
@@ -46,8 +46,14 @@ mf.direct_scf = False
 mf.scf()
 print('Time %.3f (sec)' % (time.time()-t))
 
-#t = time.time()
-#mf = scf.RDHF(mol)
-#mf.verbose = 3
-#mf.scf()
-#print('Time %.3f (sec)' % (time.time()-t))
+t = time.time()
+mf = scf.RDHF(mol).density_fit()
+mf.verbose = 3
+mf.scf()
+print('Time %.3f (sec)' % (time.time()-t))
+
+t = time.time()
+mf = scf.RDHF(mol)
+mf.verbose = 3
+mf.scf()
+print('Time %.3f (sec)' % (time.time()-t))

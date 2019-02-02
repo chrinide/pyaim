@@ -5,7 +5,7 @@ from pyscf import lib, gto, scf, x2c
 from pyscf.df import r_incore
 
 mol = gto.Mole()
-mol.basis = 'unc-tzp-dk'
+mol.basis = 'unc-dzp-dk'
 mol.atom = '''
 O      0.000000      0.000000      0.118351
 H      0.000000      0.761187     -0.469725
@@ -24,11 +24,10 @@ def fjk2c(mol, dm, *args, **kwargs):
     cderi_ll = cderi.reshape(-1,n2c,n2c)
     vj = numpy.zeros((n2c,n2c), dtype=dm.dtype)
     vk = numpy.zeros((n2c,n2c), dtype=dm.dtype)
-    rho = (numpy.dot(cderi, dm.T.reshape(-1)))
+    rho = numpy.dot(cderi, dm.T.reshape(-1))
     vj = numpy.dot(rho, cderi).reshape(n2c,n2c)
     v1 = lib.einsum('pij,jk->pik', cderi_ll, dm)
     vk = lib.einsum('pik,pkj->ij', v1, cderi_ll)
-    vk = vk.T.conj()
     return vj, vk
 
 mf = x2c.RHF(mol)

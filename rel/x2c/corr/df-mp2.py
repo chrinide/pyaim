@@ -4,6 +4,10 @@ import time, numpy, x2cmp2
 from pyscf import lib, gto, scf, x2c, ao2mo
 from pyscf.df import r_incore
 
+#At 0.0 0.0  0.000
+#At 0.0 0.0  3.100
+#Pb 0.0 0.0 0.00
+#O  0.0 0.0 1.922
 mol = gto.Mole()
 mol.basis = 'unc-dzp-dk'
 mol.atom = '''
@@ -28,11 +32,10 @@ def fjk2c(mol, dm, *args, **kwargs):
     vj = numpy.dot(rho, cderi).reshape(n2c,n2c)
     v1 = lib.einsum('pij,jk->pik', cderi_ll, dm)
     vk = lib.einsum('pik,pkj->ij', v1, cderi_ll)
-    vk = vk.T.conj()
     return vj, vk
 
 mf = x2c.RHF(mol)
-dm = mf.get_init_guess() + 0.1j
+dm = mf.get_init_guess() + 0.0j
 mf.get_jk = fjk2c
 mf.direct_scf = False
 ehf = mf.scf(dm)
@@ -180,4 +183,12 @@ print('Time %.3f (sec)' % (time.time()-t))
 #pt.frozen = ncore
 #pt.kernel()
 #print('Time %.3f (sec)' % (time.time()-t))
+
+import x2cccsd
+mycc = x2cccsd.GCCSD(mf, mo_coeff=coeff, mo_occ=occ)
+mycc.frozen = ncore
+ecc, t1, t2 = mycc.kernel()
+et = mycc.ccsd_t()
+print('(T) correlation energy', et)
+print('CCSD(T) correlation energy', mycc.e_corr + et)
 

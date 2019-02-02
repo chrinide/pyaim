@@ -39,10 +39,10 @@ def kernel(cc, eris, t1=None, t2=None, verbose=logger.INFO):
     t2T = t2.transpose(2,3,0,1)
     t1T = t1.T
     def get_wv(a, b, c):
-        w  = numpy.einsum('ejk,ei->ijk', t2T[a,:], bcei[b,c])
-        w -= numpy.einsum('im,mjk->ijk', t2T[b,c], majk[:,a])
-        v  = numpy.einsum('i,jk->ijk', t1T[a], bcjk[b,c])
-        v += numpy.einsum('i,jk->ijk', fvo[a], t2T [b,c])
+        w  = lib.einsum('ejk,ei->ijk', t2T[a,:], bcei[b,c])
+        w -= lib.einsum('im,mjk->ijk', t2T[b,c], majk[:,a])
+        v  = lib.einsum('i,jk->ijk', t1T[a], bcjk[b,c])
+        v += lib.einsum('i,jk->ijk', fvo[a], t2T [b,c])
         v += w
         w = w + w.transpose(2,0,1) + w.transpose(1,2,0)
         return w, v

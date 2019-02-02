@@ -146,7 +146,7 @@ class GCCSD(ccsd.CCSD):
         return self.l1, self.l2
 
     def ccsd_t(self, t1=None, t2=None, eris=None):
-        from pyscf.cc import x2cccsd_t
+        import x2cccsd_t
         if t1 is None: t1 = self.t1
         if t2 is None: t2 = self.t2
         if eris is None: eris = self.ao2mo(self.mo_coeff)
@@ -336,7 +336,7 @@ if __name__ == '__main__':
     mol.verbose = 4
     mol.build()
     
-    mf = x2c.UHF(mol)
+    mf = x2c.RHF(mol)
     dm = mf.get_init_guess() + 0.1j
     mf.kernel(dm)
 
