@@ -30,7 +30,14 @@ ncore = 52
 pt = x2c.MP2(mf)
 pt.frozen = ncore
 pt.kernel()
+rdm1 = pt.make_rdm1()
+rdm2 = pt.make_rdm1()
 
-cc = x2c.CCSD(mf)
-cc.frozen = ncore
-cc.kernel()
+#cc = x2c.CCSD(mf)
+#cc.frozen = ncore
+#cc.kernel()
+
+lib.logger.info(mf,'Write rdms on MO basis to HDF5 file')
+dic = {'rdm1':rdm1, 'rdm2':rdm2}
+lib.chkfile.save(name+'.chk', 'rdm', dic)
+

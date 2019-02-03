@@ -36,8 +36,12 @@ def mos(self,x):
     npoints = x.shape[0]
     aoa, aob = eval_ao(self, x, deriv=0)
     pos = abs(self.mo_occ) > self.occdrop
-    cpos = self.mo_coeff[:,pos]
-    nocc = self.nocc
+    if (self.full):
+        cpos = self.mo_coeff
+        nocc = self.nmo
+    else:
+        cpos = self.mo_coeff[:,pos]
+        nocc = self.nocc
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
     c0a = lib.dot(aoa, cpos)
     c0b = lib.dot(aob, cpos)
@@ -161,6 +165,7 @@ class Aom(lib.StreamObject):
         self.non0tab = False
         self.corr = False
         self.occdrop = 1e-6
+        self.full = False
 ##################################################
 # don't modify the following attributes, they are not input options
         self.rdm1 = None
@@ -208,6 +213,7 @@ class Aom(lib.StreamObject):
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
         logger.info(self,'Correlated ? %s' % self.corr)
+        logger.info(self,'Full set of orbitals ? %s' % self.full)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -279,9 +285,13 @@ class Aom(lib.StreamObject):
             natorb = lib.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
             self.mo_occ = natocc
-        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        nocc = len(nocc)
-        self.nocc = nocc
+
+        if (self.full):
+            self.nocc = self.nmo
+        else:
+            nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
+            nocc = len(nocc)
+            self.nocc = nocc
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
