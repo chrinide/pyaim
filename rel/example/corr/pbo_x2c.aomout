@@ -1,0 +1,114 @@
+/home/jluis/pkgs/python/2.7.14/lib/python2.7/site-packages/h5py/_hl/dataset.py:313: H5pyDeprecationWarning: dataset.value has been deprecated. Use dataset[()] instead.
+  "Use dataset[()] instead.", H5pyDeprecationWarning)
+
+******** <class 'aom.Aom'> flags ********
+* General Info
+Date Sun Feb  3 03:46:03 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file pbo_x2c.chk
+Max_memory 24000 MB (current use 73 MB)
+Correlated ? False
+Full set of orbitals ? True
+* Molecular Info
+Num atoms 2
+Num electrons 90
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.632054
+* Basis Info
+Number of molecular orbitals 228
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 228
+Number of molecular primitives 228
+* Surface Info
+Surface file pbo_x2c.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.950097
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature legendre
+Radial outside mapping exp
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 1.700754
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.780039
+
+* Go with inside betasphere
+Time in Bsphere 807.631 (sec)
+* Go outside betasphere
+Time out Bsphere 1924.159 (sec)
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build   3106.53 sec, wall time   2731.97 sec
+
+******** <class 'aom.Aom'> flags ********
+* General Info
+Date Sun Feb  3 04:31:35 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file pbo_x2c.chk
+Max_memory 24000 MB (current use 82 MB)
+Correlated ? False
+Full set of orbitals ? True
+* Molecular Info
+Num atoms 2
+Num electrons 90
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 82 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 8 position : 0.000000  0.000000  3.632054
+* Basis Info
+Number of molecular orbitals 228
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 228
+Number of molecular primitives 228
+* Surface Info
+Surface file pbo_x2c.chk.h5
+Properties for nuc 1
+Nuclear coordinate 0.000000  0.000000  3.632051
+Rho nuclear coordinate 0.000000  0.000000  3.632051
+Npang points 5810
+Ntrial 11
+Rmin for surface 1.681957
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 321
+Number of radial points inside 221
+Radial outside quadrature 1
+Radial outside mapping 2
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.566918
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.672783
+
+* Go with inside betasphere
+Time in Bsphere 756.892 (sec)
+* Go outside betasphere
+Time out Bsphere 1930.228 (sec)
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build   3052.96 sec, wall time   2687.28 sec

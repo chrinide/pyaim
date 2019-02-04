@@ -94,3 +94,9 @@ Max steps in ODE solver 200
 Good rho position 0.000000 0.000000 0.000000
 Good rho position 0.000000 0.000000 3.632051
 Time finding nucleus 0.266 (sec)
+Time finding surface 1231.881 (sec)
+Rmin for surface 1.681957
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build   4928.20 sec, wall time   1232.20 sec

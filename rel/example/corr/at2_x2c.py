@@ -31,7 +31,7 @@ pt = x2c.MP2(mf)
 pt.frozen = ncore
 pt.kernel()
 rdm1 = pt.make_rdm1()
-rdm2 = pt.make_rdm1()
+rdm2 = pt.make_rdm2()
 
 #cc = x2c.CCSD(mf)
 #cc.frozen = ncore

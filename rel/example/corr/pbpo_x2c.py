@@ -3,13 +3,13 @@
 import numpy
 from pyscf import gto, scf, lib, x2c
 
-name = 'pbo_x2c'
+name = 'pbpo_x2c'
 
 mol = gto.Mole()
 mol.basis = 'x2c-tzvpp'
 mol.atom = '''
-Pb 0.0 0.0 0.00
-O  0.0 0.0 1.922
+Pb 0.0 0.0  0.000
+Po 0.0 0.0  3.295
 '''
 mol.charge = 0
 mol.spin = 0
@@ -25,7 +25,7 @@ mf.__dict__.update(scf.chkfile.load(name+'.chk', 'scf'))
 dm = mf.make_rdm1()
 mf.kernel(dm)
 
-ncore = 52
+ncore = 100
 
 pt = x2c.MP2(mf)
 pt.frozen = ncore
@@ -38,7 +38,6 @@ rdm2 = pt.make_rdm2()
 #cc.kernel()
 
 lib.logger.info(mf,'Write rdms on MO basis to HDF5 file')
-dic = {'rdm1':rdm1, 
-       'rdm2':rdm2}
+dic = {'rdm1':rdm1, 'rdm2':rdm2}
 lib.chkfile.save(name+'.chk', 'rdm', dic)
-                
+

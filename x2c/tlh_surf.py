@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('../..')
-import surf4c
+sys.path.append('..')
+import surf
 
-natm = 3
-name = 'h3rel.chk'
-surface = surf4c.BaderSurf(name)
+natm = 2
+name = 'tlh.chk'
+surface = surf.BaderSurf(name)
 surface.epsilon = 1e-5
 surface.epsroot = 1e-5
 surface.verbose = 4
@@ -16,6 +16,7 @@ surface.npang = 5810
 surface.leb = True
 surface.rmaxsurf = 10.0
 surface.step = 0.1
+surface.corr = False
 for i in range(natm):
     surface.inuc = i
     surface.kernel()
