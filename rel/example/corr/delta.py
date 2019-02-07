@@ -8,7 +8,7 @@ from pyscf import lib, dft
 
 log = lib.logger.Logger(sys.stdout, 4)
     
-name = 'pbo_x2c.chk'
+name = 'test.chk'
 atm = [0,1]
 
 with h5py.File(name+'.h5') as f:
@@ -22,9 +22,9 @@ with h5py.File(name) as f:
     rdm2 = f['rdm/rdm2'].value
 
 print rdm2.shape
-#rdm2 = rdm2 - lib.einsum('ij,kl->ijkl',rdm1,rdm1) 
-#rdm2 = -rdm2
+rdm2 = rdm2 - lib.einsum('ij,kl->ijkl',rdm1,rdm1) 
+rdm2 = -rdm2
 
-#delta = numpy.einsum('ijkl,ji,lk->', rdm2, aom1, aom2.conj(), optimize=True)
-#log.info('Delta %f for pair %d %d' %  (delta.real, atm[0], atm[1]))
+delta = numpy.einsum('ijkl,ji,lk->', rdm2, aom1, aom2.conj(), optimize=True)
+log.info('Delta %f for pair %d %d' %  (delta.real, atm[0], atm[1]))
 
