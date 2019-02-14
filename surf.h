@@ -88,6 +88,7 @@ void surf_driver(const int inuc,
 void surface(void);
 bool checkcp(double *x, int *nuc);
 void cerror(const char *text);
+void cwarning(const char *text);
 
 int odeint(double *ystart, double h1, double eps);
 void rkqs(double *y, double *dydx, double *x, 

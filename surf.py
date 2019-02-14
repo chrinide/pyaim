@@ -136,6 +136,7 @@ class BaderSurf(lib.StreamObject):
         self.step = 0.1
         self.mstep = 120
         self.corr = False
+        self.cas = False
         self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
@@ -188,6 +189,7 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
         logger.info(self,'Correlated ? %s' % self.corr)
+        logger.info(self,'CASSCF canonical orbitals ? %s' % self.cas)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -262,10 +264,14 @@ class BaderSurf(lib.StreamObject):
 
         if (self.corr):
             self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
+            nmo = self.rdm1.shape[0]
+            if (self.cas):
+                self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
             natocc, natorb = numpy.linalg.eigh(self.rdm1)
             natorb = numpy.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
             self.mo_occ = natocc
+
         nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
         nocc = len(nocc)
         self.nocc = nocc

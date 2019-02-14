@@ -12,7 +12,7 @@ from pyscf.tools.dump_mat import dump_tri
 
 log = lib.logger.Logger(sys.stdout, 4)
     
-name = 'pbpo'
+name = 'ceo'
 atm = [0,1]
 mol = lib.chkfile.load_mol(name+'.chk')
 mo_coeff = lib.chkfile.load(name+'.chk', 'scf/mo_coeff')

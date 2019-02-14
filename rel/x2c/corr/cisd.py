@@ -298,12 +298,15 @@ if __name__ == '__main__':
     from pyscf import scf, x2c
     from pyscf import gto
 
+    #O      0.000000      0.000000      0.118351
+    #H      0.000000      0.761187     -0.469725
+    #H      0.000000     -0.761187     -0.469725
     mol = gto.Mole()
-    mol.basis = 'unc-dzp-dk'
+    #mol.basis = 'unc-dzp-dk'
+    mol.basis = 'cc-pvdz'
     mol.atom = '''
-    O      0.000000      0.000000      0.118351
-    H      0.000000      0.761187     -0.469725
-    H      0.000000     -0.761187     -0.469725
+    H      0.000000      0.000000      0.000000
+    H      0.000000      0.000000      0.750000
     '''
     mol.charge = 0
     mol.spin = 0
@@ -315,7 +318,7 @@ if __name__ == '__main__':
     dm = mf.get_init_guess() + 0.1j
     mf.kernel(dm)
 
-    ncore = 2
+    ncore = 0
     myci = CISD(mf)
     myci.nroots = 1
     myci.frozen = ncore

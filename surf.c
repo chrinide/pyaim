@@ -403,7 +403,7 @@ int odeint(double *ystart, double h1, double eps){
 			return ier;
 		}
 		if (fabs(hnext) <= hmin) cerror("Step size too small in odeint");
-		if (i == (mstep_-1)) cerror("Reached max steps in odeint");
+		if (i == (mstep_-1)) cwarning("Reached max steps in odeint");
 		h = hnext;
   }
     
@@ -696,3 +696,6 @@ void cerror(const char *text){
 	exit(1);
 }
 
+void cwarning(const char *text){
+	fprintf(stderr,"Warning %s\n", text);
+}

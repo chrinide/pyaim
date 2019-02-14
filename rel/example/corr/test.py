@@ -6,7 +6,7 @@ from pyscf import gto, scf, lib, x2c, df
 name = 'test'
 
 mol = gto.Mole()
-mol.basis = 'x2c-tzvpp'
+mol.basis = 'dzp-dk'
 mol.atom = '''
 At 0.0 0.0  0.000
 At 0.0 0.0  3.100
