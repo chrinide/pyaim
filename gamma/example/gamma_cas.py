@@ -13,13 +13,11 @@ cell.incore_anyway = True
 cell.atom='''
   H 0.000000000000   0.000000000000   0.000000000000
   H 1.000000000000   0.000000000000   0.000000000000
-  H 2.000000000000   0.000000000000   0.000000000000
-  H 3.000000000000   0.000000000000   0.000000000000
 '''
 cell.basis = 'def2-svp'
 cell.precision = 1e-12
 cell.dimension = 1
-cell.a = [[4,0,0],[0,1,0],[0,0,1]]
+cell.a = [[2,0,0],[0,1,0],[0,0,1]]
 cell.unit = 'A'
 cell.verbose = 4
 cell.build()
@@ -53,6 +51,10 @@ mc.kernel(mo)
 nmo = mc.ncore + mc.ncas
 rdm1, rdm2 = mc.fcisolver.make_rdm12(mc.ci, mc.ncas, mc.nelecas) 
 rdm1, rdm2 = mcscf.addons._make_rdm12_on_mo(rdm1, rdm2, mc.ncore, mc.ncas, nmo)
+lib.logger.info(mf,'Write rdm1-rdm2 on MO basis to HDF5 file')
+dic = {'rdm1':rdm1,
+       'rdm2':rdm2}
+lib.chkfile.save(name+'.chk', 'pdm', dic)
 
 natocc, natorb = numpy.linalg.eigh(-rdm1)
 for i, k in enumerate(numpy.argmax(abs(natorb), axis=0)):

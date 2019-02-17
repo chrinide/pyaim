@@ -1,0 +1,876 @@
+ # ---------------- PROMOLDEN ------------------------
+ # ---  MOLECULAR PROPERTIES OF SCALAR DENSITIES  ----
+ # ---              Version 1.81                  ----
+ # --- (c) A. Martín Pendás & E. Francisco 2014   ----
+ # ---         University of Oviedo               ----
+ # ---------------------------------------------------
+ #
+ # Calculation starts at 2019.02.18, 00:03:36.686
+ #
+ # Number of OMP threads :   4
+ # Number of MPI process :   1
+
+ # 
+ # WARNING: ¡¡¡ ABOUT PARALLELIZATION !!!
+ # By now only the OMP model is used. The following 
+ # parts of the code of IQA and no others are parallelized :
+ # 
+ # a) The binary code used to compute the RDM matrices 
+ # b) The check of the beta-sphere radii 
+ # c) The determination of the atomic surfaces 
+ # d) The computation of the angular averages 
+ # e) The computation of the bicentric terms 
+ # f) The romberg and different reduction like operations 
+ # g) The angular averages in the aom task 
+ # 
+ # Some results can be different when they are compared 
+ # with a version that it is not parallelized, this is 
+ # because at the end of the regions for which the reduction
+ # clause was specified, the original object is updated to 
+ # reflect the result of combining its original value with 
+ # the final value of each of the private copies using the 
+ # operator specified. The reduction operators are all 
+ # associative (except for subtraction), and the compiler 
+ # may freely reassociate the computation of the final 
+ # value. Furthermore, different degrees of parallelism may 
+ # result in different numeric results because of changes 
+ # in the association of numeric operations. For example, 
+ # a serial addition reduction may have a different 
+ # pattern of addition associations than a parallel 
+ # reduction. These different associations may change the 
+ # results of floating-point addition. Usually these 
+ # differences are small, near the machine precision, 
+ # but can acumulate up to 1d-6/1d-7 differences. 
+ # 
+ # When using the OMP model, some problems related with 
+ # the stack size can occuor, specially with the intel  
+ # compiler, to avoid this issue, the following         
+ # enviormental variables should be exported, for the   
+ # bash shell for example                               
+ # 
+ # a) export OMP_STACK_SIZE=128m                        
+ # b) export KMP_STACK_SIZE=128m                        
+ # 
+
+ # 
+ # Input number of Primitives 14 reduced to 14
+ # 
+ # Description of the Primitive Basis Set
+ # Total number of Primitive Gaussians: 14
+ # CENTER 1
+ # S Shell (Z= 0.1301070100E+02) : 1
+ # S Shell (Z= 0.1962257200E+01) : 2
+ # S Shell (Z= 0.4445379600E+00) : 3
+ # S Shell (Z= 0.1219496200E+00) : 4
+ # P Shell (Z= 0.8000000000E+00) : 5 6 7
+ # This seems to be a [ 4s | 1p |0d | 0f | 0g | 0h ] basis
+ # CENTER 2
+ # S Shell (Z= 0.1301070100E+02) : 8
+ # S Shell (Z= 0.1962257200E+01) : 9
+ # S Shell (Z= 0.4445379600E+00) : 10
+ # S Shell (Z= 0.1219496200E+00) : 11
+ # P Shell (Z= 0.8000000000E+00) : 12 13 14
+ # This seems to be a [ 4s | 1p |0d | 0f | 0g | 0h ] basis
+ # Allocating space for RDM
+ # 
+ # Cutoff for primitives, eps = 0.1000000000E-15
+ # 
+ # WAVEFUNCTION ACCOUNT:
+ # File: h2_cas.wfn
+ # Number of Centers:   2
+ # Center of mass :   0.9449  0.0000  0.0000
+ # Center of charge :   0.9449  0.0000  0.0000
+ # Inertia eigenvalues (au) :       0.0000     14.2935     14.2935
+ # Molecule: H (   2)
+ # Molecular Weight:      2.015800
+ # Cartesian coordinates of centers:
+
+        1   H      0.00000000    0.00000000    0.00000000
+        2   H      1.88972612    0.00000000    0.00000000
+
+ # Number of Primitives         :   14    reduced to   14
+ # Number of Molecular Orbitals :    2
+ # Maximum l in Basis Set       :    1
+ #------------------------------------------------------------------------
+ # MULTIDETERMINANTAL WAVEFUNCTION
+ # Number of Electrons          :    2.0000000000
+ # Number of Determinants       :        2
+ # Number of Active Electrons   :     2
+ # Number of Active Orbitals    :     2
+ # Number of Core Orbitals      :     0
+ #------------------------------------------------------------------------
+ # Testing orthogonality of natural MOs
+ # EPS_ORTHO =   1.000000000000000E-006
+ # Testing orthogonality of canonical MOs
+ # EPS_ORTHO =   1.000000000000000E-006
+ # The full set of spin MO's is orthogonal
+ # Computing second order density matrix
+           3 elements T
+           3 pairs used
+ #
+ # Done using         0.000117 seconds
+ #
+ # Number of diagonal 2-el matrix elements:    3
+ # The Self-Interaction will be computed from the non-diagonal 2-el matrix:
+ # ===>    2 new elements are needed
+
+
+ ------------------------------------------------------------------------
+                                TES MODULE                               
+ ------------------------------------------------------------------------
+
+ # The size of chunk is equal to:            1
+ # The number of threads is:            4
+ # Is a crystal wave function:  F
+ 
+ # B-spheres used in the integration ? : YES
+
+ # Surface at INFINITY is really taken at    10.000000
+
+ # Number of r points OUTSIDE B-spheres:  551
+ # Surface accuracy:   0.100E-04
+ # lmax in multipolar expansion (OUTSIDE B-spheres): 10
+ # Number of r points INSIDE  B-spheres:  451
+ # lmax in multipolar expansion  (INSIDE B-spheres):  8
+ # r quadrature: Gauss-Legendre
+ # B-sphere r quadrature: Gauss-Legendre
+ # Romberg not allowed with         551 points
+ # Angular quadrature OUTSIDE B-spheres is LEBEDEV
+ # Angular quadrature  INSIDE B-spheres is LEBEDEV
+ # r-mapping is r(u) = chi * ln [(2+eta)/(1-u+eta)] + r0
+ # B-sphere r-mapping is r(u) = chi * (1+u)/(1-u+eta) + r0
+ # Done finding accurate nuclei...
+ # Angular Lebedev quadrature used OUTSIDE B-spheres with  5810 points
+
+ # Angular Lebedev quadrature used  INSIDE B-spheres with  3074 points
+
+ 
+ # Computing symmetry matrices & Point Group
+ # Switching off symmetry module
+ # Point Group: C1    
+ # Inverse Operations:   1
+ # Number of Inequivalent atoms:    2
+ # Ineqs                    :
+ #   1   2
+ # Multiplicity of each Ineq:
+ #   1   1
+ # Atoms are equivalent to ineq (in order):
+ #   1   2
+ # Operations transforming ineq to atom   :
+ #   1   1
+ # Multiplication table: m(i,j): op j takes atom i into atom m(i,j)
+    1
+    2
+ # Number of inequivalent pairs:    1
+ # Pairs:
+ (  1,  2) (
+ # Ineq. pairs p(i,j): ineqp for pair (ineq i,j)
+ 
+    0    1
+ 
+   -1    0
+
+ # Distances between inequivalent atomic pairs:
+       1:   H    1    H    2     1.88972612
+ 
+ # Testing the size of files h2_cas.wfn.scr1-??
+ # Size of Files 'h2_cas.wfn.scr1-??' should be                 3200208. bytes
+ 
+ 
+ # Testing the size of files h2_cas.wfn.scr1b-??
+ # Size of Files 'h2_cas.wfn.scr1b-??' should be                 1753488. bytes
+ 
+ # R quadrature for atom:  1. Rmax, Rbragg:  10.00000   0.52920
+ # R quadrature for atom:  2. Rmax, Rbragg:  10.00000   0.52920
+ # B-sphere radii are defined OK !!
+ # B-spheres definition
+ # ===> Ineq atom  1 B-sphere (rad,npts) =    0.3000   451
+ # ===> Ineq atom  2 B-sphere (rad,npts) =    0.3000   451
+ # Finding surface for ineq:           1
+ # Done using         0.838258 seconds
+ # Finding surface for ineq:           2
+ # Done using         0.787183 seconds
+ # Writing Surface for all ineqs done
+ # Spherical Harmonics construction done
+ # Info file written as h2_cas.wfn.pdat
+ # Start TES partiton
+ # Compute angular averages out of B-spheres
+ # Done using         1.048720 seconds for ineq :   1
+ # Done using         1.052191 seconds for ineq :   2
+ # Done using         2.100977 seconds
+ # Compute angular averages inside B-spheres
+ # Done using         0.191799 seconds for ineq :   1
+ # Done using         0.191563 seconds for ineq :   2
+ # Done using         0.383398 seconds
+ # Densities obtained
+
+
+
+ # ------------------------------------------------------
+ # ---                                                ---
+ # --- COMPUTING  BASIN - OWN   BASIN Contributions   ---
+ # ---                                                ---
+ # ------------------------------------------------------
+
+
+
+   +++ Monocentric analysis on neq atom:  1
+   +++ Numbers in parenthesis are (NO B-sphere,B-sphere)
+       Number  1  Nuc. charge:     1.0000
+   +++ kinetic energy                 :     0.4876 (     0.4767     0.0109  ) 
+   +++ self nuc-el energy             :    -1.1001 (    -0.9675    -0.1326  ) 
+   +++ energy elec( 1)-nuc( 2)        :    -0.4817 (    -0.4682    -0.0135  ) 
+
+   +++ Forces include B-sphere and NO B-sphere terms
+   +++ force e( 1) over n( 1) (x,y,z) :     0.1291      -0.0000     0.0000
+   +++ force e( 1) over n( 2) (x,y,z) :    -0.2200       0.0000    -0.0000
+   +++ force n( 1) over n( 2) (x,y,z) :     0.2800       0.0000     0.0000
+
+
+   ++++++ Monocentric Coulomb analysis:
+   ++++++ Results outside the B-sphere:
+   ++++++
+   ++++++ Charge Multipoles (Qlm) >   0.10000E-07 with L <=  4
+           lm   0  0                 :  0.97467E+00
+           lm   1  1                 : -0.35974E-01
+           lm   2  0                 :  0.17573E+00
+           lm   2  2                 : -0.30438E+00
+           lm   3  1                 :  0.69529E-01
+           lm   3  3                 : -0.89762E-01
+           lm   4  0                 :  0.38284E+00
+           lm   4  2                 : -0.57267E+00
+           lm   4  4                 :  0.75645E+00
+
+   ++++++   lm Convergence
+        Coulomb    Exch+Corr       Self
+   0  0.33223E+00 -0.21128E+00  0.16618E+00
+   1  0.33397E+00 -0.21244E+00  0.16739E+00
+   2  0.33495E+00 -0.21299E+00  0.16790E+00
+   3  0.33535E+00 -0.21319E+00  0.16810E+00
+   4  0.33544E+00 -0.21323E+00  0.16815E+00
+   5  0.33549E+00 -0.21326E+00  0.16818E+00
+   6  0.33552E+00 -0.21327E+00  0.16819E+00
+   7  0.33553E+00 -0.21328E+00  0.16820E+00
+   8  0.33554E+00 -0.21329E+00  0.16821E+00
+   9  0.33555E+00 -0.21329E+00  0.16821E+00
+  10  0.33555E+00 -0.21329E+00  0.16821E+00
+
+
+   ++++++ Monocentric Coulomb analysis:
+   ++++++ Results inside  the B-sphere:
+   ++++++ Charge Multipoles (Qlm) >   0.10000E-07:
+           lm   0  0                 :  0.25446E-01
+           lm   1  1                 :  0.17561E-03
+           lm   2  0                 : -0.16607E-05
+           lm   2  2                 :  0.28765E-05
+           lm   3  1                 : -0.47240E-07
+           lm   3  3                 :  0.60987E-07
+   ++++++ Coulomb Multipoles (Clm) >   0.10000E-07:
+           lm   0  0                 :  0.13255E-02
+           lm   1  1                 :  0.83167E-06
+   ++++++ XC Multipoles (XClm) >   0.10000E-07:
+           lm   0  0                 : -0.10494E-02
+           lm   1  1                 : -0.30993E-06
+   ++++++ Selfint Multipoles (Flm) >   0.10000E-07:
+           lm   0  0                 :  0.67926E-03
+           lm   1  1                 :  0.52178E-06
+
+   ++++++   lm Convergence
+        Coulomb    Exch+Corr       Self
+   0  0.13255E-02 -0.10494E-02  0.67926E-03
+   1  0.13263E-02 -0.10497E-02  0.67979E-03
+   2  0.13263E-02 -0.10497E-02  0.67979E-03
+   3  0.13263E-02 -0.10497E-02  0.67979E-03
+   4  0.13263E-02 -0.10497E-02  0.67979E-03
+   5  0.13263E-02 -0.10497E-02  0.67979E-03
+   6  0.13263E-02 -0.10497E-02  0.67979E-03
+   7  0.13263E-02 -0.10497E-02  0.67979E-03
+   8  0.13263E-02 -0.10497E-02  0.67979E-03
+
+   ++++++   lm Convergence (B-sph - NO B-sph int)
+        Coulomb      Exch+Corr     Self
+   0  0.24619E-01 -0.17533E-01  0.12351E-01
+   1  0.24638E-01 -0.17540E-01  0.12364E-01
+   2  0.24638E-01 -0.17540E-01  0.12364E-01
+   3  0.24638E-01 -0.17540E-01  0.12364E-01
+   4  0.24638E-01 -0.17540E-01  0.12364E-01
+   5  0.24638E-01 -0.17540E-01  0.12364E-01
+   6  0.24638E-01 -0.17540E-01  0.12364E-01
+   7  0.24638E-01 -0.17540E-01  0.12364E-01
+   8  0.24638E-01 -0.17540E-01  0.12364E-01
+
+   ++++++   TOTAL Charge Multipoles (Qlm)
+                           NO B-sphere      B-sphere         TOTAL
+                          =============   ============   ============
+           lm   0  0     :  0.97467E+00    0.25446E-01    0.10001E+01
+           lm   1  1     : -0.35974E-01    0.17561E-03   -0.35798E-01
+           lm   2  0     :  0.17573E+00   -0.16607E-05    0.17573E+00
+           lm   2  2     : -0.30438E+00    0.28765E-05   -0.30438E+00
+           lm   3  1     :  0.69529E-01   -0.47240E-07    0.69529E-01
+           lm   3  3     : -0.89762E-01    0.60987E-07   -0.89762E-01
+           lm   4  0     :  0.38284E+00    0.76554E-09    0.38284E+00
+           lm   4  2     : -0.57267E+00   -0.11412E-08   -0.57267E+00
+           lm   4  4     :  0.75645E+00    0.15097E-08    0.75645E+00
+           lm   5  1     :  0.42333E+00    0.32289E-10    0.42333E+00
+           lm   5  3     : -0.46184E+00   -0.34877E-10   -0.46184E+00
+           lm   5  5     :  0.61552E+00    0.46792E-10    0.61552E+00
+           lm   6  0     :  0.22054E+01   -0.78368E-12    0.22054E+01
+           lm   6  2     : -0.32033E+01    0.11357E-11   -0.32033E+01
+           lm   6  4     :  0.35225E+01   -0.12440E-11    0.35225E+01
+           lm   6  6     : -0.47512E+01    0.16845E-11   -0.47512E+01
+           lm   7  1     :  0.48966E+01   -0.39849E-13    0.48966E+01
+           lm   7  3     : -0.51579E+01    0.41412E-13   -0.51579E+01
+           lm   7  5     :  0.57717E+01   -0.45783E-13    0.57717E+01
+           lm   7  7     : -0.77235E+01    0.62391E-13   -0.77235E+01
+           lm   8  0     :  0.21086E+02    0.97240E-15    0.21086E+02
+           lm   8  2     : -0.30346E+02   -0.13947E-14   -0.30346E+02
+           lm   8  4     :  0.31865E+02    0.14628E-14    0.31865E+02
+           lm   8  6     : -0.35532E+02   -0.16276E-14   -0.35532E+02
+           lm   8  8     :  0.48470E+02    0.22287E-14    0.48470E+02
+           lm   9  1     :  0.84309E+02                   0.84309E+02
+           lm   9  3     : -0.87990E+02                  -0.87990E+02
+           lm   9  5     :  0.93995E+02                   0.93995E+02
+           lm   9  7     : -0.10617E+03                  -0.10617E+03
+           lm   9  9     :  0.14172E+03                   0.14172E+03
+           lm  10  0     :  0.26284E+03                   0.26284E+03
+           lm  10  2     : -0.37720E+03                  -0.37720E+03
+           lm  10  4     :  0.38932E+03                   0.38932E+03
+           lm  10  6     : -0.40745E+03                  -0.40745E+03
+           lm  10  8     :  0.46012E+03                   0.46012E+03
+           lm  10 10     : -0.63623E+03                  -0.63623E+03
+
+   +++ Total coulomb   (w self)         =     0.3615 (     0.3356     0.0013     0.0246 )
+       Total Exch+Corr (w self)         =    -0.2319 (    -0.2133    -0.0010    -0.0175 )
+       Self interaction                 =     0.1813 (     0.1682     0.0007     0.0124 )
+       Coulomb        (wo self)         =     0.1803
+       Exch+Corr      (wo self)         =    -0.0506
+       Total repulsion                  =     0.1296
+       RHO_2 Integ                      =     0.3726
+       RHO_2 Integ (J)                  =     1.0002
+       RHO_2 Integ (XC)   = F_AA (XC)   =     0.6277
+       RHO_2 Integ (X )   = F_AA (X )   =     0.6277
+       RHO_2 Integ (corr) = F_AA (corr) =     0.0000
+
+ # Done using         0.017090 seconds for atom :   1
+
+
+   +++ Monocentric analysis on neq atom:  2
+   +++ Numbers in parenthesis are (NO B-sphere,B-sphere)
+       Number  2  Nuc. charge:     1.0000
+   +++ kinetic energy                 :     0.4876 (     0.4767     0.0109  ) 
+   +++ self nuc-el energy             :    -1.1001 (    -0.9675    -0.1326  ) 
+   +++ energy elec( 2)-nuc( 1)        :    -0.4817 (    -0.4682    -0.0135  ) 
+
+   +++ Forces include B-sphere and NO B-sphere terms
+   +++ force e( 2) over n( 2) (x,y,z) :    -0.1291      -0.0000    -0.0000
+   +++ force e( 2) over n( 1) (x,y,z) :     0.2200       0.0000     0.0000
+   +++ force n( 2) over n( 1) (x,y,z) :    -0.2800       0.0000     0.0000
+
+
+   ++++++ Monocentric Coulomb analysis:
+   ++++++ Results outside the B-sphere:
+   ++++++
+   ++++++ Charge Multipoles (Qlm) >   0.10000E-07 with L <=  4
+           lm   0  0                 :  0.97467E+00
+           lm   1  1                 :  0.35974E-01
+           lm   2  0                 :  0.17573E+00
+           lm   2  2                 : -0.30438E+00
+           lm   3  1                 : -0.69529E-01
+           lm   3  3                 :  0.89762E-01
+           lm   4  0                 :  0.38284E+00
+           lm   4  2                 : -0.57267E+00
+           lm   4  4                 :  0.75645E+00
+
+   ++++++   lm Convergence
+        Coulomb    Exch+Corr       Self
+   0  0.33223E+00 -0.21128E+00  0.16618E+00
+   1  0.33397E+00 -0.21244E+00  0.16739E+00
+   2  0.33495E+00 -0.21299E+00  0.16790E+00
+   3  0.33535E+00 -0.21319E+00  0.16810E+00
+   4  0.33544E+00 -0.21323E+00  0.16815E+00
+   5  0.33549E+00 -0.21326E+00  0.16818E+00
+   6  0.33552E+00 -0.21327E+00  0.16819E+00
+   7  0.33553E+00 -0.21328E+00  0.16820E+00
+   8  0.33554E+00 -0.21329E+00  0.16821E+00
+   9  0.33555E+00 -0.21329E+00  0.16821E+00
+  10  0.33555E+00 -0.21329E+00  0.16821E+00
+
+
+   ++++++ Monocentric Coulomb analysis:
+   ++++++ Results inside  the B-sphere:
+   ++++++ Charge Multipoles (Qlm) >   0.10000E-07:
+           lm   0  0                 :  0.25446E-01
+           lm   1  1                 : -0.17561E-03
+           lm   2  0                 : -0.16607E-05
+           lm   2  2                 :  0.28765E-05
+           lm   3  1                 :  0.47240E-07
+           lm   3  3                 : -0.60987E-07
+   ++++++ Coulomb Multipoles (Clm) >   0.10000E-07:
+           lm   0  0                 :  0.13255E-02
+           lm   1  1                 :  0.83167E-06
+   ++++++ XC Multipoles (XClm) >   0.10000E-07:
+           lm   0  0                 : -0.10494E-02
+           lm   1  1                 : -0.30993E-06
+   ++++++ Selfint Multipoles (Flm) >   0.10000E-07:
+           lm   0  0                 :  0.67926E-03
+           lm   1  1                 :  0.52178E-06
+
+   ++++++   lm Convergence
+        Coulomb    Exch+Corr       Self
+   0  0.13255E-02 -0.10494E-02  0.67926E-03
+   1  0.13263E-02 -0.10497E-02  0.67979E-03
+   2  0.13263E-02 -0.10497E-02  0.67979E-03
+   3  0.13263E-02 -0.10497E-02  0.67979E-03
+   4  0.13263E-02 -0.10497E-02  0.67979E-03
+   5  0.13263E-02 -0.10497E-02  0.67979E-03
+   6  0.13263E-02 -0.10497E-02  0.67979E-03
+   7  0.13263E-02 -0.10497E-02  0.67979E-03
+   8  0.13263E-02 -0.10497E-02  0.67979E-03
+
+   ++++++   lm Convergence (B-sph - NO B-sph int)
+        Coulomb      Exch+Corr     Self
+   0  0.24619E-01 -0.17533E-01  0.12351E-01
+   1  0.24638E-01 -0.17540E-01  0.12364E-01
+   2  0.24638E-01 -0.17540E-01  0.12364E-01
+   3  0.24638E-01 -0.17540E-01  0.12364E-01
+   4  0.24638E-01 -0.17540E-01  0.12364E-01
+   5  0.24638E-01 -0.17540E-01  0.12364E-01
+   6  0.24638E-01 -0.17540E-01  0.12364E-01
+   7  0.24638E-01 -0.17540E-01  0.12364E-01
+   8  0.24638E-01 -0.17540E-01  0.12364E-01
+
+   ++++++   TOTAL Charge Multipoles (Qlm)
+                           NO B-sphere      B-sphere         TOTAL
+                          =============   ============   ============
+           lm   0  0     :  0.97467E+00    0.25446E-01    0.10001E+01
+           lm   1  1     :  0.35974E-01   -0.17561E-03    0.35798E-01
+           lm   2  0     :  0.17573E+00   -0.16607E-05    0.17573E+00
+           lm   2  2     : -0.30438E+00    0.28765E-05   -0.30438E+00
+           lm   3  1     : -0.69529E-01    0.47240E-07   -0.69529E-01
+           lm   3  3     :  0.89762E-01   -0.60987E-07    0.89762E-01
+           lm   4  0     :  0.38284E+00    0.76554E-09    0.38284E+00
+           lm   4  2     : -0.57267E+00   -0.11412E-08   -0.57267E+00
+           lm   4  4     :  0.75645E+00    0.15097E-08    0.75645E+00
+           lm   5  1     : -0.42333E+00   -0.32289E-10   -0.42333E+00
+           lm   5  3     :  0.46184E+00    0.34877E-10    0.46184E+00
+           lm   5  5     : -0.61552E+00   -0.46792E-10   -0.61552E+00
+           lm   6  0     :  0.22054E+01   -0.78368E-12    0.22054E+01
+           lm   6  2     : -0.32033E+01    0.11357E-11   -0.32033E+01
+           lm   6  4     :  0.35225E+01   -0.12440E-11    0.35225E+01
+           lm   6  6     : -0.47512E+01    0.16845E-11   -0.47512E+01
+           lm   7  1     : -0.48966E+01    0.39849E-13   -0.48966E+01
+           lm   7  3     :  0.51579E+01   -0.41412E-13    0.51579E+01
+           lm   7  5     : -0.57717E+01    0.45783E-13   -0.57717E+01
+           lm   7  7     :  0.77235E+01   -0.62391E-13    0.77235E+01
+           lm   8  0     :  0.21086E+02    0.97240E-15    0.21086E+02
+           lm   8  2     : -0.30346E+02   -0.13947E-14   -0.30346E+02
+           lm   8  4     :  0.31865E+02    0.14628E-14    0.31865E+02
+           lm   8  6     : -0.35532E+02   -0.16276E-14   -0.35532E+02
+           lm   8  8     :  0.48470E+02    0.22287E-14    0.48470E+02
+           lm   9  1     : -0.84309E+02                  -0.84309E+02
+           lm   9  3     :  0.87990E+02                   0.87990E+02
+           lm   9  5     : -0.93995E+02                  -0.93995E+02
+           lm   9  7     :  0.10617E+03                   0.10617E+03
+           lm   9  9     : -0.14172E+03                  -0.14172E+03
+           lm  10  0     :  0.26284E+03                   0.26284E+03
+           lm  10  2     : -0.37720E+03                  -0.37720E+03
+           lm  10  4     :  0.38932E+03                   0.38932E+03
+           lm  10  6     : -0.40745E+03                  -0.40745E+03
+           lm  10  8     :  0.46012E+03                   0.46012E+03
+           lm  10 10     : -0.63623E+03                  -0.63623E+03
+
+   +++ Total coulomb   (w self)         =     0.3615 (     0.3356     0.0013     0.0246 )
+       Total Exch+Corr (w self)         =    -0.2319 (    -0.2133    -0.0010    -0.0175 )
+       Self interaction                 =     0.1813 (     0.1682     0.0007     0.0124 )
+       Coulomb        (wo self)         =     0.1803
+       Exch+Corr      (wo self)         =    -0.0506
+       Total repulsion                  =     0.1296
+       RHO_2 Integ                      =     0.3726
+       RHO_2 Integ (J)                  =     1.0002
+       RHO_2 Integ (XC)   = F_AA (XC)   =     0.6277
+       RHO_2 Integ (X )   = F_AA (X )   =     0.6277
+       RHO_2 Integ (corr) = F_AA (corr) =     0.0000
+
+ # Done using         0.016275 seconds for atom :   2
+ # Done using         0.033472 seconds
+
+
+
+ # ------------------------------------------------------
+ # ---                                                ---
+ # --- COMPUTING  BASIN - OTHER BASIN Contributions   ---
+ # ---                                                ---
+ # ------------------------------------------------------
+
+ ** (B-SPHERE - NO B-SPHERE) INTERACTIONS
+
+   B-sphere OF ATOM   2 WITH NO B-sphere OF ATOM   1
+
+   ++++++++   lm Convergence   +++++++++++++++++++++++++
+        Coulomb     Exch+Corr      Self
+   0  0.11913E-01 -0.38597E-02  0.59351E-02
+   1  0.11951E-01 -0.38780E-02  0.59541E-02
+   2  0.11951E-01 -0.38782E-02  0.59542E-02
+   3  0.11951E-01 -0.38782E-02  0.59542E-02
+   4  0.11951E-01 -0.38782E-02  0.59542E-02
+   5  0.11951E-01 -0.38782E-02  0.59542E-02
+   6  0.11951E-01 -0.38782E-02  0.59542E-02
+   7  0.11951E-01 -0.38782E-02  0.59542E-02
+   8  0.11951E-01 -0.38782E-02  0.59542E-02
+
+   B-sphere OF ATOM   1 WITH NO B-sphere OF ATOM   2
+
+   ++++++++   lm Convergence   +++++++++++++++++++++++++
+        Coulomb     Exch+Corr      Self
+   0  0.11913E-01 -0.38597E-02  0.59351E-02
+   1  0.11951E-01 -0.38780E-02  0.59541E-02
+   2  0.11951E-01 -0.38782E-02  0.59542E-02
+   3  0.11951E-01 -0.38782E-02  0.59542E-02
+   4  0.11951E-01 -0.38782E-02  0.59542E-02
+   5  0.11951E-01 -0.38782E-02  0.59542E-02
+   6  0.11951E-01 -0.38782E-02  0.59542E-02
+   7  0.11951E-01 -0.38782E-02  0.59542E-02
+   8  0.11951E-01 -0.38782E-02  0.59542E-02
+
+
+
+   +++++++++ BICENTRIC ANALYSIS ON PAIR     1 ===> Atoms     1 and     2
+
+   NO B-sphere OF ATOM   1 WITH NO B-sphere OF ATOM   2
+ 
+   +++ Using in memory version
+   +++ Estimated memory (Mb) :           3.051955
+ 
+
+   ++++++++   lm Convergence   +++++++++++++++++++++++++
+         Coulomb    Exch+Corr      Self
+   0  0.44265E+00 -0.16491E+00  0.22132E+00
+   1  0.45116E+00 -0.17910E+00  0.22565E+00
+   2  0.42878E+00 -0.16975E+00  0.21453E+00
+   3  0.42248E+00 -0.16640E+00  0.21141E+00
+   4  0.42251E+00 -0.16626E+00  0.21141E+00
+   5  0.42285E+00 -0.16643E+00  0.21157E+00
+   6  0.42285E+00 -0.16644E+00  0.21156E+00
+   7  0.42278E+00 -0.16641E+00  0.21153E+00
+   8  0.42276E+00 -0.16640E+00  0.21151E+00
+   9  0.42275E+00 -0.16639E+00  0.21151E+00
+  10  0.42274E+00 -0.16639E+00  0.21150E+00
+
+
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ +     MULTIPOLAR APPROXIMATIONS TO THE TWO-CENTER INTERACTIONS      +
+ +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ ++++ In Tot_LR_int the B-sphere of each atom includes its own nucleus
+
+   ++++++++   lm Convergence   +++++  NO B-sphere -- NO B-sphere
+         Coulomb    Exch+Corr      Self       Tot_LR_int             
+   0  0.50271E+00 -0.18904E+00  0.25136E+00  0.50271E+00
+   1  0.48346E+00 -0.19523E+00  0.24234E+00  0.48346E+00
+   2  0.41864E+00 -0.16526E+00  0.20949E+00  0.41864E+00
+   3  0.42316E+00 -0.16618E+00  0.21214E+00  0.42316E+00
+   4  0.56090E+00 -0.23050E+00  0.28217E+00  0.56090E+00
+   5  0.10451E+01 -0.46325E+00  0.53408E+00  0.10451E+01
+   6  0.78645E+01 -0.37104E+01  0.40364E+01  0.78645E+01
+   7  0.74907E+02 -0.35919E+02  0.38684E+02  0.74907E+02
+   8  0.97203E+03 -0.46418E+03  0.49985E+03  0.97203E+03
+   9  0.23496E+05 -0.11347E+05  0.12108E+05  0.23496E+05
+  10  0.18474E+06 -0.87665E+05  0.94993E+05  0.18474E+06
+
+   ++++++++   lm Convergence   +++++     B-sphere -- NO B-sphere
+         Coulomb    Exch+Corr      Self       Tot_LR_int             
+   0  0.13124E-01 -0.40242E-02  0.65580E-02 -0.50265E+00
+   1  0.12914E-01 -0.43485E-02  0.64202E-02 -0.49279E+00
+   2  0.11574E-01 -0.37599E-02  0.57679E-02 -0.44205E+00
+   3  0.11345E-01 -0.35660E-02  0.56597E-02 -0.43337E+00
+   4  0.12445E-01 -0.40785E-02  0.61962E-02 -0.47473E+00
+   5  0.12947E-01 -0.44028E-02  0.64391E-02 -0.49351E+00
+   6  0.10798E-01 -0.33752E-02  0.53906E-02 -0.41341E+00
+   7  0.88664E-02 -0.22515E-02  0.44495E-02 -0.34167E+00
+   8  0.15498E-01 -0.54359E-02  0.76889E-02 -0.58693E+00
+   9  0.26173E-01 -0.11317E-01  0.12902E-01 -0.98019E+00
+  10  0.29823E-03  0.97556E-03  0.24958E-03 -0.30858E-01
+
+   ++++++++   lm Convergence   +++++  NO B-sphere --    B-sphere
+         Coulomb    Exch+Corr      Self       Tot_LR_int             
+   0  0.13124E-01 -0.40242E-02  0.65580E-02 -0.50265E+00
+   1  0.12914E-01 -0.43485E-02  0.64202E-02 -0.49279E+00
+   2  0.11574E-01 -0.37599E-02  0.57679E-02 -0.44205E+00
+   3  0.11345E-01 -0.35660E-02  0.56597E-02 -0.43337E+00
+   4  0.12445E-01 -0.40785E-02  0.61962E-02 -0.47473E+00
+   5  0.12947E-01 -0.44028E-02  0.64391E-02 -0.49351E+00
+   6  0.10798E-01 -0.33752E-02  0.53906E-02 -0.41341E+00
+   7  0.88664E-02 -0.22515E-02  0.44495E-02 -0.34167E+00
+   8  0.15498E-01 -0.54359E-02  0.76889E-02 -0.58693E+00
+   9  0.26173E-01 -0.11317E-01  0.12902E-01 -0.98019E+00
+  10  0.29823E-03  0.97556E-03  0.24958E-03 -0.30858E-01
+
+   ++++++++   lm Convergence   +++++     B-sphere --    B-sphere
+         Coulomb    Exch+Corr      Self       Tot_LR_int             
+   0  0.34264E-03 -0.63414E-04  0.17551E-03  0.50259E+00
+   1  0.34515E-03 -0.64761E-04  0.17666E-03  0.50249E+00
+   2  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   3  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   4  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   5  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   6  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   7  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+   8  0.34518E-03 -0.64777E-04  0.17668E-03  0.50249E+00
+
+   ++++++++   lm Convergence   +++++  Full Interaction
+         Coulomb    Exch+Corr      Self       Tot_LR_int             
+   0  0.52930E+00 -0.19715E+00  0.26465E+00  0.75688E-08
+   1  0.50963E+00 -0.20399E+00  0.25535E+00  0.37741E-03
+   2  0.44213E+00 -0.17285E+00  0.22120E+00  0.37039E-01
+   3  0.44619E+00 -0.17337E+00  0.22364E+00  0.58908E-01
+   4  0.58614E+00 -0.23872E+00  0.29474E+00  0.11395E+00
+   5  0.10713E+01 -0.47212E+00  0.54714E+00  0.56053E+00
+   6  0.78864E+01 -0.37173E+01  0.40473E+01  0.75401E+01
+   7  0.74925E+02 -0.35923E+02  0.38693E+02  0.74726E+02
+   8  0.97206E+03 -0.46419E+03  0.49986E+03  0.97136E+03
+   9  0.23496E+05 -0.11347E+05  0.12108E+05  0.23494E+05
+  10  0.18474E+06 -0.87665E+05  0.94993E+05  0.18474E+06
+
+                ----------------------  TOTAL --- NOBsph-NOBsph ---- Bsph-NOBsph ---- NOBsph-Bsph ------ Bsph-Bsph
+ COUL with self (COULw)       =       0.446984         0.422736         0.011951         0.011951         0.000345
+ COUL without self (COULwo)   =       0.223395         0.211233         0.005997         0.005997         0.000169
+ LONG  RANGE COUL with self   =   0.184738E+06     0.184738E+06     0.298225E-03     0.298225E-03     0.345179E-03
+ SHORT RANGE COUL with self   =   -.184738E+06     -.184738E+06     0.116529E-01     0.116529E-01     0.000000E+00
+ Exch-Corr with self (XC)     =      -0.174209        -0.166388        -0.003878        -0.003878        -0.000065
+ XC without self              =       0.049380         0.045116         0.002076         0.002076         0.000112
+ TOTAL El-El REPULSION (EE)   =       0.272775         0.256349         0.008073         0.008073         0.000280
+ LONG RANGE TOTAL INTERACTION =   0.184739E+06     0.184738E+06     -.308580E-01     -.308580E-01     0.502492E+00
+ SELFINT = COULw-COULwo       =       0.223589         0.211504         0.005954         0.005954         0.000177
+ RHO_2int (J)                 =       1.000239         0.949989         0.024802         0.024802         0.000647
+ RHO_2int (XC)                =       0.372568         0.357239         0.007605         0.007605         0.000120
+ DELOCALIZATION INDEX (F_AB)  =       0.745137 
+
+ # Done using        36.184253 seconds for pair :   1  2
+ # Done using        36.184438 seconds
+
+
+ # ORBITAL COMPONENTS ANALYSIS
+ #
+ # ONE CENTER TERMS
+
+
+ # NEQ ATOM   1    tot V_XC =    -0.231880
+
+
+ # orbital V_XC components
+
+
+     -0.185787
+     -0.051616       0.005523
+
+
+ # NEQ ATOM   2    tot V_XC =    -0.231880
+
+
+ # orbital V_XC components
+
+
+     -0.185787
+     -0.051616       0.005523
+ #
+ # TWO CENTER TERMS
+ #
+
+
+ # NEQ PAIR  1   FORMED by ATOMS ( 1 2 )
+ # Total V_XC     =    -0.174209
+ # Total Delta_XC =     0.745137
+
+
+ # orbital V_XC components (Second entry are the associated delocalization indices)
+
+
+     -0.227770
+      1.024823
+
+
+      0.049186       0.004375
+     -0.255102      -0.024583
+
+
+ -------------------------------------------------------------------------------
+ ------------------------------- TES PARTITION ---------------------------------
+ -------------------------------------------------------------------------------
+ # 
+ # Writing a summary of results in file h2_cas.wfn.QTAM-summary
+ # 
+
+ Atomic Contributions for neq:  1
+        Atom number          :  1
+ -------------------------------------------------------------------------------
+ kinetic energy          =       0.487586
+ potential energy        =      -1.051201
+ electron repulsion      =       0.129638
+ ---coulomb              =                0.361517
+ ---exch+corr            =               -0.231880
+ ---self                 =                0.181254
+ el-own-nuc attraction   =      -1.100113
+ net energy              =      -0.482889
+ interaction energy      =      -0.161451
+ additive energy         =      -0.563615
+ effective energy        =      -0.644340
+ 2T+V                    =      -0.076029
+ Int rho_2               =       0.372568
+ Integ rho_2 J           =       1.000239
+ Integ rho_2 XC   (F_AA) =       0.627671
+ SUM-RULE-TEST           =       1.000239  AND SHOULD BE       1.000120
+
+
+ ===================  Interaction with atom:   2  =================================================
+ (NN,EN,NE,EE,Inter)               0.529177     -0.481702     -0.481702      0.272775     -0.161451
+ EE  wself : (coul,XC,self)        0.446984     -0.174209      0.223589
+ EE  woself: (coul,XC)             0.223395      0.049380
+ Coul comp.: (longr, shortr)   0.184738E+06 -0.184738E+06
+ Classical Int. (Long,Total)   0.184739E+06  0.127581E-01
+ RHO_2 Integ comp (TOT,J,XC)       0.627671      1.000239      0.372568
+ F_AB (XC)                         0.745137
+
+ Atomic Contributions for neq:  2
+        Atom number          :  2
+ -------------------------------------------------------------------------------
+ kinetic energy          =       0.487586
+ potential energy        =      -1.051201
+ electron repulsion      =       0.129638
+ ---coulomb              =                0.361517
+ ---exch+corr            =               -0.231880
+ ---self                 =                0.181254
+ el-own-nuc attraction   =      -1.100113
+ net energy              =      -0.482889
+ interaction energy      =      -0.161451
+ additive energy         =      -0.563615
+ effective energy        =      -0.644340
+ 2T+V                    =      -0.076029
+ Int rho_2               =       0.372568
+ Integ rho_2 J           =       1.000239
+ Integ rho_2 XC   (F_AA) =       0.627671
+ SUM-RULE-TEST           =       1.000239  AND SHOULD BE       1.000120
+
+
+ ===================  Interaction with atom:   1  =================================================
+ (NN,EN,NE,EE,Inter)               0.529177     -0.481702     -0.481702      0.272775     -0.161451
+ EE  wself : (coul,XC,self)        0.446984     -0.174209      0.223589
+ EE  woself: (coul,XC)             0.223395      0.049380
+ Coul comp.: (longr, shortr)   0.184738E+06 -0.184738E+06
+ Classical Int. (Long,Total)   0.184739E+06  0.127581E-01
+ RHO_2 Integ comp (TOT,J,XC)       0.627671      1.000239      0.372568
+ F_AB (XC)                         0.745137
+
+ NPAIRS TEST:
+  TOTAL PAIRS        :       1.000239     AND SHOULD BE        1.000000
+  TOTAL PAIRS (COUL) :       2.000478     AND SHOULD BE        2.000000
+  TOTAL PAIRS (XC)   :       1.000239
+
+
+ TOTAL ENERGIES:
+      KINETIC            =        0.97517221
+      POTENTIAL          =       -2.10240158
+      NUC-NUC            =        0.52917721
+      NUC-EL             =       -3.16362956
+      EL-EL              =        0.53205076
+      EL-EL Coulomb      =        1.17001886
+      EL-EL XC           =       -0.63796810 = EL-EL - EL-EL Coul
+      TOTAL ENERGY       =       -1.12722937 = ENET + EINT
+      2T+V               =       -0.15205716
+      VIRIAL RATIO (V/T) =       -2.15592852
+      ENET               =       -0.96577870
+      EINT               =       -0.16145067
+
+
+ RELEVANT RESULTS FOR ALL THE ATOMS WITH LMAX = 10
+ -------------------------------------------------------------------------------
+ Atom      Charge      Eadd         Enet         Eeff          Kin     Loc Index
+ -------------------------------------------------------------------------------
+   1    -0.000120    -0.563615    -0.482889    -0.644340     0.487586   0.627671
+   2    -0.000120    -0.563615    -0.482889    -0.644340     0.487586   0.627671
+ TotQ=  -0.000239
+
+ #
+ #
+ #===================================================================================
+ # DOMAIN AVERAGED FERMI HOLE ANALYSIS
+ #-----------------------------------------------------------------------------------
+ # Exchange-correlation DAFH Analysis
+
+ # DAFH eigenvalues for atom   1   Exchange-correlation HOLE
+ #===================================================================================
+      0.994965      0.005154
+ # The set of Natural Atomic orbitals (NAO) is orthonormal in R^3
+
+ # DELTA (  1    2) contributions
+ # occ( 1) <NAO( 1) | NAO( 1>_Omega_ 2 =     0.369327
+ # occ( 2) <NAO( 2) | NAO( 2>_Omega_ 2 =     0.003241
+ # TOTAL DELTA                         =     0.372568
+
+ # [<NAO(i)^ 1|NAO(j) 1>_ 1 Overlaps   
+   0.628924
+  -0.427967   0.371137
+
+ # [<NAO(i)^ 1|NAO(j) 1>_ 2 Overlaps   
+   0.371196
+   0.427985   0.628866
+
+ # DAFH eigenvalues for atom   2   Exchange-correlation HOLE
+ #===================================================================================
+      0.994965      0.005154
+ # The set of Natural Atomic orbitals (NAO) is orthonormal in R^3
+
+ # DELTA (  2    1) contributions
+ # occ( 1) <NAO( 1) | NAO( 1>_Omega_ 1 =     0.369327
+ # occ( 2) <NAO( 2) | NAO( 2>_Omega_ 1 =     0.003241
+ # TOTAL DELTA                         =     0.372568
+
+ # [<NAO(i)^ 2|NAO(j) 2>_ 1 Overlaps   
+   0.371196
+  -0.427985   0.628866
+
+ # [<NAO(i)^ 2|NAO(j) 2>_ 2 Overlaps   
+   0.628924
+   0.427967   0.371137
+ #
+ #-----------------------------------------------------------------------------------
+ #
+
+ # ORBITAL CONTRIBUTIONS TO DELTA (  2    1)
+ # natural atomic orbital   1 =     0.738654 ,  accumulated =     0.738654
+ # natural atomic orbital   2 =     0.006483 ,  accumulated =     0.745137
+
+ #
+ #
+ #===================================================================================
+ # Delocalization indices analysis
+ # DELOCALIZATION INDEX ANALYSIS FOR ATOMS (  2   1)
+ # Contribution up to XC eigenfunction   1 =     1.024823 ,accumulated =     1.024823
+ # Contribution up to XC eigenfunction   2 =    -0.279686 ,accumulated =     0.745137
+ #
+ 
+
+ #-----------------------------------------------------
+ #    timer:
+ #   
+ # -pid--------name----------cumtime--------pcalls--popen-
+ #   1      _promolden      40.446381          1       F
+ #   2      _rdwfn____       0.000675          1       F
+ #   3      _binrdm___       0.000112          1       F
+ #   4      _bsphere__       0.020009          1       F
+ #   5      _surf_____       1.647748          1       F
+ #   6      _writelm__       2.484401          1       F
+ #   7      _monoelec_       0.033536          1       F
+ #   8      _nukin____       0.004467          2       F
+ #   9      _mono2e___       0.028732          2       F
+ #  10      _bicen____      36.184437          1       F
+ #  11      _qlmvlm___       0.000152          1       F
+ #  12      _sumgaunt_       0.011372          1       F
+ #  13      _coulbices      36.164555          1       F
+ #  14      _longbice_       0.001029          4       F
+ #  15      _newsolap_       0.000049          1       F
+ #  16      _domavgfh_       0.000195          1       F
+ #
+
+ # Total elapsed time =       40.446474 seconds
+ #
+ # Calculation ends at 2019.02.18, 00:04:17.127
+ # Normal termination of Promolden

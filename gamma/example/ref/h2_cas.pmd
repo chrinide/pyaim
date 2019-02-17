@@ -1,0 +1,19 @@
+h2_cas.wfn
+nosymmetry
+tes
+  rmaxsurf 10
+  epsiscp 0.220
+  radialquad 7
+  rmapping 3
+  lmax 10
+  nr 551
+  lebedev 5810
+  betasphere
+  betarad 1 0.300
+  radialquadbeta 7
+  rmappingbeta 2
+  nrb 451
+  lmaxbeta 8
+  lebedevbeta 3074
+  dafh
+endtes

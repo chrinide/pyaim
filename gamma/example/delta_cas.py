@@ -8,7 +8,7 @@ from pyscf import lib, dft
 
 log = lib.logger.Logger(sys.stdout, 4)
     
-name = 'test.chk'
+name = 'gamma_cas.chk'
 atm = [0,1]
 
 with h5py.File(name+'.h5') as f:
@@ -18,8 +18,8 @@ with h5py.File(name+'.h5') as f:
     aom2 = f[idx+'/aom'].value
 
 with h5py.File(name) as f:
-    rdm1 = f['rdm/rdm1'].value
-    rdm2 = f['rdm/rdm2'].value
+    rdm1 = f['pdm/rdm1'].value
+    rdm2 = f['pdm/rdm2'].value
 
 rdm2 = rdm2 - lib.einsum('ij,kl->ijkl',rdm1,rdm1) 
 rdm2 = -rdm2

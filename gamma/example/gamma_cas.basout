@@ -1,0 +1,154 @@
+
+******** <class 'pyaim.gamma.basin.Basin'> flags ********
+* General Info
+Date Sun Feb 17 23:51:56 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file gamma_cas.chk
+Max_memory 24000 MB (current use 81 MB)
+Correlated ? True
+CASSCF canonical orbitals ? True
+* Cell Info
+Cell dimension 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 1 
+K-point 1 : 0.000000  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 2
+Number of molecular primitives 10
+* Surface Info
+Surface file gamma_cas.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature legendre
+Radial outside mapping becke
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.500000
+Beta-Sphere radi 0.472432
+
+* Go with inside betasphere
+*--> density inside bsphere  0.08989 
+*--> kinetic inside bsphere  0.03433 
+*--> laplacian inside bsphere -0.74295 
+Time in Bsphere 1.066 (sec)
+* Go outside betasphere
+*--> density outside bsphere  0.90963 
+*--> kinetic outside bsphere  0.41598 
+*--> laplacian outside bsphere  0.74279 
+Time out Bsphere 4.054 (sec)
+Write info to HDF5 file
+*-> Total density  0.99951 
+*-> Total kinetic  0.45031 
+*-> Total laplacian -0.00016 
+Basim properties of atom 0 done
+    CPU time for Basin build     20.39 sec, wall time      5.13 sec
+
+******** <class 'pyaim.gamma.basin.Basin'> flags ********
+* General Info
+Date Sun Feb 17 23:52:01 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file gamma_cas.chk
+Max_memory 24000 MB (current use 98 MB)
+Correlated ? True
+CASSCF canonical orbitals ? True
+* Cell Info
+Cell dimension 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 1 
+K-point 1 : 0.000000  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of occupied molecular orbitals 2
+Number of molecular primitives 10
+* Surface Info
+Surface file gamma_cas.chk.h5
+Properties for nuc 1
+Nuclear coordinate 1.889726  0.000000  0.000000
+Rho nuclear coordinate 1.889726  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 1
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.500000
+Beta-Sphere radi 0.472432
+
+* Go with inside betasphere
+*--> density inside bsphere  0.08989 
+*--> kinetic inside bsphere  0.03433 
+*--> laplacian inside bsphere -0.74295 
+Time in Bsphere 1.069 (sec)
+* Go outside betasphere
+*--> density outside bsphere  0.90963 
+*--> kinetic outside bsphere  0.41598 
+*--> laplacian outside bsphere  0.74279 
+Time out Bsphere 4.053 (sec)
+Write info to HDF5 file
+*-> Total density  0.99951 
+*-> Total kinetic  0.45031 
+*-> Total laplacian -0.00016 
+Basim properties of atom 1 done
+    CPU time for Basin build     20.52 sec, wall time      5.13 sec

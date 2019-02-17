@@ -1,0 +1,9 @@
+0
+gamma_cas.wfn.aom
+gamma_cas.wfn
+norecur
+probcut 1d-4
+ngroup 2
+1 1
+1 2
+end

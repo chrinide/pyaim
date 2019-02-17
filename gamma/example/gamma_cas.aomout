@@ -1,0 +1,144 @@
+
+******** <class 'pyaim.gamma.aom.Aom'> flags ********
+* General Info
+Date Sun Feb 17 23:53:13 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file gamma_cas.chk
+Max_memory 24000 MB (current use 79 MB)
+Correlated ? False
+CASSCF canonical orbitals ? True
+* Cell Info
+Cell dimension 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 1 
+K-point 1 : 0.000000  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 2
+Number of molecular primitives 10
+* Surface Info
+Surface file gamma_cas.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 301
+Number of radial points inside 201
+Radial outside quadrature legendre
+Radial outside mapping becke
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.377945
+* AOM Info
+List of orbitals to be integrated 2
+
+* Go with inside betasphere
+Time in Bsphere 1.376 (sec)
+* Go outside betasphere
+Time out Bsphere 4.674 (sec)
+        #0        #1   
+0       0.49988
+1      -0.42700   0.50000
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build     24.11 sec, wall time      6.06 sec
+
+******** <class 'pyaim.gamma.aom.Aom'> flags ********
+* General Info
+Date Sun Feb 17 23:53:19 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file gamma_cas.chk
+Max_memory 24000 MB (current use 83 MB)
+Correlated ? False
+CASSCF canonical orbitals ? True
+* Cell Info
+Cell dimension 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 1 
+K-point 1 : 0.000000  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 2
+Number of molecular primitives 10
+* Surface Info
+Surface file gamma_cas.chk.h5
+Properties for nuc 1
+Nuclear coordinate 1.889726  0.000000  0.000000
+Rho nuclear coordinate 1.889726  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 301
+Number of radial points inside 201
+Radial outside quadrature 1
+Radial outside mapping 1
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.377945
+* AOM Info
+List of orbitals to be integrated 2
+
+* Go with inside betasphere
+Time in Bsphere 1.381 (sec)
+* Go outside betasphere
+Time out Bsphere 4.671 (sec)
+        #0        #1   
+0       0.49988
+1       0.42700   0.50000
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build     24.23 sec, wall time      6.06 sec
