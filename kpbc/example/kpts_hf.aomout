@@ -1,7 +1,7 @@
 
-******** <class 'pyaim.kpbc.surf.BaderSurf'> flags ********
+******** <class 'pyaim.kpbc.aom.Aom'> flags ********
 * General Info
-Date Sun Feb 17 23:34:19 2019
+Date Sun Feb 17 23:36:36 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -23,7 +23,7 @@ Cell b2 axis : 0.000000  0.000000  3.324918
 Cell volume 13.4967 (Bohr^3)
 Number of cell vectors 13
 Number of kpoints 1 
-K-point 0 : 0.000000  0.000000  0.000000
+K-point 1 : 0.000000  0.000000  0.000000
 Num atoms 2
 Num electrons 2
 Total charge 0
@@ -32,39 +32,45 @@ Atom Coordinates (Bohr)
 Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
 Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
 * Basis Info
-Is cartesian False
-Number of molecular orbitals 10
-Orbital EPS occ criterion 1.000000e-06
+Number of molecular orbitals 1
 Number of molecular primitives 10
 * Surface Info
-Lebedev quadrature
-Npang points 5810
 Surface file kpts_hf.chk.h5
-Surface for nuc 0
-Rmaxsurface 10.000000
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
 Ntrial 11
-Rprimer 0.400000
-Epsiscp 0.220000
-Epsroot 1.000000e-05
-ODE solver rkck
-ODE tool 1.000000e-05
-Max steps in ODE solver 300
-
-Check rho position 0.000000 0.000000 0.000000
-Setting xyzrho for atom to imput coords
-Check rho position 1.889726 0.000000 0.000000
-Setting xyzrho for atom to imput coords
-Time finding nucleus 0.001 (sec)
-Time finding surface 47.334 (sec)
 Rmin for surface 0.944864
 Rmax for surface 10.000000
-Write HDF5 surface file
-Surface of atom 0 saved
-    CPU time for BaderSurf build    189.40 sec, wall time     47.39 sec
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 301
+Number of radial points inside 201
+Radial outside quadrature legendre
+Radial outside mapping becke
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.377945
+* AOM Info
+List of orbitals per K point to be integrated 1
 
-******** <class 'pyaim.kpbc.surf.BaderSurf'> flags ********
+* Go with inside betasphere
+Time in Bsphere 1.378 (sec)
+* Go outside betasphere
+Time out Bsphere 4.702 (sec)
+        #0   
+0       0.49988
+Write info to HDF5 file
+
+AOM of atom 0 done
+    CPU time for AOM build     24.23 sec, wall time      6.09 sec
+
+******** <class 'pyaim.kpbc.aom.Aom'> flags ********
 * General Info
-Date Sun Feb 17 23:35:06 2019
+Date Sun Feb 17 23:36:42 2019
 Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
 [GCC 7.3.0]
 Numpy 1.15.4
@@ -72,7 +78,7 @@ Number of threads 4
 Verbose level 4
 Scratch dir /scratch-ssd/jluis
 Input data file kpts_hf.chk
-Max_memory 24000 MB (current use 82 MB)
+Max_memory 24000 MB (current use 83 MB)
 * Cell Info
 Cell dimension : 1
 Lattice vectors (Bohr)
@@ -86,7 +92,7 @@ Cell b2 axis : 0.000000  0.000000  3.324918
 Cell volume 13.4967 (Bohr^3)
 Number of cell vectors 13
 Number of kpoints 1 
-K-point 0 : 0.000000  0.000000  0.000000
+K-point 1 : 0.000000  0.000000  0.000000
 Num atoms 2
 Num electrons 2
 Total charge 0
@@ -95,32 +101,38 @@ Atom Coordinates (Bohr)
 Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
 Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
 * Basis Info
-Is cartesian False
-Number of molecular orbitals 10
-Orbital EPS occ criterion 1.000000e-06
+Number of molecular orbitals 1
 Number of molecular primitives 10
 * Surface Info
-Lebedev quadrature
-Npang points 5810
 Surface file kpts_hf.chk.h5
-Surface for nuc 1
-Rmaxsurface 10.000000
+Properties for nuc 1
+Nuclear coordinate 1.889726  0.000000  0.000000
+Rho nuclear coordinate 1.889726  0.000000  0.000000
+Npang points 5810
 Ntrial 11
-Rprimer 0.400000
-Epsiscp 0.220000
-Epsroot 1.000000e-05
-ODE solver rkck
-ODE tool 1.000000e-05
-Max steps in ODE solver 300
-
-Check rho position 0.000000 0.000000 0.000000
-Setting xyzrho for atom to imput coords
-Check rho position 1.889726 0.000000 0.000000
-Setting xyzrho for atom to imput coords
-Time finding nucleus 0.000 (sec)
-Time finding surface 46.812 (sec)
 Rmin for surface 0.944864
 Rmax for surface 10.000000
-Write HDF5 surface file
-Surface of atom 1 saved
-    CPU time for BaderSurf build    187.42 sec, wall time     46.87 sec
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 301
+Number of radial points inside 201
+Radial outside quadrature 1
+Radial outside mapping 1
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.400000
+Beta-Sphere radi 0.377945
+* AOM Info
+List of orbitals per K point to be integrated 1
+
+* Go with inside betasphere
+Time in Bsphere 1.373 (sec)
+* Go outside betasphere
+Time out Bsphere 4.710 (sec)
+        #0   
+0       0.49988
+Write info to HDF5 file
+
+AOM of atom 1 done
+    CPU time for AOM build     24.35 sec, wall time      6.09 sec

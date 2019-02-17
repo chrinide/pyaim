@@ -29,17 +29,21 @@ if sys.version_info >= (3,):
 def mos(self,x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao_kpts(self.cell, x, kpts=self.kpts, deriv=0)
-    #nocc = self.nmo
-    #npoints, nao = ao.shape
-    #cpos = self.mo_coeff
-    #c0 = numpy.dot(ao, cpos)
-    #aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
-    #idx = 0
-    #for i in range(nocc):
-    #    for j in range(i+1):
-    #        aom[idx] = numpy.einsum('i,i->i',c0[:,i],c0[:,j])*self.kpts[]**2
-    #        idx += 1
-    #return aom
+    nocc = self.nmo
+    npoints, nao = ao[0].shape
+    aom = numpy.zeros((nocc*(nocc+1)/2,npoints), dtype=numpy.complex128)
+    idx = 0
+    for i in range(nocc):
+        cposi = self.mo_coeff[:,i]
+        ii = self.tags[i]
+        c0i = numpy.dot(ao[ii], cposi)
+        for j in range(i+1):
+            cposj = self.mo_coeff[:,j]
+            jj = self.tags[j]
+            c0j = numpy.dot(ao[jj], cposj)
+            aom[idx] = numpy.einsum('i,i->i',c0i.conj(),c0j)
+            idx += 1
+    return aom
 
 def inbasin(self,r,j):
     isin = False
@@ -55,6 +59,81 @@ def inbasin(self,r,j):
             return isin
         rs1 = rs2
     return isin
+
+def out_beta(self):
+    logger.info(self,'* Go outside betasphere')
+    xcoor = numpy.zeros(3)
+    nrad = self.nrad
+    npang = self.npang
+    iqudr = self.iqudr
+    mapr = self.mapr
+    r0 = self.brad
+    rfar = self.rmax
+    rad = self.rad
+    t0 = time.time()
+    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+    coordsang = self.agrids
+    nocc = self.nmo
+    NPROPS = nocc*(nocc+1)//2
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
+    for n in range(nrad):
+        r = rmesh[n]
+        coords = []
+        weigths = []
+        for j in range(npang):
+            inside = True
+            inside = inbasin(self,r,j)
+            if (inside == True):
+                cost = coordsang[j,0]
+                sintcosp = coordsang[j,1]*coordsang[j,2]
+                sintsinp = coordsang[j,1]*coordsang[j,3]
+                xcoor[0] = r*sintcosp
+                xcoor[1] = r*sintsinp
+                xcoor[2] = r*cost    
+                p = self.xnuc + xcoor
+                coords.append(p)
+                weigths.append(coordsang[j,4])
+        coords = numpy.array(coords)
+        weigths = numpy.array(weigths)
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, weigths)
+        rprops += props*dvol[n]*rwei[n]
+    logger.info(self,'Time out Bsphere %.3f (sec)' % (time.time()-t0))
+    return rprops
+    
+def int_beta(self): 
+    logger.info(self,'* Go with inside betasphere')
+    xcoor = numpy.zeros(3)
+    npang = self.bnpang
+    coords = numpy.empty((npang,3))
+    nrad = self.bnrad
+    iqudr = self.biqudr
+    mapr = self.bmapr
+    r0 = 0
+    rfar = self.brad
+    rad = self.rad
+    t0 = time.time()
+    rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
+    coordsang = grid.lebgrid(npang)
+    nocc = self.nmo
+    NPROPS = nocc*(nocc+1)//2
+    rprops = numpy.zeros(NPROPS, dtype=numpy.complex128)
+    for n in range(nrad):
+        r = rmesh[n]
+        for j in range(npang): # j-loop can be changed to map
+            cost = coordsang[j,0]
+            sintcosp = coordsang[j,1]*coordsang[j,2]
+            sintsinp = coordsang[j,1]*coordsang[j,3]
+            xcoor[0] = r*sintcosp
+            xcoor[1] = r*sintsinp
+            xcoor[2] = r*cost    
+            p = self.xnuc + xcoor
+            coords[j] = p
+        val = mos(self,coords)
+        props = numpy.einsum('pi,i->p', val, coordsang[:,4])
+        rprops += props*dvol[n]*rwei[n]
+    logger.info(self,'Time in Bsphere %.3f (sec)' % (time.time()-t0))
+    return rprops
 
 class Aom(lib.StreamObject):
 
@@ -85,6 +164,7 @@ class Aom(lib.StreamObject):
         self.cell = None
         self.kpts = None
         self.nkpts = None
+        self.tags = None
         self.ls = None
         self.mo_coeff = None
         self.mo_occ = None
@@ -201,7 +281,6 @@ class Aom(lib.StreamObject):
         self.nkpts = len(self.kpts)
         self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in self.cell._atom])
         self.charges = self.cell.atom_charges()
-        self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         if self.charges[self.inuc] == 1:
             self.rad = grid.BRAGG[self.charges[self.inuc]]
         else:
@@ -221,10 +300,21 @@ class Aom(lib.StreamObject):
 
         self.brad = self.rmin*self.betafac
 
-        # TODO: organize here orbitals per k-point
-        nprims, nmo = self.mo_coeff[0].shape 
+        # TODO: general orbitals
+        mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
+        nprims, nmo = mo_coeff[0].shape 
+        if (self.orbs == -1):
+            self.orbs = nmo
         self.nprims = nprims
-        self.nmo = nmo
+        self.nmo = self.orbs*self.nkpts
+        self.mo_coeff = numpy.zeros((self.nprims,self.nmo), dtype=numpy.complex128)
+        self.tags = numpy.zeros(self.nmo, dtype=numpy.int32)
+        ii = 0
+        for k in range(self.nkpts):
+            for i in range(self.orbs):
+                self.mo_coeff[:,ii] = mo_coeff[k][:,i]
+                self.tags[ii] = k
+                ii += 1
 
         if self.verbose >= logger.WARN:
             self.check_sanity()
@@ -249,23 +339,25 @@ class Aom(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-        self.aom = numpy.zeros((self.nmo,self.nmo))
-        #with lib.with_omp_threads(self.nthreads):
-        #    aomb = int_beta(self)
-        #    aoma = out_beta(self)
-        #
-        #idx = 0
-        #for i in range(self.nmo):
-        #    for j in range(i+1):
-        #        self.aom[i,j] = aoma[idx]+aomb[idx] 
-        #        self.aom[j,i] = self.aom[i,j]
-        #        idx += 1
-        #if (self.nmo<=30):
-        #    dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
+        self.aom = numpy.zeros((self.nmo,self.nmo), dtype=numpy.complex128)
+        with lib.with_omp_threads(self.nthreads):
+            aomb = int_beta(self)
+            aoma = out_beta(self)
+        
+        idx = 0
+        for i in range(self.nmo):
+            for j in range(i+1):
+                self.aom[i,j] = aoma[idx]+aomb[idx] 
+                self.aom[j,i] = self.aom[i,j].conj()
+                idx += 1
+        norm = float(1.0/self.nkpts)
+        self.aom = self.aom*norm
+        if (self.nmo<=30):
+            dump_tri(self.stdout, self.aom, ncol=NCOL, digits=DIGITS, start=0)
 
         logger.info(self,'Write info to HDF5 file')
-        #atom_dic = {'aom':self.aom}
-        #lib.chkfile.save(self.surfile, 'ovlp'+str(self.inuc), atom_dic)
+        atom_dic = {'aom':self.aom}
+        lib.chkfile.save(self.surfile, 'ovlp'+str(self.inuc), atom_dic)
         logger.info(self,'')
 
         logger.info(self,'AOM of atom %d done',self.inuc)

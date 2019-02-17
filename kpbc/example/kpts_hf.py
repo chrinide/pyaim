@@ -20,7 +20,7 @@ cell.unit = 'A'
 cell.verbose = 4
 cell.build()
 
-nk = [8,1,1]
+nk = [1,1,1]
 kpts = cell.make_kpts(nk)
 kpts -= kpts[0] # Shift to gamma
 scf.chkfile.save_cell(cell, name+'.chk')
