@@ -222,6 +222,7 @@ class BaderSurf(lib.StreamObject):
                  self.max_memory, lib.current_memory()[0])
 
         logger.info(self,'* Cell Info')
+        logger.info(self,'Cell dimension : %d', self.cell.dimension)
         logger.info(self,'Lattice vectors (Bohr)')
         for i in range(3):
             logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
@@ -288,7 +289,7 @@ class BaderSurf(lib.StreamObject):
         self.natm = self.cell.natm		
         self.kpts = lib.chkfile.load(self.chkfile, 'kcell/kpts')
         self.nkpts = len(self.kpts)
-        self.ls = cell.get_lattice_Ls(dimension=3)
+        self.ls = cell.get_lattice_Ls(dimension=self.cell.dimension)
         self.ls = self.ls[numpy.argsort(lib.norm(self.ls, axis=1))]
         self.atm = numpy.asarray(cell._atm, dtype=numpy.int32, order='C')
         self.bas = numpy.asarray(cell._bas, dtype=numpy.int32, order='C')

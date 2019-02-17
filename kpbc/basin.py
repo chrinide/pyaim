@@ -146,7 +146,6 @@ class Basin(lib.StreamObject):
         self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
-        self.rdm1 = None
         self.nocc = None
         self.cell = None
         self.a = None
@@ -197,6 +196,7 @@ class Basin(lib.StreamObject):
                  self.max_memory, lib.current_memory()[0])
 
         logger.info(self,'* Cell Info')
+        logger.info(self,'Cell dimension : %d', self.cell.dimension)
         logger.info(self,'Lattice vectors (Bohr)')
         for i in range(3):
             logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
@@ -260,7 +260,7 @@ class Basin(lib.StreamObject):
         self.charge = self.cell.charge    
         self.spin = self.cell.spin      
         self.natm = self.cell.natm		
-        self.ls = self.cell.get_lattice_Ls(dimension=3)
+        self.ls = self.cell.get_lattice_Ls(dimension=self.cell.dimension)
         self.ls = self.ls[numpy.argsort(lib.norm(self.ls, axis=1))]
         self.kpts = lib.chkfile.load(self.chkfile, 'kcell/kpts')
         self.nkpts = len(self.kpts)
