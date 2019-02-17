@@ -5,7 +5,7 @@ FC = gfortran
 LD = gcc
 FDEBUG = -Wpedantic -g -pg -Wunused -fbacktrace -fcheck=bounds,mem,pointer,do,array-temps -Wall
 CDEBUG = -Wpedantic -g -pg -Wunused -Wall
-CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm #$(CDEBUG) 
+CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm -ftree-loop-vectorize -ffast-math #$(CDEBUG) 
 FFLAGS = -O3 -mtune=native -fopenmp -fpic     #$(FDEBUG) 
 LFLAGS = -shared -L/home/jluis/src/pyscf/dev/pyscf/lib -lcgto -lgfortran
 

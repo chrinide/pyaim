@@ -253,6 +253,10 @@ class BaderSurf(lib.StreamObject):
         self.non0tab = numpy.ones((1,self.nbas), dtype=numpy.int8)
         self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in mol._atom])
         self.charges = mol.atom_charges()
+        #if (self.cas):
+        #    self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
+        #else:
+        #    self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
         nprims, nmo = self.mo_coeff.shape 
@@ -265,9 +269,9 @@ class BaderSurf(lib.StreamObject):
         if (self.corr):
             self.rdm1 = lib.chkfile.load(self.chkfile, 'rdm/rdm1') 
             nmo = self.rdm1.shape[0]
+            natocc, natorb = numpy.linalg.eigh(self.rdm1)
             if (self.cas):
                 self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
-            natocc, natorb = numpy.linalg.eigh(self.rdm1)
             natorb = numpy.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
             self.mo_occ = natocc

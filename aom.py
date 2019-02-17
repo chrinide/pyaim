@@ -190,6 +190,7 @@ class Aom(lib.StreamObject):
         self.aom = None
         self.nocc = None
         self.corr = False
+        self.cas = False
         self.occdrop = 1e-6
         self._keys = set(self.__dict__.keys())
 
@@ -210,6 +211,8 @@ class Aom(lib.StreamObject):
         logger.info(self,'Input data file %s' % self.chkfile)
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
+        logger.info(self,'Correlated ? %s' % self.corr)
+        logger.info(self,'CASSCF canonical orbitals ? %s' % self.cas)
 
         logger.info(self,'* Molecular Info')
         logger.info(self,'Num atoms %d' % self.natm)
@@ -265,7 +268,10 @@ class Aom(lib.StreamObject):
         self.natm = self.mol.natm		
         self.coords = numpy.asarray([(numpy.asarray(atom[1])).tolist() for atom in self.mol._atom])
         self.charges = self.mol.atom_charges()
-        self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
+        if (self.cas):
+            self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
+        else:
+            self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
         nprims, nmo = self.mo_coeff.shape 
         self.nprims = nprims

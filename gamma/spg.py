@@ -12,9 +12,8 @@ try:
 except ImportError:
     from pyspglib import spglib as spg
 
-from pyscf.pbc import lib as libpbc
 from pyscf import lib
-from pyscf.lib import logger
+from pyscf.pbc import lib as libpbc
 
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
@@ -144,7 +143,7 @@ def spginfo(self):
 class Spg(lib.StreamObject):
 
     def __init__(self, datafile):
-        self.verbose = logger.NOTE
+        self.verbose = lib.logger.NOTE
         self.stdout = sys.stdout
         self.max_memory = lib.param.MAX_MEMORY
         self.chkfile = datafile
@@ -171,47 +170,47 @@ class Spg(lib.StreamObject):
 
     def dump_input(self):
 
-        if self.verbose < logger.INFO:
+        if self.verbose < lib.logger.INFO:
             return self
 
-        logger.info(self,'')
-        logger.info(self,'******** %s flags ********', self.__class__)
-        logger.info(self,'* General Info')
-        logger.info(self,'Date %s' % time.ctime())
-        logger.info(self,'Python %s' % sys.version)
-        logger.info(self,'Numpy %s' % numpy.__version__)
-        logger.info(self,'Number of threads %d' % self.nthreads)
-        logger.info(self,'Verbose level %d' % self.verbose)
-        logger.info(self,'Scratch dir %s' % self.scratch)
-        logger.info(self,'Input data file %s' % self.chkfile)
-        logger.info(self,'Max_memory %d MB (current use %d MB)',
+        lib.logger.info(self,'')
+        lib.logger.info(self,'******** %s flags ********', self.__class__)
+        lib.logger.info(self,'* General Info')
+        lib.logger.info(self,'Date %s' % time.ctime())
+        lib.logger.info(self,'Python %s' % sys.version)
+        lib.logger.info(self,'Numpy %s' % numpy.__version__)
+        lib.logger.info(self,'Number of threads %d' % self.nthreads)
+        lib.logger.info(self,'Verbose level %d' % self.verbose)
+        lib.logger.info(self,'Scratch dir %s' % self.scratch)
+        lib.logger.info(self,'Input data file %s' % self.chkfile)
+        lib.logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
 
-        logger.info(self,'* Cell Info')
-        logger.info(self,'Lattice vectors (Bohr)')
+        lib.logger.info(self,'* Cell Info')
+        lib.logger.info(self,'Lattice vectors (Bohr)')
         for i in range(3):
-            logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
-        logger.info(self,'Lattice reciprocal vectors (1/Bohr)')
+            lib.logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
+        lib.logger.info(self,'Lattice reciprocal vectors (1/Bohr)')
         for i in range(3):
-            logger.info(self,'Cell b%d axis : %.6f  %.6f  %.6f', i, *self.b[i])
-        logger.info(self,'Cell volume %g (Bohr^3)', self.vol)
-        logger.info(self,'Number of cell vectors %d' % len(self.ls))
-        logger.info(self,'Number of kpoints %d ' % self.nkpts)
+            lib.logger.info(self,'Cell b%d axis : %.6f  %.6f  %.6f', i, *self.b[i])
+        lib.logger.info(self,'Cell volume %g (Bohr^3)', self.vol)
+        lib.logger.info(self,'Number of cell vectors %d' % len(self.ls))
+        lib.logger.info(self,'Number of kpoints %d ' % self.nkpts)
         for i in range(self.nkpts):
-            logger.info(self,'K-point %d : %.6f  %.6f  %.6f', i, *self.kpts)
-        logger.info(self,'Num atoms %d' % self.natm)
-        logger.info(self,'Num electrons %d' % self.nelectron)
-        logger.info(self,'Total charge %d' % self.charge)
-        logger.info(self,'Spin %d ' % self.spin)
-        logger.info(self,'Atom Coordinates (Bohr)')
+            lib.logger.info(self,'K-point %d : %.6f  %.6f  %.6f', i, *self.kpts)
+        lib.logger.info(self,'Num atoms %d' % self.natm)
+        lib.logger.info(self,'Num electrons %d' % self.nelectron)
+        lib.logger.info(self,'Total charge %d' % self.charge)
+        lib.logger.info(self,'Spin %d ' % self.spin)
+        lib.logger.info(self,'Atom Coordinates (Bohr)')
         for i in range(self.natm):
-            logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
+            lib.logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
                         self.charges[i], *self.coords[i])
-        logger.info(self,'Atom Coordinates (Alat)')
+        lib.logger.info(self,'Atom Coordinates (Alat)')
         for i in range(self.natm):
-            logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
+            lib.logger.info(self,'Nuclei %d with charge %d position : %.6f  %.6f  %.6f', i, 
                         self.charges[i], *self.frac[i])
-        logger.info(self,'')
+        lib.logger.info(self,'')
 
         return self
 
@@ -237,14 +236,14 @@ class Spg(lib.StreamObject):
         self.charges = cell.atom_charges()
         self.frac = cart2frac(self.a,self.coords)            
 
-        if self.verbose >= logger.WARN:
+        if self.verbose >= lib.logger.WARN:
             self.check_sanity()
-        if self.verbose > logger.NOTE:
+        if self.verbose > lib.logger.NOTE:
             self.dump_input()
 
         spginfo(self)
 
-        logger.timer(self,'Spg build', *t0)
+        lib.logger.timer(self,'Spg build', *t0)
 
         return self
 

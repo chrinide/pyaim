@@ -149,6 +149,7 @@ class BaderSurf(lib.StreamObject):
         self.step = 0.1
         self.mstep = 120
         self.corr = False
+        self.cas = False
         self.occdrop = 1e-6
 ##################################################
 # don't modify the following attributes, they are not input options
@@ -210,8 +211,10 @@ class BaderSurf(lib.StreamObject):
         logger.info(self,'Max_memory %d MB (current use %d MB)',
                  self.max_memory, lib.current_memory()[0])
         logger.info(self,'Correlated ? %s' % self.corr)
+        logger.info(self,'CASSCF canonical orbitals ? %s' % self.cas)
 
         logger.info(self,'* Cell Info')
+        logger.info(self,'Cell dimension : %d', self.cell.dimension)
         logger.info(self,'Lattice vectors (Bohr)')
         for i in range(3):
             logger.info(self,'Cell a%d axis : %.6f  %.6f  %.6f', i, *self.a[i])
@@ -277,11 +280,14 @@ class BaderSurf(lib.StreamObject):
         self.charge = self.cell.charge    
         self.spin = self.cell.spin      
         self.natm = self.cell.natm		
-        self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
+        if (self.cas):
+            self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
+        else:
+            self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
         self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
         self.kpts = lib.chkfile.load(self.chkfile, 'kcell/kpts')
-        self.nkpts = len(self.kpts)
-        self.ls = cell.get_lattice_Ls(dimension=3)
+        self.nkpts = 1#len(self.kpts)
+        self.ls = cell.get_lattice_Ls(dimension=self.cell.dimension)
         self.ls = self.ls[numpy.argsort(lib.norm(self.ls, axis=1))]
         self.atm = numpy.asarray(cell._atm, dtype=numpy.int32, order='C')
         self.bas = numpy.asarray(cell._bas, dtype=numpy.int32, order='C')

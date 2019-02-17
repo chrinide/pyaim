@@ -19,15 +19,25 @@ signal.signal(signal.SIGINT, signal.SIG_DFL)
 if sys.version_info >= (3,):
     unicode = str
 
-NPROPS = 3
-PROPS = ['density', 'kinetic', 'laplacian']
 EPS = 1e-7
 
 # TODO: screaning of points
-def rho(self,x):
-    ao = dft.numint.eval_ao(self.cell, x, deriv=2)
-    rho = dft.numint.eval_rho2(self.cell, ao, self.mo_coeff, self.mo_occ, xctype='MGGA') 
-    return numpy.array([rho[0],rho[5],rho[4]])
+# Temporal only occupied orbitals
+def mos(self,x):
+    x = numpy.reshape(x, (-1,3))
+    ao = dft.numint.eval_ao(self.cell, x, deriv=0)
+    npoints, nao = ao.shape
+    nocc = self.nocc
+    pos = self.mo_occ > self.occdrop
+    cpos = self.mo_coeff[:,pos]
+    c0 = numpy.dot(ao, cpos)
+    aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
+    idx = 0
+    for i in range(nocc):
+        for j in range(i+1):
+            aom[idx] = numpy.einsum('i,i->i',c0[:,i],c0[:,j])
+            idx += 1
+    return aom
 
 def inbasin(self,r,j):
     isin = False

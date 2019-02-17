@@ -157,7 +157,8 @@ void surf_driver(const int inuc,
     ls_[i*3+2] = ls[i*3+2];
 	  //printf("Coordinate of ls %d %g %g %g\n", i,ls_[i*3+0], ls_[i*3+1], ls_[i*3+2]);
   }
-	explk_ = (double complex *) malloc(sizeof(double complex)*nls_*nkpts_);
+	//explk_ = (double complex *) malloc(sizeof(double complex)*nls_*nkpts_);
+	explk_ = (double complex *) malloc(sizeof(double complex)*nls_);
   assert(explk_ != NULL);
   for (i=0; i<nls_; i++){
     explk_[i] = explk[i];
@@ -231,15 +232,18 @@ void surf_driver(const int inuc,
 
 inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
 
-	double complex ao_[nprims_*4*nkpts_];
+	//double complex ao_[nprims_*4*nkpts_];
+	double complex ao_[nprims_*4];
   double c0_[nmo_],c1_[nmo_],c2_[nmo_],c3_[nmo_];
 
   if (cart_ == 1) {
-    aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
+    //aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
+    aim_PBCGTOval_cart_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, 1, ao_, 
                               point, rcut_, non0tab_, atm_, natm_, bas_, nbas_, env_);
   }
   else {
-    aim_PBCGTOval_sph_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
+    //aim_PBCGTOval_sph_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, nkpts_, ao_, 
+    aim_PBCGTOval_sph_deriv1(1, shls_, ao_loc_, ls_, nls_, explk_, 1, ao_, 
                              point, rcut_, non0tab_, atm_, natm_, bas_, nbas_, env_);
   }
 
@@ -251,7 +255,7 @@ inline void rho_grad(double *point, double *rho, double *grad, double *gradmod){
     c2_[i] = 0.0;
     c3_[i] = 0.0;
     for (j=0; j<nprims_; j++){
-      c0_[i] += creal(ao_[j+nprims_*0])*mo_coeff_[i*nprims_+j];
+      c0_[i] += creal(ao_[j])*mo_coeff_[i*nprims_+j];
       c1_[i] += creal(ao_[j+nprims_*1])*mo_coeff_[i*nprims_+j];
       c2_[i] += creal(ao_[j+nprims_*2])*mo_coeff_[i*nprims_+j];
       c3_[i] += creal(ao_[j+nprims_*3])*mo_coeff_[i*nprims_+j];

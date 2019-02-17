@@ -5,3 +5,9 @@
 * Be carefully with symm, for example when diagonalizing the NADO or DAFH
 * In complex C routines for rho, check when conj is needed and when not
 * Add XDM and post VV10 dispersion
+
+####### Not working when linar dependency !!!
+
+In AOM in case of CASSCF there should be one way to calculate the overlap
+integrals over a defined set of canonical 
+
