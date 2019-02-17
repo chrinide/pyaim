@@ -160,7 +160,10 @@ class Aom(lib.StreamObject):
         self.biqudr = 'legendre'
         self.bmapr = 'becke'
         self.non0tab = False
+        self.occdrop = 1e-6
         self.full = False # Use only occupied orbitals
+        self.corr = False
+        self.cas = False
 ##################################################
 # don't modify the following attributes, they are not input options
         self.mol = None
@@ -189,9 +192,6 @@ class Aom(lib.StreamObject):
         self.brad = None
         self.aom = None
         self.nocc = None
-        self.corr = False
-        self.cas = False
-        self.occdrop = 1e-6
         self._keys = set(self.__dict__.keys())
 
     def dump_input(self):

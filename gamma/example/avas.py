@@ -108,7 +108,7 @@ def kernel(mf, aolabels, threshold_occ=THRESHOLD_OCC, threshold_vir=THRESHOLD_VI
         mo_occ = mf.mo_occ
         mo_energy = mf.mo_energy
     nocc = numpy.count_nonzero(mo_occ != 0)
-    ovlp = mol.pbc_intor('int1e_ovlp')
+    ovlp = mol.pbc_intor('int1e_ovlp', hermi=1)
     log.info('  Total number of HF MOs  is equal to    %d' ,mo_coeff.shape[1])
     log.info('  Number of occupied HF MOs is equal to  %d', nocc)
     log.info('  Number of core HF MOs is equal to  %d', ncore)
@@ -130,8 +130,8 @@ def kernel(mf, aolabels, threshold_occ=THRESHOLD_OCC, threshold_vir=THRESHOLD_VI
         s2 = reduce(numpy.dot, (c.T, ovlp, c))
         s21 = reduce(numpy.dot, (c.T, ovlp, mo_coeff[:, ncore:]))
     else:
-        s2 = pmol.pbc_intor('int1e_ovlp')[baslst][:,baslst]
-        s21 = gto.intor_cross('int1e_ovlp', pmol, mol)[baslst]
+        s2 = pmol.pbc_intor('int1e_ovlp', hermi=1)[baslst][:,baslst]
+        s21 = gto.cell.intor_cross('int1e_ovlp', pmol, mol)[baslst]
         s21 = numpy.dot(s21, mo_coeff[:, ncore:])
     sa = s21.T.dot(scipy.linalg.solve(s2, s21))
 

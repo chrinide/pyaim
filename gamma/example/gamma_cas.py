@@ -9,21 +9,20 @@ from pyscf.tools import wfn_format
 name = 'gamma_cas'
 
 cell = gto.Cell()
+cell.incore_anyway = True
 cell.atom='''
   H 0.000000000000   0.000000000000   0.000000000000
   H 1.000000000000   0.000000000000   0.000000000000
+  H 2.000000000000   0.000000000000   0.000000000000
+  H 3.000000000000   0.000000000000   0.000000000000
 '''
-cell.basis = 'def2-svpd'
+cell.basis = 'def2-svp'
 cell.precision = 1e-12
 cell.dimension = 1
-cell.incore_anayway = True
-cell.a = [[2,0,0],[0,1,0],[0,0,1]]
+cell.a = [[4,0,0],[0,1,0],[0,0,1]]
 cell.unit = 'A'
 cell.verbose = 4
 cell.build()
-
-#ls = cell.get_lattice_Ls(dimension=1)
-#print ls
 
 mf = scf.RHF(cell).density_fit()
 mf.with_df.auxbasis = 'def2-svp-jkfit'
@@ -32,7 +31,7 @@ mf.max_cycle = 150
 mf.chkfile = name+'.chk'
 mf.with_df._cderi_to_save = name+'_eri.h5'
 #mf.with_df._cderi = name+'_eri.h5' 
-mf = mole_scf.addons.remove_linear_dep_(mf)
+#mf = mole_scf.addons.remove_linear_dep_(mf)
 ehf = mf.kernel()
 
 kpts = [0,0,0]
@@ -43,9 +42,6 @@ ao_labels = ['H 1s']
 ncas, nelecas, mo = avas.avas(mf, ao_labels, ncore=0, minao='ano', with_iao=True, \
                                              threshold_occ=0.1, threshold_vir=0.1)
 
-ncas = 2
-nelecas = 2
-mo = mf.mo_coeff
 mc = mcscf.CASSCF(mf, ncas, nelecas)
 #mc.fix_spin_(shift=.4, ss=0)
 mc.fcisolver = fci.direct_spin0.FCI()
