@@ -129,11 +129,11 @@ void surf_driver4c(const int inuc,
         mo_coeffS_[i*n2c_+j] = mo_coeffS[j*nmo_+i];
     }
 	}
-	for (j=0; j<n2c_; j++){
+	//for (j=0; j<n2c_; j++){
         //printf("%g+i%g  %g+i%g  %g+i%g  %g+ig\n", mo_coeffS[0*nmo_+j], mo_coeffS[0*n2c_+j], mo_coeffS[j*nmo_+0], mo_coeffS[j*n2c_+0]);
         //printf("%g + i%g\n", mo_coeffS[j*nmo_+0]);
         //printf("%g + i%g\n", mo_coeffS_[0*n2c_+j]);
-  }
+  //}
 
   //double point[3], grad[3], rho, gradmod;
   //point[0] = 0.0;

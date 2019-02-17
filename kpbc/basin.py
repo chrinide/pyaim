@@ -150,6 +150,7 @@ class Basin(lib.StreamObject):
         self.cell = None
         self.a = None
         self.b = None
+        self.vol = None
         self.cell = None
         self.kpts = None
         self.nkpts = None

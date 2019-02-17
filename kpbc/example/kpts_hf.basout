@@ -1,0 +1,162 @@
+
+******** <class 'pyaim.kpbc.basin.Basin'> flags ********
+* General Info
+Date Sun Feb 17 17:02:43 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file kpts_hf.chk
+Max_memory 24000 MB (current use 79 MB)
+* Cell Info
+Cell dimension : 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 8 
+K-point 1 : 0.000000  0.000000  0.000000
+K-point 1 : 0.207807  0.000000  0.000000
+K-point 1 : 0.415615  0.000000  0.000000
+K-point 1 : 0.623422  0.000000  0.000000
+K-point 1 : 0.831230  0.000000  0.000000
+K-point 1 : 1.039037  0.000000  0.000000
+K-point 1 : 1.246844  0.000000  0.000000
+K-point 1 : 1.454652  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of molecular primitives 10
+* Surface Info
+Surface file kpts_hf.chk.h5
+Properties for nuc 0
+Nuclear coordinate 0.000000  0.000000  0.000000
+Rho nuclear coordinate 0.000000  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature legendre
+Radial outside mapping becke
+Radial inside quadrature legendre
+Radial inside mapping exp
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.500000
+Beta-Sphere radi 0.472432
+
+* Go with inside betasphere
+*--> density inside bsphere  0.08361 
+*--> kinetic inside bsphere  0.03727 
+*--> laplacian inside bsphere -0.68392 
+Time in Bsphere 2.484 (sec)
+* Go outside betasphere
+*--> density outside bsphere  0.91594 
+*--> kinetic outside bsphere  0.48316 
+*--> laplacian outside bsphere  0.68385 
+Time out Bsphere 7.061 (sec)
+Write info to HDF5 file
+*-> Total density  0.99955 
+*-> Total kinetic  0.52043 
+*-> Total laplacian -0.00007 
+Basim properties of atom 0 done
+    CPU time for Basin build     38.10 sec, wall time      9.56 sec
+
+******** <class 'pyaim.kpbc.basin.Basin'> flags ********
+* General Info
+Date Sun Feb 17 17:02:52 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file kpts_hf.chk
+Max_memory 24000 MB (current use 116 MB)
+* Cell Info
+Cell dimension : 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 8 
+K-point 1 : 0.000000  0.000000  0.000000
+K-point 1 : 0.207807  0.000000  0.000000
+K-point 1 : 0.415615  0.000000  0.000000
+K-point 1 : 0.623422  0.000000  0.000000
+K-point 1 : 0.831230  0.000000  0.000000
+K-point 1 : 1.039037  0.000000  0.000000
+K-point 1 : 1.246844  0.000000  0.000000
+K-point 1 : 1.454652  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of molecular primitives 10
+* Surface Info
+Surface file kpts_hf.chk.h5
+Properties for nuc 1
+Nuclear coordinate 1.889726  0.000000  0.000000
+Rho nuclear coordinate 1.889726  0.000000  0.000000
+Npang points 5810
+Ntrial 11
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+* Radial and angular grid Info
+Npang points inside 3074
+Number of radial points outside 221
+Number of radial points inside 121
+Radial outside quadrature 1
+Radial outside mapping 1
+Radial inside quadrature 1
+Radial inside mapping 2
+Slater-Bragg radii 0.661404
+Beta-Sphere factor 0.500000
+Beta-Sphere radi 0.472432
+
+* Go with inside betasphere
+*--> density inside bsphere  0.08361 
+*--> kinetic inside bsphere  0.03727 
+*--> laplacian inside bsphere -0.68392 
+Time in Bsphere 2.470 (sec)
+* Go outside betasphere
+*--> density outside bsphere  0.91594 
+*--> kinetic outside bsphere  0.48316 
+*--> laplacian outside bsphere  0.68385 
+Time out Bsphere 7.047 (sec)
+Write info to HDF5 file
+*-> Total density  0.99955 
+*-> Total kinetic  0.52043 
+*-> Total laplacian -0.00007 
+Basim properties of atom 1 done
+    CPU time for Basin build     38.09 sec, wall time      9.53 sec

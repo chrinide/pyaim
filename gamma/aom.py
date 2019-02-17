@@ -29,10 +29,9 @@ if sys.version_info >= (3,):
 def mos(self,x):
     x = numpy.reshape(x, (-1,3))
     ao = dft.numint.eval_ao(self.cell, x, deriv=0)
+    nocc = self.nmo
     npoints, nao = ao.shape
-    nocc = self.nocc
-    pos = self.mo_occ > self.occdrop
-    cpos = self.mo_coeff[:,pos]
+    cpos = self.mo_coeff
     c0 = numpy.dot(ao, cpos)
     aom = numpy.zeros((nocc*(nocc+1)/2,npoints))
     idx = 0
@@ -70,10 +69,7 @@ def out_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = self.agrids
-    if (self.full):
-        nocc = self.nmo
-    else:
-        nocc = self.nocc
+    nocc = self.nmo
     NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
@@ -115,10 +111,7 @@ def int_beta(self):
     t0 = time.time()
     rmesh, rwei, dvol, dvoln = grid.rquad(nrad,r0,rfar,rad,iqudr,mapr)
     coordsang = grid.lebgrid(npang)
-    if (self.full):
-        nocc = self.nmo
-    else:
-        nocc = self.nocc
+    nocc = self.nmo
     NPROPS = nocc*(nocc+1)//2
     rprops = numpy.zeros(NPROPS)
     for n in range(nrad):
@@ -160,21 +153,19 @@ class Aom(lib.StreamObject):
         self.non0tab = False
         self.corr = False
         self.cas = False
-        self.occdrop = 1e-6
         self.nkpts = 1
-        self.full = False # Use only occupied orbitals
+        self.orbs = -1
 ##################################################
 # don't modify the following attributes, they are not input options
         self.rdm1 = None
-        self.nocc = None
         self.cell = None
         self.a = None
         self.b = None
+        self.vol = None
         self.cell = None
         self.kpts = None
         self.ls = None
         self.mo_coeff = None
-        self.mo_occ = None
         self.ntrial = None
         self.npang = None
         self.natm = None
@@ -225,7 +216,7 @@ class Aom(lib.StreamObject):
         logger.info(self,'Lattice reciprocal vectors (1/Bohr)')
         for i in range(3):
             logger.info(self,'Cell b%d axis : %.6f  %.6f  %.6f', i, *self.b[i])
-        logger.info(self,'Cell volume %g (Bohr^3)', self.vol)
+        logger.info(self,'Cell volume %g (Bohr^3)', self.cell.vol)
         logger.info(self,'Number of cell vectors %d' % len(self.ls))
         logger.info(self,'Number of kpoints %d ' % self.nkpts)
         logger.info(self,'K-point %d : %.6f  %.6f  %.6f', 1, *self.kpts)
@@ -240,10 +231,7 @@ class Aom(lib.StreamObject):
 
         logger.info(self,'* Basis Info')
         logger.info(self,'Number of molecular orbitals %d' % self.nmo)
-        logger.info(self,'Orbital EPS occ criterion %e' % self.occdrop)
-        logger.info(self,'Number of occupied molecular orbitals %d' % self.nocc)
         logger.info(self,'Number of molecular primitives %d' % self.nprims)
-        logger.debug(self,'Occs : %s' % self.mo_occ) 
 
         logger.info(self,'* Surface Info')
         logger.info(self,'Surface file %s' % self.surfile)
@@ -266,6 +254,9 @@ class Aom(lib.StreamObject):
         logger.info(self,'Slater-Bragg radii %f', self.rad) 
         logger.info(self,'Beta-Sphere factor %f', self.betafac)
         logger.info(self,'Beta-Sphere radi %f', self.brad)
+
+        logger.info(self,'* AOM Info')
+        logger.info(self,'List of orbitals to be integrated %s', self.orbs)
         logger.info(self,'')
 
         return self
@@ -292,10 +283,7 @@ class Aom(lib.StreamObject):
             self.mo_coeff = lib.chkfile.load(self.chkfile, 'mcscf/mo_coeff')
         else:
             self.mo_coeff = lib.chkfile.load(self.chkfile, 'scf/mo_coeff')
-        self.mo_occ = lib.chkfile.load(self.chkfile, 'scf/mo_occ')
-        nprims, nmo = self.mo_coeff.shape 
-        self.nprims = nprims
-        self.nmo = nmo
+
         if self.charges[self.inuc] == 1:
             self.rad = grid.BRAGG[self.charges[self.inuc]]
         else:
@@ -306,10 +294,14 @@ class Aom(lib.StreamObject):
             natocc, natorb = numpy.linalg.eigh(self.rdm1)
             natorb = numpy.dot(self.mo_coeff, natorb)
             self.mo_coeff = natorb
-            self.mo_occ = natocc
-        nocc = self.mo_occ[abs(self.mo_occ)>self.occdrop]
-        nocc = len(nocc)
-        self.nocc = nocc
+
+        if (self.orbs != -1): #TODO:general list of orbitals
+            idx = numpy.arange(self.orbs)
+            self.mo_coeff = self.mo_coeff[:,idx]
+
+        nprims, nmo = self.mo_coeff.shape 
+        self.nprims = nprims
+        self.nmo = nmo
 
         idx = 'atom'+str(self.inuc)
         with h5py.File(self.surfile) as f:
@@ -348,23 +340,13 @@ class Aom(lib.StreamObject):
         elif (self.bmapr == 'none'):
             self.bmapr = 0
 
-
-        if (self.full):
-            self.nocc = self.nmo
-            nocc = self.nmo
-        else:
-            nocc = self.mo_occ[self.mo_occ>self.occdrop]
-            nocc = len(nocc)
-            self.nocc = nocc
-
-        self.aom = numpy.zeros((nocc,nocc))
-
+        self.aom = numpy.zeros((self.nmo,self.nmo))
         with lib.with_omp_threads(self.nthreads):
             aomb = int_beta(self)
             aoma = out_beta(self)
 
         idx = 0
-        for i in range(nocc):
+        for i in range(self.nmo):
             for j in range(i+1):
                 self.aom[i,j] = aoma[idx]+aomb[idx] 
                 self.aom[j,i] = self.aom[i,j]

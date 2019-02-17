@@ -1,0 +1,140 @@
+
+******** <class 'pyaim.kpbc.surf.BaderSurf'> flags ********
+* General Info
+Date Sun Feb 17 16:57:42 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file kpts_hf.chk
+Max_memory 24000 MB (current use 79 MB)
+* Cell Info
+Cell dimension : 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 8 
+K-point 0 : 0.000000  0.000000  0.000000
+K-point 1 : 0.207807  0.000000  0.000000
+K-point 2 : 0.415615  0.000000  0.000000
+K-point 3 : 0.623422  0.000000  0.000000
+K-point 4 : 0.831230  0.000000  0.000000
+K-point 5 : 1.039037  0.000000  0.000000
+K-point 6 : 1.246844  0.000000  0.000000
+K-point 7 : 1.454652  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of molecular primitives 10
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file kpts_hf.chk.h5
+Surface for nuc 0
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 300
+
+Check rho position -0.018298 -0.000000 -0.000000
+Setting xyzrho for atom to imput coords
+Check rho position 1.908024 -0.000000 0.000000
+Setting xyzrho for atom to imput coords
+Time finding nucleus 0.310 (sec)
+Time finding surface 67.718 (sec)
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 0 saved
+    CPU time for BaderSurf build    272.19 sec, wall time     68.09 sec
+
+******** <class 'pyaim.kpbc.surf.BaderSurf'> flags ********
+* General Info
+Date Sun Feb 17 16:58:50 2019
+Python 2.7.14 (default, Apr 10 2018, 19:21:27) 
+[GCC 7.3.0]
+Numpy 1.15.4
+Number of threads 4
+Verbose level 4
+Scratch dir /scratch-ssd/jluis
+Input data file kpts_hf.chk
+Max_memory 24000 MB (current use 82 MB)
+* Cell Info
+Cell dimension : 1
+Lattice vectors (Bohr)
+Cell a0 axis : 3.779452  0.000000  0.000000
+Cell a1 axis : 0.000000  1.889726  0.000000
+Cell a2 axis : 0.000000  0.000000  1.889726
+Lattice reciprocal vectors (1/Bohr)
+Cell b0 axis : 1.662459  0.000000  0.000000
+Cell b1 axis : 0.000000  3.324918  0.000000
+Cell b2 axis : 0.000000  0.000000  3.324918
+Cell volume 13.4967 (Bohr^3)
+Number of cell vectors 13
+Number of kpoints 8 
+K-point 0 : 0.000000  0.000000  0.000000
+K-point 1 : 0.207807  0.000000  0.000000
+K-point 2 : 0.415615  0.000000  0.000000
+K-point 3 : 0.623422  0.000000  0.000000
+K-point 4 : 0.831230  0.000000  0.000000
+K-point 5 : 1.039037  0.000000  0.000000
+K-point 6 : 1.246844  0.000000  0.000000
+K-point 7 : 1.454652  0.000000  0.000000
+Num atoms 2
+Num electrons 2
+Total charge 0
+Spin 0 
+Atom Coordinates (Bohr)
+Nuclei 0 with charge 1 position : 0.000000  0.000000  0.000000
+Nuclei 1 with charge 1 position : 1.889726  0.000000  0.000000
+* Basis Info
+Is cartesian False
+Number of molecular orbitals 10
+Orbital EPS occ criterion 1.000000e-06
+Number of molecular primitives 10
+* Surface Info
+Lebedev quadrature
+Npang points 5810
+Surface file kpts_hf.chk.h5
+Surface for nuc 1
+Rmaxsurface 10.000000
+Ntrial 11
+Rprimer 0.400000
+Epsiscp 0.220000
+Epsroot 1.000000e-05
+ODE solver rkck
+ODE tool 1.000000e-05
+Max steps in ODE solver 300
+
+Check rho position -0.018298 -0.000000 -0.000000
+Setting xyzrho for atom to imput coords
+Check rho position 1.908024 -0.000000 0.000000
+Setting xyzrho for atom to imput coords
+Time finding nucleus 0.307 (sec)
+Time finding surface 67.454 (sec)
+Rmin for surface 0.944864
+Rmax for surface 10.000000
+Write HDF5 surface file
+Surface of atom 1 saved
+    CPU time for BaderSurf build    271.27 sec, wall time     67.82 sec

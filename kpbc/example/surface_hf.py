@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from pyaim.gamma import surf
+from pyaim.kpbc import surf
 
-name = 'gamma_hf.chk'
+name = 'kpts_hf.chk'
 natm = 2
 
 surface = surf.BaderSurf(name)
@@ -14,8 +14,6 @@ surface.epsiscp = 0.220
 surface.mstep = 300
 surface.npang = 5810
 surface.leb = True
-surface.corr = False
-surface.cas = False
 for i in range(natm):
     surface.inuc = i
     surface.kernel()

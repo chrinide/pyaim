@@ -1,12 +1,9 @@
 #!/usr/bin/env make
 
 CC = gcc
-FC = gfortran
 LD = gcc
-FDEBUG = -Wpedantic -g -pg -Wunused -fbacktrace -fcheck=bounds,mem,pointer,do,array-temps -Wall
 CDEBUG = -Wpedantic -g -pg -Wunused -Wall
-CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm #$(CDEBUG) 
-FFLAGS = -O3 -mtune=native -fopenmp -fpic     #$(FDEBUG) 
+CFLAGS = -O3 -mtune=native -fopenmp -fpic -lm -ftree-loop-vectorize -ffast-math #$(CDEBUG) 
 LFLAGS = -shared -L/home/jluis/src/pyscf/dev/pyscf/lib -lcgto -lgfortran
 
 all: libaim.so lib4caim.so
@@ -23,13 +20,11 @@ clean:
 	/bin/rm -f *.so *.o *.pyc *.mod
 
 .SUFFIXES:
-.SUFFIXES: .c .o .f90
+.SUFFIXES: .c .o
 
 .c.o:
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-.f90.o:
-	$(FC) -c $(FFLAGS) -o $@ $<
-
 surf.o: surf.h
 surf4c.o: surf.h
+
